@@ -1,0 +1,56 @@
+:root {
+	--background-colour: #262626;
+}
+body {
+	background: #262626;
+	color: white;
+}
+.tab {
+	display: flex;
+	align-items: center;
+	border-radius: 2px;
+	margin: 4px;
+	box-sizing: border-box;
+	--fade-color: var(--background-colour);
+}
+.tabIcon {
+	width: 16px;
+	margin: 5px;
+	box-sizing: content-box;
+}
+.tabIcon.noIcon {
+	opacity: 0;
+}
+.tabText {
+	overflow: hidden;
+	white-space: nowrap;
+	position: relative;
+	width: 100%;
+	margin-right: 5px;
+}
+.tabCloseBtn {
+	display: none;
+	width: 13px;
+	margin-right: 5px;
+	cursor: pointer;
+}
+.tabText:after {
+	content: "";
+	position: absolute;
+	right: 0;
+	width: 20px;
+	bottom: 0;
+	top: 0;
+	background: linear-gradient(to right, transparent, var(--fade-color));
+}
+.tab.activeTab {
+	background: #444;
+	--fade-color: #444;
+}
+.tab:hover:not(.activeTab) {
+	background: #333;
+	--fade-color: #333;
+}
+.tab:hover > .tabCloseBtn {
+	display: block;
+}
