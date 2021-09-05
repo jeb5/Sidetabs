@@ -2,7 +2,7 @@
 	--background-colour: #262626;
 }
 body {
-	background: #262626;
+	background: var(--background-colour);
 	color: white;
 }
 .tab {
@@ -15,10 +15,12 @@ body {
 }
 .tabIcon {
 	width: 16px;
+	height: 16px;
 	margin: 5px;
+	flex-shrink: 0;
 	box-sizing: content-box;
 }
-.tabIcon.noIcon {
+.tabIcon[src=""] {
 	opacity: 0;
 }
 .tabText {
