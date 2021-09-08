@@ -7,9 +7,10 @@ class Tab {
 		this.updateDetails();
 		this.setActive(this.active);
 		tabsDiv.insertBefore(tabEl, tabsDiv.children[rawTab.index]);
+		tabOrder.splice(rawTab.index, 0, this.id);
 	}
 	get index() {
-		return [...tabsDiv.children].indexOf(this.tabEl);
+		return tabOrder.indexOf(this.id);
 	}
 	updated(changeInfo) {
 		const newInfo = { ...this, ...changeInfo };
@@ -18,10 +19,18 @@ class Tab {
 		this.active = newInfo.active;
 	}
 	moved(toIndex) {
-		tabsDiv.insertBefore(this.tabEl, tabsDiv.children[toIndex]);
+		if (toIndex < this.index) {
+			tabsDiv.insertBefore(this.tabEl, tabsDiv.children[toIndex]);
+		} else {
+			tabsDiv.insertBefore(this.tabEl, tabsDiv.children[toIndex].nextSibling);
+			//acts like insertAfter. If .nextSibling is null (end of list), .insertBefore *will* place at end
+		}
+		tabOrder.splice(this.index, 1);
+		tabOrder.splice(toIndex, 0, this.id);
 	}
 	removeTab() {
 		tabsDiv.removeChild(this.tabEl);
+		tabOrder.splice(this.index, 1);
 	}
 	updateDetails() {
 		this.titleEl.innerText = this.title;
@@ -48,10 +57,9 @@ class Tab {
 				tabs: [this.index],
 			});
 		});
+
 		tabEl.classList.add("tab");
-
 		titleEl.classList.add("tabText");
-
 		tabCloseBtn.classList.add("tabCloseBtn");
 		tabCloseBtn.src = browser.runtime.getURL("assets/close.svg");
 		tabCloseBtn.addEventListener("click", async e => {
@@ -66,6 +74,7 @@ class Tab {
 }
 const tabsDiv = document.getElementById("tabsDiv");
 let currentTabs = {}; //All tabs in the current window, indexed by id
+let tabOrder = []; //All tabs ids in the current window, sorted by index
 let WIN_ID = null;
 
 function tabCreated(rawTab) {
@@ -111,7 +120,5 @@ async function setup() {
 	browser.tabs.onUpdated.addListener(tabChanged, { windowId: WIN_ID });
 
 	const tabs = await browser.tabs.query({ windowId: WIN_ID });
-	const oldTabs = Object.values(currentTabs);
-	for (const tab of oldTabs) tabRemoved(tab);
 	for (const tab of tabs) tabCreated(tab);
 }
