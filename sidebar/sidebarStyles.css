@@ -1,5 +1,5 @@
 :root {
-	--background-colour: #262626;
+	--background-colour: #1c1b22;
 }
 body {
 	background: var(--background-colour);
@@ -11,7 +11,10 @@ body {
 	border-radius: 2px;
 	margin: 4px;
 	box-sizing: border-box;
-	--fade-color: var(--background-colour);
+	--tab-color: var(--background-colour);
+	background: var(--tab-color);
+	position: relative;
+	overflow: hidden;
 }
 .tabIcon {
 	width: 16px;
@@ -19,9 +22,37 @@ body {
 	margin: 5px;
 	flex-shrink: 0;
 	box-sizing: content-box;
+	transition: opacity 200ms ease, transform 200ms ease;
 }
 .tabIcon[src=""] {
-	opacity: 0;
+	visibility: hidden;
+}
+.tab.loading > .tabIcon {
+	opacity: 0.7;
+	transform: scale(0.9);
+}
+.tab > * {
+	z-index: 2;
+}
+.tab.finishLoad:after {
+	content: "";
+	position: absolute;
+	left: 0;
+	height: 100%;
+	z-index: 1;
+	background: rgb(51, 102, 212);
+	border-radius: 0px 5px 5px 0px;
+	animation: finishLoad 400ms ease-out;
+}
+@keyframes finishLoad {
+	from {
+		width: 0%;
+		opacity: 90%;
+	}
+	to {
+		opacity: 0%;
+		width: 100%;
+	}
 }
 .tabText {
 	overflow: hidden;
@@ -29,6 +60,7 @@ body {
 	position: relative;
 	width: 100%;
 	margin-right: 5px;
+	margin-left: 2px;
 }
 .tabCloseBtn {
 	display: none;
@@ -43,15 +75,13 @@ body {
 	width: 20px;
 	bottom: 0;
 	top: 0;
-	background: linear-gradient(to right, transparent, var(--fade-color));
+	background: linear-gradient(to right, transparent, var(--tab-color));
 }
 .tab.activeTab {
-	background: #444;
-	--fade-color: #444;
+	--tab-color: #42414d;
 }
 .tab:hover:not(.activeTab) {
-	background: #333;
-	--fade-color: #333;
+	--tab-color: #34333a;
 }
 .tab:hover > .tabCloseBtn {
 	display: block;

@@ -17,6 +17,7 @@ class Tab {
 		this.title = newInfo.title;
 		this.favIconUrl = newInfo.favIconUrl;
 		this.active = newInfo.active;
+		this.status = newInfo.status;
 	}
 	moved(toIndex) {
 		if (toIndex < this.index) {
@@ -34,7 +35,25 @@ class Tab {
 	}
 	updateDetails() {
 		this.titleEl.innerText = this.title;
-		this.faviconEl.src = this.favIconUrl;
+		this.faviconEl.src = this.favIconUrl || "";
+		this.updateLoadStyle();
+	}
+	updateLoadStyle() {
+		if (this.status === "loading") {
+			this.tabEl.classList.add("loading");
+		} else {
+			if (this.tabEl.classList.contains("loading")) {
+				if (this.tabEl.classList.contains("finishLoad")) {
+					clearTimeout(this.loadTimeout);
+					this.tabEl.classList.remove("finishLoad");
+				}
+				this.tabEl.classList.add("finishLoad");
+				this.loadTimeout = setTimeout(() => {
+					this.tabEl.classList.remove("finishLoad");
+				}, 500);
+				this.tabEl.classList.remove("loading");
+			}
+		}
 	}
 	setActive(active) {
 		this.active = active;
