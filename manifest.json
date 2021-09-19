@@ -10,7 +10,7 @@
 		"default_title": "Sidetabs",
 		"default_panel": "sidebar/sidebar.html"
 	},
-	"permissions": ["tabs"],
+	"permissions": ["tabs", "menus", "menus.overrideContext"],
 	"commands": {
 		"_execute_sidebar_action": {
 			"suggested_key": {

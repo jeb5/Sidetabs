@@ -1,4 +1,10 @@
-class Tab {
+import { WIN_ID } from "./sidebar.mjs";
+import { showTabMenu } from "./contextMenu.mjs";
+
+const tabsDiv = document.getElementById("tabsDiv");
+let tabOrder = []; //All tabs ids in the current window, sorted by index
+
+export default class Tab {
 	constructor(rawTab) {
 		this.updated(rawTab);
 		this.id = rawTab.id;
@@ -18,6 +24,8 @@ class Tab {
 		this.favIconUrl = newInfo.favIconUrl;
 		this.active = newInfo.active;
 		this.status = newInfo.status;
+		this.muted = newInfo.mutedInfo?.muted || this.muted;
+		this.pinned = newInfo.pinned;
 	}
 	moved(toIndex) {
 		if (toIndex < this.index) {
@@ -60,6 +68,24 @@ class Tab {
 		if (this.active) return this.tabEl.classList.add("activeTab");
 		this.tabEl.classList.remove("activeTab");
 	}
+	async reload() {
+		return await browser.tabs.reload(this.id);
+	}
+	async mute() {
+		return await browser.tabs.update(this.id, { muted: true });
+	}
+	async unmute() {
+		return await browser.tabs.update(this.id, { muted: false });
+	}
+	async duplicate() {
+		return await browser.tabs.duplicate(this.id);
+	}
+	async pin() {
+		return await browser.tabs.update(this.id, { pinned: true });
+	}
+	async unpin() {
+		return await browser.tabs.update(this.id, { pinned: false });
+	}
 	createTabEl() {
 		const tabEl = document.createElement("div");
 		const titleEl = document.createElement("div");
@@ -76,6 +102,9 @@ class Tab {
 				tabs: [this.index],
 			});
 		});
+		tabEl.addEventListener("contextmenu", () => {
+			showTabMenu(this);
+		});
 
 		tabEl.classList.add("tab");
 		titleEl.classList.add("tabText");
@@ -91,53 +120,6 @@ class Tab {
 		return { tabEl, titleEl, faviconEl };
 	}
 }
-const tabsDiv = document.getElementById("tabsDiv");
-let currentTabs = {}; //All tabs in the current window, indexed by id
-let tabOrder = []; //All tabs ids in the current window, sorted by index
-let WIN_ID = null;
-
-function tabCreated(rawTab) {
-	currentTabs[rawTab.id] = new Tab(rawTab);
-}
-function tabRemoved(tabId) {
-	currentTabs[tabId].removeTab();
-	delete currentTabs[tabId];
-}
-function tabChanged(tabId, changeInfo) {
-	currentTabs[tabId].updated(changeInfo);
-	currentTabs[tabId].updateDetails();
-}
-function tabMoved(tabId, toIndex) {
-	currentTabs[tabId].moved(toIndex);
-}
-
-setup();
-async function setup() {
-	WIN_ID = (await browser.windows.getCurrent()).id; //WINDOW_ID_CURRENT returns wrong value for some reason
-	browser.tabs.onActivated.addListener(async ({ tabId, previousTabId, windowId }) => {
-		if (windowId == WIN_ID) {
-			currentTabs[tabId].setActive(true);
-			currentTabs[previousTabId]?.setActive(false);
-		}
-	});
-	browser.tabs.onAttached.addListener(async (tabId, { newWindowId }) => {
-		if (newWindowId === WIN_ID) tabCreated(await browser.tabs.get(tabId));
-	});
-	browser.tabs.onCreated.addListener(tab => {
-		if (tab.windowId === WIN_ID) tabCreated(tab);
-	});
-	browser.tabs.onDetached.addListener((tabId, { oldWindowId }) => {
-		if (oldWindowId === WIN_ID) tabRemoved(tabId);
-	});
-	// browser.tabs.onHighlighted.addListener(tabChange);
-	browser.tabs.onMoved.addListener((tabId, { windowId, toIndex }) => {
-		if (windowId === WIN_ID) tabMoved(tabId, toIndex);
-	});
-	browser.tabs.onRemoved.addListener((tabId, { windowId }) => {
-		if (windowId === WIN_ID) tabRemoved(tabId);
-	});
-	browser.tabs.onUpdated.addListener(tabChanged, { windowId: WIN_ID });
-
-	const tabs = await browser.tabs.query({ windowId: WIN_ID });
-	for (const tab of tabs) tabCreated(tab);
+export async function newTab(createOptions = {}) {
+	return await browser.tabs.create(createOptions);
 }
