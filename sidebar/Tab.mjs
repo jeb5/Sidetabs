@@ -26,6 +26,8 @@ export default class Tab {
 		this.status = newInfo.status;
 		this.muted = newInfo.mutedInfo?.muted || this.muted;
 		this.pinned = newInfo.pinned;
+		this.url = newInfo.url;
+		this.discarded = newInfo.discarded;
 	}
 	moved(toIndex) {
 		if (toIndex < this.index) {
@@ -44,7 +46,15 @@ export default class Tab {
 	updateDetails() {
 		this.titleEl.innerText = this.title;
 		this.faviconEl.src = this.favIconUrl || "";
+		this.updateClassList();
+	}
+	updateClassList() {
 		this.updateLoadStyle();
+		if (this.discarded) {
+			this.tabEl.classList.add("discarded");
+		} else {
+			this.tabEl.classList.remove("discarded");
+		}
 	}
 	updateLoadStyle() {
 		if (this.status === "loading") {
@@ -86,9 +96,21 @@ export default class Tab {
 	async unpin() {
 		return await browser.tabs.update(this.id, { pinned: false });
 	}
+	async bookmark() {
+		return await browser.bookmarks.create({ title: this.title, url: this.url });
+	}
+	async close() {
+		return await browser.tabs.remove(this.id);
+	}
+	async discard() {
+		await browser.tabs.discard(this.id);
+	}
+	get discardable() {
+		return !this.discarded && !this.active;
+	}
 	createTabEl() {
 		const tabEl = document.createElement("div");
-		const titleEl = document.createElement("div");
+		const titleEl = document.createElement("a");
 		const faviconEl = document.createElement("img");
 		const tabCloseBtn = document.createElement("img");
 		tabEl.appendChild(faviconEl);
@@ -105,15 +127,20 @@ export default class Tab {
 		tabEl.addEventListener("contextmenu", () => {
 			showTabMenu(this);
 		});
+		tabEl.draggable = true;
+		tabEl.addEventListener("dragstart", e => {
+			e.dataTransfer.setData("text/x-moz-url", `${this.url}\n${this.title}`);
+			e.dataTransfer.setData("text/uri-list", this.url);
+			e.dataTransfer.setData("text/plain", this.url);
+			e.dataTransfer.effectAllowed = "copyMove";
+			e.dataTransfer.setDragImage(document.getElementById("invisibleDragImage"), 0, 0);
+		});
 
 		tabEl.classList.add("tab");
 		titleEl.classList.add("tabText");
 		tabCloseBtn.classList.add("tabCloseBtn");
 		tabCloseBtn.src = browser.runtime.getURL("assets/close.svg");
-		tabCloseBtn.addEventListener("click", async e => {
-			e.stopPropagation();
-			await browser.tabs.remove(this.id);
-		});
+		tabCloseBtn.addEventListener("click", async () => this.close());
 
 		faviconEl.classList.add("tabIcon");
 
@@ -122,4 +149,11 @@ export default class Tab {
 }
 export async function newTab(createOptions = {}) {
 	return await browser.tabs.create(createOptions);
+}
+export async function restoreClosedTab() {
+	const lastClosed = await browser.sessions.getRecentlyClosed();
+	if (!lastClosed.length) return;
+	const lastTab = lastClosed.find(e => e.tab && e.tab.windowId === WIN_ID)?.tab;
+	if (!lastTab) return;
+	return await browser.sessions.restore(lastTab.sessionId);
 }
