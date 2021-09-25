@@ -5,6 +5,15 @@ body {
 	background: var(--background-colour);
 	color: white;
 }
+hr {
+	width: 90%;
+	height: 0;
+	border: 0px;
+	border-bottom: 1px solid #999;
+}
+#pinnedTabsDiv > hr:only-child {
+	display: none;
+}
 .tab {
 	display: flex;
 	align-items: center;

@@ -12,7 +12,6 @@ function tabRemoved(tabId) {
 }
 function tabChanged(tabId, changeInfo) {
 	currentTabs[tabId].updated(changeInfo);
-	currentTabs[tabId].updateDetails();
 }
 function tabMoved(tabId, toIndex) {
 	currentTabs[tabId].moved(toIndex);
@@ -23,8 +22,8 @@ async function setup() {
 	WIN_ID = (await browser.windows.getCurrent()).id; //WINDOW_ID_CURRENT returns wrong value for some reason
 	browser.tabs.onActivated.addListener(async ({ tabId, previousTabId, windowId }) => {
 		if (windowId == WIN_ID) {
-			currentTabs[tabId].setActive(true);
-			currentTabs[previousTabId]?.setActive(false);
+			currentTabs[tabId].updated({ active: true });
+			currentTabs[previousTabId].updated({ active: false });
 		}
 	});
 	browser.tabs.onAttached.addListener(async (tabId, { newWindowId }) => {
