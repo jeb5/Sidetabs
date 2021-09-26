@@ -1,4 +1,5 @@
 import { newTab, restoreClosedTab } from "./Tab.mjs";
+import { containers } from "./sidebar.mjs";
 
 export function showTabMenu(tab) {
 	setMenu([
@@ -9,10 +10,27 @@ export function showTabMenu(tab) {
 		tab.muted ? { title: "Unmute Tab", onclick: () => tab.unmute() } : { title: "Mute Tab", onclick: () => tab.mute() },
 		tab.pinned ? { title: "Unpin Tab", onclick: () => tab.unpin() } : { title: "Pin Tab", onclick: () => tab.pin() },
 		{ title: "Duplicate Tab", onclick: () => tab.duplicate() },
+		{
+			title: "Reopen in Container",
+			enabled: !!containers.length && tab.isReopenable,
+			children: [
+				{
+					title: "Default",
+					enabled: !!tab.container,
+					onclick: () => tab.reopenWithCookieStoreId(null),
+				},
+				...containers.map(container => ({
+					title: container.name,
+					icons: { 16: container.iconUrl },
+					enabled: container.cookieStoreId != tab.cookieStoreId,
+					onclick: () => tab.reopenWithCookieStoreId(container.cookieStoreId),
+				})),
+			],
+		},
 		{ title: "Unload Tab", onclick: () => tab.discard(), enabled: tab.discardable },
 		{ title: "Bookmark Tab", onclick: () => tab.bookmark() },
 		{ type: "separator" },
-		{ title: "Close tab", onclick: () => tab.close() },
+		{ title: "Close Tab", onclick: () => tab.close() },
 	]);
 }
 document.addEventListener("contextmenu", event => {
@@ -36,5 +54,5 @@ function createContext(contextObj, parentId = null) {
 		viewTypes: ["sidebar"],
 		...createProps,
 	});
-	for (const childContextObj of contextObj.children || []) createContext(childContextObj, id);
+	for (const childContextObj of children || []) createContext(childContextObj, id);
 }

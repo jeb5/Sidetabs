@@ -1,6 +1,7 @@
 import Tab from "./Tab.mjs";
 
 let currentTabs = {}; //All tabs in the current window, indexed by id
+export let containers = [];
 export let WIN_ID = null;
 
 function tabCreated(rawTab) {
@@ -11,7 +12,7 @@ function tabRemoved(tabId) {
 	delete currentTabs[tabId];
 }
 function tabChanged(tabId, changeInfo) {
-	currentTabs[tabId].updated(changeInfo);
+	currentTabs[tabId]?.updated(changeInfo);
 }
 function tabMoved(tabId, toIndex) {
 	currentTabs[tabId].moved(toIndex);
@@ -23,7 +24,7 @@ async function setup() {
 	browser.tabs.onActivated.addListener(async ({ tabId, previousTabId, windowId }) => {
 		if (windowId == WIN_ID) {
 			currentTabs[tabId].updated({ active: true });
-			currentTabs[previousTabId].updated({ active: false });
+			currentTabs[previousTabId]?.updated({ active: false });
 		}
 	});
 	browser.tabs.onAttached.addListener(async (tabId, { newWindowId }) => {
@@ -47,3 +48,11 @@ async function setup() {
 	const tabs = await browser.tabs.query({ windowId: WIN_ID });
 	for (const tab of tabs) tabCreated(tab);
 }
+
+async function rebuildContainers() {
+	containers = await browser.contextualIdentities.query({});
+}
+browser.contextualIdentities.onRemoved.addListener(rebuildContainers);
+browser.contextualIdentities.onUpdated.addListener(rebuildContainers);
+browser.contextualIdentities.onCreated.addListener(rebuildContainers);
+rebuildContainers();

@@ -1,4 +1,4 @@
-import { WIN_ID } from "./sidebar.mjs";
+import { WIN_ID, containers } from "./sidebar.mjs";
 import { showTabMenu } from "./contextMenu.mjs";
 
 const tabsDiv = document.getElementById("tabsDiv");
@@ -17,15 +17,20 @@ export default class Tab {
 		this.belongingDiv = pinned ? pinnedTabsDiv : tabsDiv;
 		this.belongingOrder = pinned ? pinnedTabOrder : tabOrder;
 		this.belongingOrder.splice(index, 0, this.id);
-		console.log(this.belongingOrder);
 		this.belongingDiv.insertBefore(tabEl, tabsDiv.children[index]);
 		this.updated(rawTab);
 	}
 	get index() {
 		return this.belongingOrder.indexOf(this.id);
 	}
+	get browserIndex() {
+		return this.pinned ? this.index : this.index + pinnedTabOrder.length;
+	}
+	get container() {
+		const container = containers.find(e => e.cookieStoreId === this.cookieStoreId);
+		return container || null;
+	}
 	updated(changeInfo) {
-		// console.log("Updated", changeInfo);
 		const handlers = {
 			title: newValue => {
 				this.title = newValue;
@@ -39,6 +44,10 @@ export default class Tab {
 				this.active = newValue;
 				this.tabEl.classList.toggle("activeTab", this.active);
 			},
+			cookieStoreId: newValue => {
+				this.cookieStoreId = newValue;
+				if (this.container) this.titleEl.style.color = this.container.colorCode;
+			},
 			status: newValue => {
 				const loading = newValue == "loading"; //Status is either "loading" or "complete"
 				this.tabEl.classList.toggle("loading", loading);
@@ -51,7 +60,6 @@ export default class Tab {
 			},
 			mutedInfo: newValue => (this.muted = newValue.muted),
 			pinned: newValue => {
-				console.log(this.id, "Pinned:", newValue);
 				if (this.pinned === newValue) return;
 				this.pinned = newValue;
 				this.movePinned(newValue);
@@ -68,7 +76,6 @@ export default class Tab {
 	}
 	async movePinned(pinning) {
 		const newIndex = (await browser.tabs.get(this.id)).index;
-		console.log("#", this.id, "MovePinned:", newIndex);
 		if (pinning) {
 			//unpinned -> pinned
 			this.belongingDiv = pinnedTabsDiv;
@@ -91,7 +98,6 @@ export default class Tab {
 		const newIndex = this.pinned ? toIndex : toIndex - pinnedTabOrder.length;
 		if (newIndex < 0 || newIndex >= this.belongingOrder.length) return; //Tab has probably been pinned or unpinned
 		if (this.index === newIndex) return;
-		console.log("#", this.id, "Moved:", newIndex);
 
 		if (newIndex < this.index) {
 			this.belongingDiv.insertBefore(this.tabEl, this.belongingDiv.children[newIndex]);
@@ -133,9 +139,25 @@ export default class Tab {
 	async discard() {
 		await browser.tabs.discard(this.id);
 	}
+	async reopenWithCookieStoreId(cookieStoreId) {
+		await browser.tabs.create({
+			active: this.active,
+			...(cookieStoreId ? { cookieStoreId } : {}),
+			discarded: this.discarded,
+			...(this.discarded ? { title: this.title } : {}),
+			index: this.browserIndex,
+			pinned: this.pinned,
+			url: this.url,
+		});
+		await this.close();
+	}
 
 	get discardable() {
 		return !this.discarded && !this.active;
+	}
+	get isReopenable() {
+		const { protocol } = new URL(this.url);
+		return ["http:", "https:"].indexOf(protocol) != -1;
 	}
 	createTabEl() {
 		const tabEl = document.createElement("div");
@@ -147,11 +169,7 @@ export default class Tab {
 		tabEl.appendChild(tabCloseBtn);
 
 		tabEl.addEventListener("click", async () => {
-			await browser.tabs.highlight({
-				windowId: WIN_ID,
-				populate: false,
-				tabs: [this.pinned ? this.index : this.index + pinnedTabOrder.length],
-			});
+			await browser.tabs.update(this.id, { active: true });
 		});
 		tabEl.addEventListener("contextmenu", () => showTabMenu(this));
 		tabEl.draggable = true;
