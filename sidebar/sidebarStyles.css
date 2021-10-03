@@ -73,12 +73,23 @@ hr {
 	width: 100%;
 	margin-right: 5px;
 	margin-left: 2px;
+	flex-shrink: 10;
 }
 .tabCloseBtn {
 	display: none;
-	width: 13px;
+	width: 20px;
 	margin-right: 5px;
+	padding: 4px;
 	cursor: pointer;
+}
+.tabCloseBtn:hover {
+	background: rgba(255, 255, 255, 0.2);
+	border-radius: 3px;
+}
+.containerIndicator {
+	width: 2px;
+	margin-right: 1px;
+	align-self: stretch;
 }
 .tabText:after {
 	content: "";

@@ -9,8 +9,13 @@ let pinnedTabOrder = []; //All pinned tab ids in the current window, sorted by i
 export default class Tab {
 	constructor(rawTab) {
 		this.id = rawTab.id;
-		const { tabEl, titleEl, faviconEl } = this.createTabEl();
-		[this.tabEl, this.titleEl, this.faviconEl] = [tabEl, titleEl, faviconEl];
+		const { tabEl, titleEl, faviconEl, containerIndicatorEl } = this.createTabEl();
+		[this.tabEl, this.titleEl, this.faviconEl, this.containerIndicatorEl] = [
+			tabEl,
+			titleEl,
+			faviconEl,
+			containerIndicatorEl,
+		];
 
 		const pinned = rawTab.pinned;
 		const index = pinned ? rawTab.index : rawTab.index - pinnedTabOrder.length;
@@ -46,7 +51,7 @@ export default class Tab {
 			},
 			cookieStoreId: newValue => {
 				this.cookieStoreId = newValue;
-				if (this.container) this.titleEl.style.color = this.container.colorCode;
+				if (this.container) this.containerIndicatorEl.style.backgroundColor = this.container.colorCode;
 			},
 			status: newValue => {
 				const loading = newValue == "loading"; //Status is either "loading" or "complete"
@@ -147,7 +152,7 @@ export default class Tab {
 			...(this.discarded ? { title: this.title } : {}),
 			index: this.browserIndex,
 			pinned: this.pinned,
-			url: this.url,
+			...(this.url !== "about:newtab" ? { url: this.url } : {}),
 		});
 		await this.close();
 	}
@@ -157,10 +162,12 @@ export default class Tab {
 	}
 	get isReopenable() {
 		const { protocol } = new URL(this.url);
-		return ["http:", "https:"].indexOf(protocol) != -1;
+		return ["http:", "https:"].indexOf(protocol) != -1 || this.url === "about:newtab";
 	}
 	createTabEl() {
 		const tabEl = document.createElement("div");
+		const containerIndicatorEl = document.createElement("div");
+		tabEl.appendChild(containerIndicatorEl);
 		const faviconEl = document.createElement("img");
 		tabEl.appendChild(faviconEl);
 		const titleEl = document.createElement("div");
@@ -190,10 +197,12 @@ export default class Tab {
 			e.stopPropagation();
 			this.close();
 		});
+		containerIndicatorEl.classList.add("containerIndicator");
 
 		faviconEl.classList.add("tabIcon");
+		faviconEl.src = "";
 
-		return { tabEl, titleEl, faviconEl };
+		return { tabEl, titleEl, faviconEl, containerIndicatorEl };
 	}
 }
 export async function newTab(createOptions = {}) {
