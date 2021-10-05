@@ -1,7 +1,8 @@
-import { newTab, restoreClosedTab } from "./Tab.mjs";
-import { containers } from "./sidebar.mjs";
+import Tab, { newTab, restoreClosedTab } from "./Tab";
+import { containers } from "./sidebar";
+import browser from "webextension-polyfill";
 
-export function showTabMenu(tab) {
+export function showTabMenu(tab: Tab) {
 	setMenu([
 		{ title: "New Tab", onclick: () => newTab({ openerTabId: tab.id }) },
 		{ title: "Reopen Closed Tab", onclick: () => restoreClosedTab() },
@@ -17,7 +18,7 @@ export function showTabMenu(tab) {
 				{
 					title: "Default",
 					enabled: !!tab.container,
-					onclick: () => tab.reopenWithCookieStoreId(null),
+					onclick: () => tab.reopenWithCookieStoreId(),
 				},
 				...containers.map(container => ({
 					title: container.name,
@@ -34,21 +35,25 @@ export function showTabMenu(tab) {
 	]);
 }
 document.addEventListener("contextmenu", event => {
-	if (event.target.closest(".tab")) return;
+	if ((event.target as HTMLElement).closest(".tab")) return;
 	setMenu([
 		{ title: "New Tab", onclick: () => newTab() },
 		{ title: "Reopen Closed Tab", onclick: () => restoreClosedTab() },
 		{ type: "separator" },
 	]);
 });
-function setMenu(structure) {
+
+interface MenuStructure extends browser.Menus.CreateCreatePropertiesType {
+	children?: MenuStructure[];
+}
+function setMenu(structure: MenuStructure[]) {
 	browser.menus.overrideContext({ showDefaults: false });
 	browser.menus.removeAll();
 	for (const contextObj of structure) createContext(contextObj);
 }
-function createContext(contextObj, parentId = null) {
-	const { children, ...createProps } = contextObj;
-	if (parentId != null) createProps.parentId = parentId;
+function createContext(menu: MenuStructure, parentId?: string | number) {
+	const { children, ...createProps } = menu;
+	if (parentId != undefined) createProps.parentId = parentId;
 	const id = browser.menus.create({
 		contexts: ["all"],
 		viewTypes: ["sidebar"],

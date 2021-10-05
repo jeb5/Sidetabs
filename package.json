@@ -1,0 +1,46 @@
+{
+	"name": "sidetabs",
+	"version": "1.0.0",
+	"description": "A Firefox extension that shows vertical tabs in the sidebar.",
+	"scripts": {
+		"watch": "parcel watch ./src/manifest.json --no-hmr --no-cache --target webext-dev --dist-dir ./extension",
+		"run": "web-ext run",
+		"dev": "concurrently \"npm run watch\" \"npm run run\""
+	},
+	"browserslist": [
+		"last 1 Firefox version"
+	],
+	"targets": {
+		"webext-dev": {
+			"sourceMap": {
+				"inline": true,
+				"inlineSources": true
+			}
+		}
+	},
+	"webExt": {
+		"sourceDir": "extension"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/jeb5/SideTabs.git"
+	},
+	"author": "jeb5",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/jeb5/SideTabs/issues"
+	},
+	"homepage": "https://github.com/jeb5/SideTabs#readme",
+	"devDependencies": {
+		"@parcel/config-webextension": "^2.0.0-rc.0",
+		"@parcel/transformer-image": "^2.0.0-rc.0",
+		"concurrently": "^6.3.0",
+		"parcel": "^2.0.0-rc.0",
+		"typescript": "^4.4.3",
+		"web-ext": "^6.4.0"
+	},
+	"dependencies": {
+		"@types/webextension-polyfill": "^0.8.0",
+		"webextension-polyfill": "^0.8.0"
+	}
+}

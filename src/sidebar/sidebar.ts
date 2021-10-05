@@ -1,20 +1,23 @@
-import Tab from "./Tab.mjs";
+import "./contextMenu";
+import Tab from "./Tab";
+import "./sidebarStyles.css";
+import browser from "webextension-polyfill";
 
-let currentTabs = {}; //All tabs in the current window, indexed by id
-export let containers = [];
-export let WIN_ID = null;
+let currentTabs: { [id: string]: Tab } = {}; //All tabs in the current window, indexed by id
+export let containers: browser.ContextualIdentities.ContextualIdentity[] = [];
+export let WIN_ID: number | undefined;
 
-function tabCreated(rawTab) {
-	currentTabs[rawTab.id] = new Tab(rawTab);
+function tabCreated(rawTab: browser.Tabs.Tab) {
+	if (rawTab.id != undefined) currentTabs[rawTab.id] = new Tab(rawTab);
 }
-function tabRemoved(tabId) {
+function tabRemoved(tabId: number) {
 	currentTabs[tabId].removeTab();
 	delete currentTabs[tabId];
 }
-function tabChanged(tabId, changeInfo) {
+function tabChanged(tabId: number, changeInfo: object) {
 	currentTabs[tabId]?.updated(changeInfo);
 }
-function tabMoved(tabId, toIndex) {
+function tabMoved(tabId: number, toIndex: number) {
 	currentTabs[tabId].moved(toIndex);
 }
 
@@ -24,7 +27,7 @@ async function setup() {
 	browser.tabs.onActivated.addListener(async ({ tabId, previousTabId, windowId }) => {
 		if (windowId == WIN_ID) {
 			currentTabs[tabId].updated({ active: true });
-			currentTabs[previousTabId]?.updated({ active: false });
+			if (previousTabId != undefined) currentTabs[previousTabId]?.updated({ active: false });
 		}
 	});
 	browser.tabs.onAttached.addListener(async (tabId, { newWindowId }) => {

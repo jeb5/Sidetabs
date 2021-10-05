@@ -1,14 +1,34 @@
-import { WIN_ID, containers } from "./sidebar.mjs";
-import { showTabMenu } from "./contextMenu.mjs";
+import { WIN_ID, containers } from "./sidebar";
+import { showTabMenu } from "./contextMenu";
+import browser from "webextension-polyfill";
 
-const tabsDiv = document.getElementById("tabsDiv");
-const pinnedTabsDiv = document.getElementById("pinnedTabsDiv");
-let tabOrder = []; //All unpinned tab ids in the current window, sorted by index
-let pinnedTabOrder = []; //All pinned tab ids in the current window, sorted by index
+const tabsDiv = document.getElementById("tabsDiv") as HTMLElement;
+const pinnedTabsDiv = document.getElementById("pinnedTabsDiv") as HTMLElement;
+let tabOrder: number[] = []; //All unpinned tab ids in the current window, sorted by index
+let pinnedTabOrder: number[] = []; //All pinned tab ids in the current window, sorted by index
 
 export default class Tab {
-	constructor(rawTab) {
-		this.id = rawTab.id;
+	id: number;
+	tabEl: HTMLElement;
+	titleEl: HTMLElement;
+	faviconEl: HTMLImageElement;
+	containerIndicatorEl: HTMLElement;
+	belongingDiv: HTMLElement;
+	belongingOrder: number[];
+
+	pinned!: boolean;
+	title!: string;
+	favIconUrl!: string;
+	active!: boolean;
+	cookieStoreId!: string;
+	status!: "loading" | "complete";
+	loadTimeout!: ReturnType<typeof setTimeout>;
+	muted!: boolean;
+	url!: string;
+	discarded!: boolean;
+
+	constructor(rawTab: browser.Tabs.Tab) {
+		this.id = rawTab.id || -1;
 		const { tabEl, titleEl, faviconEl, containerIndicatorEl } = this.createTabEl();
 		[this.tabEl, this.titleEl, this.faviconEl, this.containerIndicatorEl] = [
 			tabEl,
@@ -25,18 +45,18 @@ export default class Tab {
 		this.belongingDiv.insertBefore(tabEl, tabsDiv.children[index]);
 		this.updated(rawTab);
 	}
-	get index() {
+	get index(): number {
 		return this.belongingOrder.indexOf(this.id);
 	}
-	get browserIndex() {
+	get browserIndex(): number {
 		return this.pinned ? this.index : this.index + pinnedTabOrder.length;
 	}
 	get container() {
 		const container = containers.find(e => e.cookieStoreId === this.cookieStoreId);
 		return container || null;
 	}
-	updated(changeInfo) {
-		const handlers = {
+	updated(changeInfo: object) {
+		const handlers: { [change: string]: (newValue: any) => void } = {
 			title: newValue => {
 				this.title = newValue;
 				this.titleEl.innerText = this.title;
@@ -79,7 +99,7 @@ export default class Tab {
 			if (keyChanged in handlers) handlers[keyChanged](newValue);
 		}
 	}
-	async movePinned(pinning) {
+	async movePinned(pinning: boolean) {
 		const newIndex = (await browser.tabs.get(this.id)).index;
 		if (pinning) {
 			//unpinned -> pinned
@@ -96,7 +116,7 @@ export default class Tab {
 		}
 		this.belongingDiv.insertBefore(this.tabEl, this.belongingDiv.children[this.index]);
 	}
-	moved(toIndex) {
+	moved(toIndex: number) {
 		//When move event is fired, this.pinned may be outdated, as move events are fired before onUpdated events. Therefore, the index that the tab is moving to may not be a possible index to move to.
 		//When pinned or unpinned, movedPinned() will handle move
 
@@ -144,7 +164,7 @@ export default class Tab {
 	async discard() {
 		await browser.tabs.discard(this.id);
 	}
-	async reopenWithCookieStoreId(cookieStoreId) {
+	async reopenWithCookieStoreId(cookieStoreId?: string) {
 		await browser.tabs.create({
 			active: this.active,
 			...(cookieStoreId ? { cookieStoreId } : {}),
@@ -180,12 +200,13 @@ export default class Tab {
 		});
 		tabEl.addEventListener("contextmenu", () => showTabMenu(this));
 		tabEl.draggable = true;
-		tabEl.addEventListener("dragstart", e => {
+		tabEl.addEventListener("dragstart", (e: DragEvent) => {
+			if (!e.dataTransfer) return;
 			e.dataTransfer.setData("text/x-moz-url", `${this.url}\n${this.title}`);
 			e.dataTransfer.setData("text/uri-list", this.url);
 			e.dataTransfer.setData("text/plain", this.url);
 			e.dataTransfer.effectAllowed = "copyMove";
-			e.dataTransfer.setDragImage(document.getElementById("invisibleDragImage"), 0, 0);
+			e.dataTransfer.setDragImage(document.getElementById("invisibleDragImage") as HTMLElement, 0, 0);
 		});
 		tabEl.classList.add("tab");
 

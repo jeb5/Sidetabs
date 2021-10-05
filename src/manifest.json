@@ -11,6 +11,7 @@
 		"default_panel": "sidebar/sidebar.html"
 	},
 	"permissions": ["tabs", "menus", "menus.overrideContext", "bookmarks", "sessions", "cookies", "contextualIdentities"],
+	"web_accessible_resources": ["assets/*"],
 	"commands": {
 		"_execute_sidebar_action": {
 			"suggested_key": {
