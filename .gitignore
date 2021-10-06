@@ -1,3 +1,5 @@
 node_modules
 .parcel-cache
 .vscode
+.ff_profile/*
+extension

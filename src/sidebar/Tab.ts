@@ -2,6 +2,9 @@ import { WIN_ID, containers } from "./sidebar";
 import { showTabMenu } from "./contextMenu";
 import browser from "webextension-polyfill";
 
+const CLOSE_ICON = browser.runtime.getURL("assets/close.svg");
+const DEFAULT_ICON = browser.runtime.getURL("assets/firefox-glyph.svg");
+
 const tabsDiv = document.getElementById("tabsDiv") as HTMLElement;
 const pinnedTabsDiv = document.getElementById("pinnedTabsDiv") as HTMLElement;
 let tabOrder: number[] = []; //All unpinned tab ids in the current window, sorted by index
@@ -62,8 +65,12 @@ export default class Tab {
 				this.titleEl.innerText = this.title;
 			},
 			favIconUrl: newValue => {
-				this.favIconUrl = newValue;
-				this.faviconEl.src = this.favIconUrl || "";
+				if (newValue && !newValue.startsWith("chrome://")) {
+					this.favIconUrl = newValue;
+				} else {
+					this.favIconUrl = DEFAULT_ICON;
+				}
+				this.faviconEl.src = this.favIconUrl;
 			},
 			active: newValue => {
 				this.active = newValue;
@@ -213,7 +220,7 @@ export default class Tab {
 		titleEl.classList.add("tabText");
 
 		tabCloseBtn.classList.add("tabCloseBtn");
-		tabCloseBtn.src = browser.runtime.getURL("assets/close.svg");
+		tabCloseBtn.src = CLOSE_ICON;
 		tabCloseBtn.addEventListener("click", async e => {
 			e.stopPropagation();
 			this.close();
@@ -221,7 +228,7 @@ export default class Tab {
 		containerIndicatorEl.classList.add("containerIndicator");
 
 		faviconEl.classList.add("tabIcon");
-		faviconEl.src = "";
+		faviconEl.src = DEFAULT_ICON;
 
 		return { tabEl, titleEl, faviconEl, containerIndicatorEl };
 	}

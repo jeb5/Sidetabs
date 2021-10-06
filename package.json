@@ -3,9 +3,10 @@
 	"version": "1.0.0",
 	"description": "A Firefox extension that shows vertical tabs in the sidebar.",
 	"scripts": {
-		"watch": "parcel watch ./src/manifest.json --no-hmr --no-cache --target webext-dev --dist-dir ./extension",
-		"run": "web-ext run",
-		"dev": "concurrently \"npm run watch\" \"npm run run\""
+		"watch": "parcel watch ./src/manifest.json --no-hmr --target webext-dev --dist-dir ./extension",
+		"build": "parcel build ./src/manifest.json --target webext-dev --dist-dir ./extension",
+		"run": "web-ext run --source-dir ./extension --keep-profile-changes --firefox-profile=./.ff_profile",
+		"dev": "npm run build && concurrently \"npm run watch\" \"npm run run\""
 	},
 	"browserslist": [
 		"last 1 Firefox version"

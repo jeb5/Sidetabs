@@ -4,8 +4,9 @@
 	"version": "0.1",
 	"sidebar_action": {
 		"default_icon": {
-			"16": "assets/icons/tab16.png",
-			"32": "assets/icons/tab32.png"
+			"16": "assets/icons/icon16.png",
+			"32": "assets/icons/icon32.png",
+			"64": "assets/icons/icon64.png"
 		},
 		"default_title": "Sidetabs",
 		"default_panel": "sidebar/sidebar.html"
