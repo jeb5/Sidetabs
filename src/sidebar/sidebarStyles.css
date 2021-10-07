@@ -46,6 +46,12 @@ hr {
 .tab > * {
 	z-index: 2;
 }
+.tab.dragging {
+	z-index: 4;
+}
+.tab.dragSibling:not(.dragging) {
+	transition: transform 300ms;
+}
 .tab.finishLoad:after {
 	content: "";
 	position: absolute;

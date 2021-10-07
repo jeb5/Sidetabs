@@ -1,6 +1,7 @@
 import { WIN_ID, containers } from "./sidebar";
 import { showTabMenu } from "./contextMenu";
 import browser from "webextension-polyfill";
+import drag from "./drag";
 
 const CLOSE_ICON = browser.runtime.getURL("assets/close.svg");
 const DEFAULT_ICON = browser.runtime.getURL("assets/firefox-glyph.svg");
@@ -130,12 +131,13 @@ export default class Tab {
 		const newIndex = this.pinned ? toIndex : toIndex - pinnedTabOrder.length;
 		if (newIndex < 0 || newIndex >= this.belongingOrder.length) return; //Tab has probably been pinned or unpinned
 		if (this.index === newIndex) return;
-
-		if (newIndex < this.index) {
-			this.belongingDiv.insertBefore(this.tabEl, this.belongingDiv.children[newIndex]);
-		} else {
-			this.belongingDiv.insertBefore(this.tabEl, this.belongingDiv.children[newIndex].nextSibling);
-			//acts like insertAfter. If .nextSibling is null (end of list), .insertBefore *will* place at end
+		if (this.belongingDiv.children[newIndex] !== this.tabEl) {
+			if (newIndex < this.index) {
+				this.belongingDiv.insertBefore(this.tabEl, this.belongingDiv.children[newIndex]);
+			} else {
+				this.belongingDiv.insertBefore(this.tabEl, this.belongingDiv.children[newIndex].nextSibling);
+				//acts like insertAfter. If .nextSibling is null (end of list), .insertBefore *will* place at end
+			}
 		}
 		this.belongingOrder.splice(this.index, 1); //removes
 		this.belongingOrder.splice(newIndex, 0, this.id);
@@ -208,12 +210,20 @@ export default class Tab {
 		tabEl.addEventListener("contextmenu", () => showTabMenu(this));
 		tabEl.draggable = true;
 		tabEl.addEventListener("dragstart", (e: DragEvent) => {
-			if (!e.dataTransfer) return;
-			e.dataTransfer.setData("text/x-moz-url", `${this.url}\n${this.title}`);
-			e.dataTransfer.setData("text/uri-list", this.url);
-			e.dataTransfer.setData("text/plain", this.url);
-			e.dataTransfer.effectAllowed = "copyMove";
-			e.dataTransfer.setDragImage(document.getElementById("invisibleDragImage") as HTMLElement, 0, 0);
+			if ((e.target as HTMLElement).classList.contains("tabCloseBtn")) return e.preventDefault();
+			if (e.dataTransfer) {
+				e.dataTransfer.setData("text/x-moz-url", `${this.url}\n${this.title}`);
+				e.dataTransfer.setData("text/uri-list", this.url);
+				e.dataTransfer.setData("text/plain", this.url);
+				e.dataTransfer.effectAllowed = "copyMove";
+				e.dataTransfer.setDragImage(document.createElement("div"), 0, 0);
+			}
+			drag(e, tabEl, this.belongingDiv).then(
+				newIndex => {
+					browser.tabs.move(this.id, { index: this.pinned ? newIndex : newIndex + pinnedTabOrder.length });
+				},
+				() => {}
+			);
 		});
 		tabEl.classList.add("tab");
 
