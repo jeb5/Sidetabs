@@ -6,7 +6,7 @@
 		"watch": "parcel watch ./src/manifest.json --no-hmr --target webext-dev --dist-dir ./extension",
 		"build": "parcel build ./src/manifest.json --target webext-dev --dist-dir ./extension",
 		"run": "web-ext run --source-dir ./extension --keep-profile-changes --firefox-profile=./.ff_profile",
-		"dev": "npm run build && concurrently \"npm run watch\" \"npm run run\""
+		"dev": "npm run build; concurrently \"npm run watch\" \"npm run run\""
 	},
 	"browserslist": [
 		"last 1 Firefox version"
@@ -33,15 +33,20 @@
 	},
 	"homepage": "https://github.com/jeb5/SideTabs#readme",
 	"devDependencies": {
-		"@parcel/config-webextension": "^2.0.0-rc.0",
-		"@parcel/transformer-image": "^2.0.0-rc.0",
+		"@parcel/config-webextension": "^2.0.1",
+		"@parcel/transformer-image": "^2.0.1",
+		"@types/react-dom": "^17.0.11",
 		"concurrently": "^6.3.0",
-		"parcel": "^2.0.0-rc.0",
-		"typescript": "^4.4.3",
-		"web-ext": "^6.4.0"
+		"parcel": "^2.0.1",
+		"typescript": "^4.4.4",
+		"web-ext": "^6.5.0"
 	},
 	"dependencies": {
-		"@types/webextension-polyfill": "^0.8.0",
+		"@types/webextension-polyfill": "^0.8.1",
+		"react": "^17.0.2",
+		"react-dom": "^17.0.2",
+		"react-sortable-hoc": "^2.0.0",
+		"react-sortablejs": "^6.0.0",
 		"webextension-polyfill": "^0.8.0"
 	}
 }

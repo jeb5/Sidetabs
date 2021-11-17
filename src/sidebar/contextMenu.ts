@@ -1,5 +1,5 @@
+import { containers } from "./containers";
 import Tab, { newTab, restoreClosedTab } from "./Tab";
-import { containers } from "./sidebar";
 import browser from "webextension-polyfill";
 
 export function showTabMenu(tab: Tab) {
@@ -8,16 +8,18 @@ export function showTabMenu(tab: Tab) {
 		{ title: "Reopen Closed Tab", onclick: () => restoreClosedTab() },
 		{ type: "separator" },
 		{ title: "Reload Tab", onclick: () => tab.reload() },
-		tab.muted ? { title: "Unmute Tab", onclick: () => tab.unmute() } : { title: "Mute Tab", onclick: () => tab.mute() },
+		tab.mutedInfo?.muted
+			? { title: "Unmute Tab", onclick: () => tab.unmute() }
+			: { title: "Mute Tab", onclick: () => tab.mute() },
 		tab.pinned ? { title: "Unpin Tab", onclick: () => tab.unpin() } : { title: "Pin Tab", onclick: () => tab.pin() },
 		{ title: "Duplicate Tab", onclick: () => tab.duplicate() },
 		{
 			title: "Reopen in Container",
-			enabled: !!containers.length && tab.isReopenable,
+			enabled: !!containers.length && tab.getReopenable(),
 			children: [
 				{
 					title: "Default",
-					enabled: !!tab.container,
+					enabled: !!tab.cookieStoreId,
 					onclick: () => tab.reopenWithCookieStoreId(),
 				},
 				...containers.map(container => ({
@@ -28,7 +30,7 @@ export function showTabMenu(tab: Tab) {
 				})),
 			],
 		},
-		{ title: "Unload Tab", onclick: () => tab.discard(), enabled: tab.discardable },
+		{ title: "Unload Tab", onclick: () => tab.discard(), enabled: tab.getDiscardable() },
 		{ title: "Bookmark Tab", onclick: () => tab.bookmark() },
 		{ type: "separator" },
 		{ title: "Close Tab", onclick: () => tab.close() },
@@ -39,7 +41,6 @@ document.addEventListener("contextmenu", event => {
 	setMenu([
 		{ title: "New Tab", onclick: () => newTab() },
 		{ title: "Reopen Closed Tab", onclick: () => restoreClosedTab() },
-		{ type: "separator" },
 	]);
 });
 

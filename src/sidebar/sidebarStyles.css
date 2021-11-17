@@ -9,16 +9,21 @@ hr {
 	width: 90%;
 	height: 0;
 	border: 0px;
-	border-bottom: 1px solid #999;
+	border-bottom: 1px solid #5a5a5a;
+	margin: 0px auto;
 }
-#pinnedTabsDiv > hr:only-child {
+.tabsDiv:empty {
 	display: none;
+}
+.tabsDiv {
+	padding: 3px;
 }
 .tab {
 	display: flex;
 	align-items: center;
 	border-radius: 2px;
-	margin: 4px;
+	margin-bottom: 4px;
+	margin-top: 4px;
 	box-sizing: border-box;
 	--tab-color: var(--background-colour);
 	background: var(--tab-color);
@@ -48,11 +53,9 @@ hr {
 }
 .tab.dragging {
 	z-index: 4;
+	pointer-events: initial !important;
 }
-.tab.dragSibling:not(.dragging) {
-	transition: transform 300ms;
-}
-.tab.finishLoad:after {
+.tab.justLoaded:after {
 	content: "";
 	position: absolute;
 	left: 0;
