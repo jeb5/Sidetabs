@@ -11,23 +11,28 @@ function Wrapper<T extends object>(): new (init: T) => T {
 export default class Tab extends Wrapper<browser.Tabs.Tab>() {
 	constructor(tabData: browser.Tabs.Tab) {
 		super(tabData);
-		this.activate = this.activate.bind(this);
-		this.close = this.close.bind(this);
-		this.reload = this.reload.bind(this);
-		this.mute = this.mute.bind(this);
-		this.unmute = this.unmute.bind(this);
-		this.duplicate = this.duplicate.bind(this);
-		this.pin = this.pin.bind(this);
-		this.unpin = this.unpin.bind(this);
-		this.bookmark = this.bookmark.bind(this);
-		this.discard = this.discard.bind(this);
-		this.reopenWithCookieStoreId = this.reopenWithCookieStoreId.bind(this);
-		this.getDiscardable = this.getDiscardable.bind(this);
-		this.getReopenable = this.getReopenable.bind(this);
-		this.getContainer = this.getContainer.bind(this);
+		this.activate = this.activate;
+		this.close = this.close;
+		this.reload = this.reload;
+		this.mute = this.mute;
+		this.unmute = this.unmute;
+		this.duplicate = this.duplicate;
+		this.pin = this.pin;
+		this.unpin = this.unpin;
+		this.bookmark = this.bookmark;
+		this.discard = this.discard;
+		this.reopenWithCookieStoreId = this.reopenWithCookieStoreId;
+		this.getDiscardable = this.getDiscardable;
+		this.getReopenable = this.getReopenable;
+		this.getContainer = this.getContainer;
+		this.getLoading = this.getLoading;
+		this.getMuted = this.getMuted;
 	}
 	getDiscardable() {
 		return !this.active && !this.discarded;
+	}
+	getMuted() {
+		return this.mutedInfo?.muted;
 	}
 	getReopenable() {
 		const { protocol } = new URL(this.url || "");
@@ -35,6 +40,9 @@ export default class Tab extends Wrapper<browser.Tabs.Tab>() {
 	}
 	getContainer() {
 		return containers.find(({ cookieStoreId }) => cookieStoreId === this.cookieStoreId);
+	}
+	getLoading() {
+		return this.status === "loading";
 	}
 	async activate() {
 		await browser.tabs.update(this.id!, { active: true });

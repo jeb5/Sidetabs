@@ -133,7 +133,6 @@ const Sidebar = () => {
 		transitionDuration: 150,
 		helperClass: "dragging",
 		distance: 1,
-		// pressDelay: 500,
 	};
 	const pinnedTabs = state.tabOrder.filter(tabId => state.tabs[tabId].pinned).map(tabId => state.tabs[tabId]);
 	const regularTabs = state.tabOrder.filter(tabId => !state.tabs[tabId].pinned).map(tabId => state.tabs[tabId]);

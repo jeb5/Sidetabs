@@ -1,8 +1,8 @@
 :root {
-	--background-colour: #1c1b22;
+	--background-color: 28, 27, 34;
 }
 body {
-	background: var(--background-colour);
+	background: rgb(var(--background-color));
 	color: white;
 }
 hr {
@@ -25,16 +25,21 @@ hr {
 	margin-bottom: 4px;
 	margin-top: 4px;
 	box-sizing: border-box;
-	--tab-color: var(--background-colour);
-	background: var(--tab-color);
+	--tab-color: var(--background-color);
+	background: rgb(var(--tab-color));
 	position: relative;
 	overflow: hidden;
 }
-.tabIcon {
-	width: 16px;
-	height: 16px;
-	margin: 5px;
+.iconAndBadge {
 	flex-shrink: 0;
+	margin: 5px;
+	height: 16px;
+	width: 16px;
+	position: relative;
+}
+.tabIcon {
+	width: 100%;
+	height: 100%;
 	box-sizing: content-box;
 	transition: opacity 200ms ease, transform 200ms ease;
 }
@@ -45,6 +50,34 @@ hr {
 	opacity: 0.7;
 	transform: scale(0.9);
 }
+.badge {
+	position: absolute;
+	width: 12px;
+	height: 12px;
+	bottom: -3px;
+	right: -3px;
+	border-radius: 50%;
+	background: rgba(var(--tab-color), 0.7);
+}
+.badge:empty {
+	display: none;
+}
+.badge > .loadingIndicator {
+	border-radius: 50%;
+	border: 3px solid rgba(0, 0, 0, 0);
+	border-top: 3px solid #4fb7f8;
+	width: 100%;
+	height: 100%;
+	animation: loading 400ms linear infinite;
+}
+@keyframes loading {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
 .tab.discarded {
 	opacity: 0.7;
 }
@@ -54,6 +87,9 @@ hr {
 .tab.dragging {
 	z-index: 4;
 	pointer-events: initial !important;
+}
+.tab.drawingAttention {
+	font-weight: bold;
 }
 .tab.justLoaded:after {
 	content: "";
@@ -107,13 +143,13 @@ hr {
 	width: 20px;
 	bottom: 0;
 	top: 0;
-	background: linear-gradient(to right, transparent, var(--tab-color));
+	background: linear-gradient(to right, transparent, rgb(var(--tab-color)));
 }
 .tab.activeTab {
-	--tab-color: #42414d;
+	--tab-color: 66, 65, 77;
 }
 .tab:hover:not(.activeTab) {
-	--tab-color: #34333a;
+	--tab-color: 51, 50, 57;
 }
 .tab:hover > .tabCloseBtn {
 	display: block;

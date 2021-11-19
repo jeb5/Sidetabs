@@ -3,23 +3,24 @@ import Tab from "./Tab";
 import browser from "webextension-polyfill";
 import { showTabMenu } from "./contextMenu";
 
-const CLOSE_ICON = browser.runtime.getURL("assets/close.svg");
-const DEFAULT_ICON = browser.runtime.getURL("assets/firefox-glyph.svg");
+const ICONS = {
+	CLOSE: browser.runtime.getURL("assets/icons/close.svg"),
+	DEFAULT: browser.runtime.getURL("assets/icons/firefox-glyph.svg"),
+	AUDIO_PLAYING: browser.runtime.getURL("assets/icons/music_note.svg"),
+	AUDIO_MUTE: browser.runtime.getURL("assets/icons/music_note_off.svg"),
+};
 
 export default function TabElement({ tab }: { tab: Tab }) {
 	const showContextMenu = () => {
 		showTabMenu(tab);
 	};
 
-	const tabContainer = tab.getContainer();
-	const containerColorStyle = tabContainer?.color ? { backgroundColor: tabContainer.color } : {};
-
-	const [loading, setLoading] = React.useState(tab.status === "loading");
+	const [loading, setLoading] = React.useState(tab.getLoading());
 	const [justLoaded, setJustLoaded] = React.useState(false); //Means the tab was loaded in the last 500 ms.
 
 	React.useEffect(() => {
-		setLoading(tab.status === "loading");
-		if (tab.status === "complete" && loading) {
+		setLoading(tab.getLoading());
+		if (!tab.getLoading() && loading) {
 			setJustLoaded(true);
 			setLoading(false);
 			setTimeout(() => setJustLoaded(false), 500);
@@ -29,8 +30,23 @@ export default function TabElement({ tab }: { tab: Tab }) {
 	const tabClasses = ["tab"];
 	if (tab.active) tabClasses.push("activeTab");
 	if (tab.discarded) tabClasses.push("discarded");
-	if (tab.status === "loading") tabClasses.push("loading");
+	if (tab.getLoading()) tabClasses.push("loading");
 	if (justLoaded) tabClasses.push("justLoaded");
+	if (tab.attention) tabClasses.push("drawingAttention");
+
+	const tabContainer = tab.getContainer();
+	const containerColorStyle = tabContainer?.color ? { backgroundColor: tabContainer.color } : {};
+
+	let badge = (() => {
+		if (tab.getLoading()) {
+			return <div className="loadingIndicator" />;
+		} else if (tab.getMuted()) {
+			return <img src={ICONS.AUDIO_MUTE} onClick={() => tab.unmute()} />;
+		} else if (tab.audible) {
+			return <img src={ICONS.AUDIO_PLAYING} onClick={() => tab.mute()} />;
+		}
+		return null;
+	})();
 
 	return (
 		<div
@@ -40,11 +56,14 @@ export default function TabElement({ tab }: { tab: Tab }) {
 				tab.activate();
 			}}>
 			<div style={containerColorStyle} className="containerIndicator"></div>
-			<img className="tabIcon" src={tab.favIconUrl || DEFAULT_ICON} />
+			<div className="iconAndBadge">
+				<img className="tabIcon" src={tab.favIconUrl || ICONS.DEFAULT} />
+				<div className="badge">{badge}</div>
+			</div>
 			<div className="tabText">{tab.title}</div>
 			<img
 				className="tabCloseBtn"
-				src={CLOSE_ICON}
+				src={ICONS.CLOSE}
 				onClick={event => {
 					event.stopPropagation();
 					tab.close();
