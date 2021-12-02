@@ -11,7 +11,16 @@
 		"default_title": "Sidetabs",
 		"default_panel": "sidebar/sidebar.html"
 	},
-	"permissions": ["tabs", "menus", "menus.overrideContext", "bookmarks", "sessions", "cookies", "contextualIdentities"],
+	"permissions": [
+		"tabs",
+		"menus",
+		"menus.overrideContext",
+		"bookmarks",
+		"sessions",
+		"cookies",
+		"contextualIdentities",
+		"theme"
+	],
 	"web_accessible_resources": ["assets/icons/*", "assets/*"],
 	"commands": {
 		"_execute_sidebar_action": {

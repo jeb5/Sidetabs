@@ -2,5 +2,7 @@ node_modules
 .parcel-cache
 .vscode
 .ff_profile/*
+!.ff_profile/__preserve_dir
 extension
 .DS_Store
+design

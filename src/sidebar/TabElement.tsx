@@ -3,6 +3,7 @@ import Tab from "./Tab";
 import browser from "webextension-polyfill";
 import { showTabMenu } from "./contextMenu";
 
+function setTheme(theme: browser.Theme.Static) {}
 const ICONS = {
 	CLOSE: browser.runtime.getURL("assets/icons/close.svg"),
 	DEFAULT: browser.runtime.getURL("assets/icons/firefox-glyph.svg"),
@@ -17,6 +18,7 @@ export default function TabElement({ tab }: { tab: Tab }) {
 
 	const [loading, setLoading] = React.useState(tab.getLoading());
 	const [justLoaded, setJustLoaded] = React.useState(false); //Means the tab was loaded in the last 500 ms.
+	const [brokenFavicon, setBrokenFavicon] = React.useState(false);
 
 	React.useEffect(() => {
 		setLoading(tab.getLoading());
@@ -57,7 +59,11 @@ export default function TabElement({ tab }: { tab: Tab }) {
 			}}>
 			<div style={containerColorStyle} className="containerIndicator"></div>
 			<div className="iconAndBadge">
-				<img className="tabIcon" src={tab.favIconUrl || ICONS.DEFAULT} />
+				<img
+					className="tabIcon"
+					src={brokenFavicon ? ICONS.DEFAULT : tab.favIconUrl || ICONS.DEFAULT}
+					onError={() => setBrokenFavicon(true)}
+				/>
 				<div className="badge">{badge}</div>
 			</div>
 			<div className="tabText">{tab.title}</div>

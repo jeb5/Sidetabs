@@ -3,7 +3,7 @@
 		"target": "es2015",
 		"module": "commonjs",
 		"typeRoots": [
-			"node_modules/@types"
+			"node_modules/@types",
 		],
 		"strict": true,
 		"esModuleInterop": true,

@@ -3,7 +3,6 @@ import TabElement from "./TabElement";
 import "./sidebarStyles.css";
 import browser from "webextension-polyfill";
 import React, { ReactElement } from "react";
-import ReactDOM from "react-dom";
 import { SortableContainer, SortableElement, SortEndHandler } from "react-sortable-hoc";
 
 const arrWithReposition = (arr: any[], from: number, to: number) => {
@@ -16,7 +15,7 @@ const arrWithReposition = (arr: any[], from: number, to: number) => {
 const SortableEl = SortableElement(({ element }: { element: ReactElement }) => element);
 const SortableList = SortableContainer(({ parentDiv }: { parentDiv: ReactElement }) => parentDiv);
 
-const Sidebar = () => {
+export default function Sidebar() {
 	type stateType = { tabs: { [id: string]: Tab }; tabOrder: number[] };
 
 	const [state, setState] = React.useState<stateType>({ tabs: {}, tabOrder: [] }); //State is combined to prevent unnecessary re-renders when both peices of state change in succession.
@@ -173,5 +172,4 @@ const Sidebar = () => {
 			/>
 		</>
 	);
-};
-ReactDOM.render(<Sidebar />, document.getElementById("sidebar"));
+}
