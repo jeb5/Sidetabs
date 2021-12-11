@@ -1,9 +1,11 @@
-import Tab from "./Tab";
+import Tab, { newTab } from "./Tab";
 import TabElement from "./TabElement";
 import "./sidebarStyles.css";
 import browser from "webextension-polyfill";
 import React, { ReactElement } from "react";
 import { SortableContainer, SortableElement, SortEndHandler } from "react-sortable-hoc";
+
+import NewTabIcon from "../assets/icons/new-tab.svg";
 
 const arrWithReposition = (arr: any[], from: number, to: number) => {
 	const result = [...arr];
@@ -170,6 +172,13 @@ export default function Sidebar() {
 					</div>
 				}
 			/>
+			<hr />
+			<div className="newTabBar" onClick={() => newTab()}>
+				<div className="addBtn">
+					<NewTabIcon className="icon" />
+				</div>
+				<div className="newTabLabel">New Tab</div>
+			</div>
 		</>
 	);
 }

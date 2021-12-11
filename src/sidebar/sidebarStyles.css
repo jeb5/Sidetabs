@@ -16,10 +16,17 @@
 	--theme-button-hover-background: 255, 0, 0;
 	--theme-bg-overlay: 0, 0, 0, 0;
 	--theme-bg-image: rgba(var(--theme-bg-color));
+
+	--favicon-height: 16px;
+	--tab-height: 30px;
+	--tab-gap: 5px;
 }
 body {
 	/* background: var(--theme-bg-image); */
 	color: white;
+}
+#sidebar {
+	padding: 3px;
 }
 #backgroundImagePanel {
 	position: absolute;
@@ -35,33 +42,31 @@ body {
 	transform: rotate(90deg);
 }
 hr {
-	width: 90%;
+	width: 95%;
 	height: 0;
 	border: 0px;
 	border-bottom: 1px solid rgba(var(--theme-line-separator-color));
 	margin: 0px auto;
+	opacity: 0.8;
 }
 .tabsDiv:empty {
 	display: none;
-}
-.tabsDiv {
-	padding: 3px;
 }
 .tab {
 	display: flex;
 	align-items: center;
 	border-radius: 2px;
-	margin-bottom: 4px;
-	margin-top: 4px;
+	margin: var(--tab-gap) 0;
 	box-sizing: border-box;
 	position: relative;
 	overflow: hidden;
+	height: var(--tab-height);
 }
 .iconAndBadge {
 	flex-shrink: 0;
-	margin: 5px;
-	height: 16px;
-	width: 16px;
+	margin: 0 5px;
+	height: var(--favicon-height);
+	width: var(--favicon-height);
 	position: relative;
 }
 .tabIcon {
@@ -179,4 +184,29 @@ hr {
 }
 .tab:hover > .tabCloseBtn {
 	display: block;
+}
+.newTabBar {
+	align-items: center;
+	display: flex;
+	cursor: pointer;
+	opacity: 0.5;
+	margin-top: var(--tab-gap);
+	height: var(--tab-height);
+	transition: opacity 100ms ease;
+}
+.newTabBar:hover {
+	opacity: 1;
+}
+.newTabBar > .addBtn {
+	width: var(--favicon-height);
+	height: var(--favicon-height);
+	margin: 0 5px 0 7px;
+}
+.newTabBar > .newTabLabel {
+	margin-left: 2px;
+}
+svg.icon {
+	width: 100%;
+	height: auto;
+	fill: rgba(var(--theme-tab-text-color));
 }

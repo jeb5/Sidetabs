@@ -3,7 +3,6 @@ import Tab from "./Tab";
 import browser from "webextension-polyfill";
 import { showTabMenu } from "./contextMenu";
 
-function setTheme(theme: browser.Theme.Static) {}
 const ICONS = {
 	CLOSE: browser.runtime.getURL("assets/icons/close.svg"),
 	DEFAULT: browser.runtime.getURL("assets/icons/firefox-glyph.svg"),

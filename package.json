@@ -36,6 +36,7 @@
 	"devDependencies": {
 		"@parcel/config-webextension": "^2.0.1",
 		"@parcel/transformer-image": "^2.0.1",
+		"@parcel/transformer-svg-react": "^2.0.1",
 		"@types/color": "^3.0.2",
 		"@types/md5": "^2.3.1",
 		"@types/react-dom": "^17.0.11",
