@@ -39,6 +39,7 @@ const themeStyleColorMappings: { [cssVar: string]: string[] } = {
 	"--theme-tab-load-color": ["tab_loading"],
 	"--theme-tab-selected-color": ["tab_selected", "toolbar", "frame"],
 	"--theme-button-hover-background": ["button_background_hover"],
+	"--theme-icons-color": ["icons", "tab_background_text"],
 };
 
 async function updateThemeStyle(theme: Theme) {
@@ -127,11 +128,11 @@ function detectExceptionThemes(theme: Theme, windowInDarkMode: boolean): Sidebar
 	// --- Exception themes ---
 
 	switch (md5(JSON.stringify(theme))) {
-		case "aa5ac5367b6f2a6ec0899c0fb6154ceb": //Alpenglow
+		case "2ce2e83daebfbe7578356a7f0a2a072b": //Alpenglow
 			// Alpenglow is the only dynamic (light/dark) theme that I know of, but theme.getCurrent() only returns the light version.
 			if (windowInDarkMode) return DEFAULT_THEMES.ALPENGLOW_DARK;
 			return DEFAULT_THEMES.ALPENGLOW_LIGHT;
-		case "0fb317c69d5ddbd2f4f710fb7f006f46": //Alpenglow (forced dark), a popular theme
+		case "cc4847db92ef0dcf5b691a6c870b6ba6": //Alpenglow (forced dark), a popular theme
 			return DEFAULT_THEMES.ALPENGLOW_DARK;
 
 		default:

@@ -12,6 +12,7 @@ export const DEFAULT_DARK_SIDEBAR_THEME: SidebarTheme = {
 		"--theme-tab-load-color": Color("rgb(10,132,255)"),
 		"--theme-tab-selected-color": Color("rgb(66,65,77)"),
 		"--theme-button-hover-background": Color("rgba(255,255,255,0.1)"),
+		"--theme-icons-color": Color("rgb(251,251,254)"),
 	},
 };
 export const DEFAULT_LIGHT_SIDEBAR_THEME: SidebarTheme = {
@@ -25,6 +26,7 @@ export const DEFAULT_LIGHT_SIDEBAR_THEME: SidebarTheme = {
 		"--theme-tab-load-color": Color("rgb(10,132,255)"),
 		"--theme-tab-selected-color": Color("#fff"),
 		"--theme-button-hover-background": Color("rgba(0,0,0,0.1)"),
+		"--theme-icons-color": Color("rgb(91,91,102)"),
 	},
 };
 
@@ -38,6 +40,7 @@ export const ALPENGLOW_DARK: SidebarTheme = {
 		"--theme-tab-load-color": Color("rgb(10,132,255)"),
 		"--theme-tab-selected-color": Color("rgb(60, 31, 123)"),
 		"--theme-button-hover-background": Color("rgba(255,255,255,0.1)"),
+		"--theme-icons-color": Color("hsla(271, 100%, 77%, 1)"),
 	},
 };
 export const ALPENGLOW_LIGHT: SidebarTheme = {
@@ -50,5 +53,6 @@ export const ALPENGLOW_LIGHT: SidebarTheme = {
 		"--theme-tab-load-color": Color("hsla(265, 100%, 72%, 1)"),
 		"--theme-tab-selected-color": Color("hsla(0, 0%, 100%, .76)"),
 		"--theme-button-hover-background": Color("hsla(240, 26%, 11%, .08)"),
+		"--theme-icons-color": Color("hsla(258, 66%, 48%, 1)"),
 	},
 };

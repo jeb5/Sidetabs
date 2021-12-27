@@ -2,13 +2,21 @@ import React from "react";
 import Tab from "./Tab";
 import browser from "webextension-polyfill";
 import { showTabMenu } from "./contextMenu";
+import CLOSE_ICON from "../assets/icons/close.svg";
+import AUDIO_PLAYING_ICON from "../assets/icons/music_note.svg";
+import AUDIO_MUTE_ICON from "../assets/icons/music_note_off.svg";
+import DEFAULT_TAB_ICON from "../assets/icons/firefox_default_icon.svg";
+function isValidHttpUrl(possibleUrl: string) {
+	let url;
+	try {
+		url = new URL(possibleUrl);
+	} catch (_) {
+		return false;
+	}
+	return url.protocol === "http:" || url.protocol === "https:";
+}
 
-const ICONS = {
-	CLOSE: browser.runtime.getURL("assets/icons/close.svg"),
-	DEFAULT: browser.runtime.getURL("assets/icons/firefox-glyph.svg"),
-	AUDIO_PLAYING: browser.runtime.getURL("assets/icons/music_note.svg"),
-	AUDIO_MUTE: browser.runtime.getURL("assets/icons/music_note_off.svg"),
-};
+// const DEFAULT_TAB_ICON_SRC = browser.runtime.getURL("assets/icons/firefox_default_icon.svg");
 
 export default function TabElement({ tab }: { tab: Tab }) {
 	const showContextMenu = () => {
@@ -17,7 +25,7 @@ export default function TabElement({ tab }: { tab: Tab }) {
 
 	const [loading, setLoading] = React.useState(tab.getLoading());
 	const [justLoaded, setJustLoaded] = React.useState(false); //Means the tab was loaded in the last 500 ms.
-	const [brokenFavicon, setBrokenFavicon] = React.useState(false);
+	const [useDefaultIcon, setUseDefaultIcon] = React.useState(false);
 
 	React.useEffect(() => {
 		setLoading(tab.getLoading());
@@ -27,6 +35,10 @@ export default function TabElement({ tab }: { tab: Tab }) {
 			setTimeout(() => setJustLoaded(false), 500);
 		}
 	}, [tab.status]);
+
+	React.useEffect(() => {
+		setUseDefaultIcon(tab.favIconUrl === undefined || tab.favIconUrl === "" || tab.url === "about:newtab");
+	}, [tab.favIconUrl]);
 
 	const tabClasses = ["tab"];
 	if (tab.active) tabClasses.push("activeTab");
@@ -42,9 +54,9 @@ export default function TabElement({ tab }: { tab: Tab }) {
 		if (tab.getLoading()) {
 			return <div className="loadingIndicator" />;
 		} else if (tab.getMuted()) {
-			return <img src={ICONS.AUDIO_MUTE} onClick={() => tab.unmute()} />;
+			return <AUDIO_MUTE_ICON className="icon" onClick={() => tab.unmute()} />;
 		} else if (tab.audible) {
-			return <img src={ICONS.AUDIO_PLAYING} onClick={() => tab.mute()} />;
+			return <AUDIO_PLAYING_ICON className="icon" onClick={() => tab.mute()} />;
 		}
 		return null;
 	})();
@@ -54,26 +66,27 @@ export default function TabElement({ tab }: { tab: Tab }) {
 			onContextMenu={showContextMenu}
 			className={tabClasses.join(" ")}
 			onClick={() => {
+				//BUG: Click events sometimes hit the body instead of the tab. This appears not to be a react-specific issue.
 				tab.activate();
 			}}>
 			<div style={containerColorStyle} className="containerIndicator"></div>
 			<div className="iconAndBadge">
-				<img
-					className="tabIcon"
-					src={brokenFavicon ? ICONS.DEFAULT : tab.favIconUrl || ICONS.DEFAULT}
-					onError={() => setBrokenFavicon(true)}
-				/>
+				{useDefaultIcon ? (
+					<DEFAULT_TAB_ICON className="icon defaultTabIcon" />
+				) : (
+					<img className="tabIcon" src={tab.favIconUrl} onError={() => setUseDefaultIcon(true)} />
+				)}
 				<div className="badge">{badge}</div>
 			</div>
 			<div className="tabText">{tab.title}</div>
-			<img
+			<div
 				className="tabCloseBtn"
-				src={ICONS.CLOSE}
 				onClick={event => {
 					event.stopPropagation();
 					tab.close();
-				}}
-			/>
+				}}>
+				<CLOSE_ICON className="icon" />
+			</div>
 		</div>
 	);
 }

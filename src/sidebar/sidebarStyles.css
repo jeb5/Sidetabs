@@ -16,6 +16,7 @@
 	--theme-button-hover-background: 255, 0, 0;
 	--theme-bg-overlay: 0, 0, 0, 0;
 	--theme-bg-image: rgba(var(--theme-bg-color));
+	--theme-icons-color: 255, 255, 255;
 
 	--favicon-height: 16px;
 	--tab-height: 30px;
@@ -158,9 +159,13 @@ hr {
 .tabCloseBtn {
 	display: none;
 	width: 20px;
+	height: 20px;
 	margin-right: 5px;
 	padding: 4px;
 	cursor: pointer;
+}
+.tabCloseBtn > .icon {
+	fill: rgba(var(--tab-text-color));
 }
 .tabCloseBtn:hover {
 	background: rgba(var(--theme-button-hover-background));
@@ -208,5 +213,8 @@ hr {
 svg.icon {
 	width: 100%;
 	height: auto;
-	fill: rgba(var(--theme-tab-text-color));
+	fill: rgba(var(--theme-icons-color));
+}
+svg.defaultTabIcon {
+	opacity: 70%;
 }
