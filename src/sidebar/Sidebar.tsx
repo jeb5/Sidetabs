@@ -133,7 +133,7 @@ export default function Sidebar() {
 		lockOffset: "0px",
 		transitionDuration: 150,
 		helperClass: "dragging",
-		distance: 1,
+		distance: 4,
 	};
 	const pinnedTabs = state.tabOrder.filter(tabId => state.tabs[tabId].pinned).map(tabId => state.tabs[tabId]);
 	const regularTabs = state.tabOrder.filter(tabId => !state.tabs[tabId].pinned).map(tabId => state.tabs[tabId]);

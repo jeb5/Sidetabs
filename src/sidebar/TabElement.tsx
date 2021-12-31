@@ -26,8 +26,10 @@ export default function TabElement({ tab }: { tab: Tab }) {
 	}, [tab.status]);
 
 	React.useEffect(() => {
-		setUseDefaultIcon(tab.favIconUrl === undefined || tab.favIconUrl === "" || tab.url === "about:newtab");
-	}, [tab.favIconUrl]);
+		setUseDefaultIcon(
+			tab.favIconUrl === undefined || tab.favIconUrl === "" || tab.url === "about:newtab" || tab.url === "about:blank"
+		);
+	}, [tab.favIconUrl, tab.status]);
 
 	const tabClasses = ["tab"];
 	if (tab.active) tabClasses.push("activeTab");
@@ -44,14 +46,12 @@ export default function TabElement({ tab }: { tab: Tab }) {
 			onContextMenu={showContextMenu}
 			className={tabClasses.join(" ")}
 			onClick={() => {
-				//BUG: Click events sometimes hit the body instead of the tab. This appears not to be a react-specific issue.
-				//Clicks are just missing the tabs??? wtf
 				tab.activate();
 			}}>
 			<div style={containerColorStyle} className="containerIndicator"></div>
 			<div className="iconPlusIndicator">
 				{useDefaultIcon ? (
-					<DEFAULT_TAB_ICON className="icon defaultTabIcon" />
+					<DEFAULT_TAB_ICON className="icon tabIcon defaultTabIcon" />
 				) : (
 					<img className="tabIcon" src={tab.favIconUrl} onError={() => setUseDefaultIcon(true)} />
 				)}

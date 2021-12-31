@@ -25,9 +25,13 @@
 body {
 	/* background: var(--theme-bg-image); */
 	color: white;
+	height: 100vh;
 }
 #sidebar {
 	padding: 3px;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
 }
 #backgroundImagePanel {
 	position: absolute;
@@ -50,6 +54,12 @@ hr {
 	margin: 0px auto;
 	opacity: 0.8;
 }
+.tabsDiv {
+	overflow-y: scroll;
+}
+#sidebar > *:not(.regularTabs) {
+	flex-shrink: 0;
+}
 .tabsDiv:empty {
 	display: none;
 }
@@ -62,6 +72,7 @@ hr {
 	position: relative;
 	overflow: hidden;
 	height: var(--tab-height);
+	border: 1px solid transparent;
 }
 .iconPlusIndicator {
 	flex-shrink: 0;
@@ -79,9 +90,9 @@ hr {
 .tabIcon[src=""] {
 	visibility: hidden;
 }
-.tab.loading > .tabIcon {
-	opacity: 0.7;
-	transform: scale(0.9);
+.tab.loading .tabIcon {
+	opacity: 0.8;
+	transform: scale(0.95);
 }
 .badges {
 	height: 1em;
@@ -179,7 +190,7 @@ hr {
 .tab.activeTab {
 	background: rgba(var(--theme-tab-selected-color));
 	--tab-text-color: var(--theme-tab-text-color);
-	box-shadow: rgba(var(--theme-tab-border-color)) 0px 0px 0px 1px;
+	border: 1px solid rgba(var(--theme-tab-border-color));
 }
 .tab:not(.activeTab) {
 	--tab-text-color: var(--theme-tab-background-text-color);
