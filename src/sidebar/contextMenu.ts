@@ -19,7 +19,7 @@ export function showTabMenu(tab: Tab) {
 			children: [
 				{
 					title: "Default",
-					enabled: !!tab.cookieStoreId,
+					enabled: !(!tab.cookieStoreId || tab.cookieStoreId === "firefox-default"),
 					onclick: () => tab.reopenWithCookieStoreId(),
 				},
 				...containers.map(container => ({

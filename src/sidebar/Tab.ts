@@ -36,7 +36,7 @@ export default class Tab extends Wrapper<browser.Tabs.Tab>() {
 	}
 	getReopenable() {
 		const { protocol } = new URL(this.url || "");
-		return ["http:", "https:"].indexOf(protocol) != -1 || this.url === "about:newtab";
+		return protocol === "http:" || protocol === "https:" || this.url === "about:newtab";
 	}
 	getContainer() {
 		return containers.find(({ cookieStoreId }) => cookieStoreId === this.cookieStoreId);
