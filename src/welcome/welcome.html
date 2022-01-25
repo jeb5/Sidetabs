@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="welcome.css" />
+		<title>Welcome to Sidetabs!</title>
+	</head>
+	<body>
+		<div class="heading">
+			<div class="hero">
+				<img src="../assets/app_icons/sidetabs.svg" alt="sidetabs logo" />
+				<h1>Sidetabs</h1>
+			</div>
+		</div>
+		<div class="main">
+			<div class="mainSection">
+				<h2>How to use</h2>
+				<div class="introduction">
+					<p>Press <span class="kbd">Ctrl</span> + <span class="kbd">Alt</span> + <span class="kbd">R</span> to toggle Sidetabs in the sidebar.</p>
+					<p>You can also click the Sidetabs icon in the toolbar to toggle Sidetabs.</p>
+					<img style="float: right;" width="200px" src="../assets/assisting_images/right_left.jpg" alt="Where to find right button"/>
+					<p>You'll probably want to keep the sidebar on the left side of your browser window, but if you'd like to switch it to the right, click on the sidebar header, and click "Move Sidebar to Right".</p>
+					<h2>What can Sidetabs do?</h2>
+					<p>Sidetabs is intended as a replacement for regular Firefox tabs. It can therefore do almost everything that regular tabs can.</p>
+					<p>Tabs can be rearranged, closed, restored, and new tabs opened. Right-clicking a tab will display additional options.</p>
+					<p>Sidetabs will adapt to browser themes, to match the style of your regular tabs. Custom themes are supported.</p>
+
+				</div>
+				
+			</div>
+			<div class="mainSection">
+				<h2>Extra improvements</h2>
+				<div class="introduction">
+					<p>
+						If you're looking to switch to the sidebar tabs lifestyle, there are a few additional tweaks you'll probably want to make.
+					</p>
+					<p>
+						In order to make a few cosmetic changes to Firefox, you'll need to edit your browser's <span class="code">userChrome.css</span> file. You can use this file to add custom styles to your browser.
+					</p>
+					<p>To edit your <span class="code">userChrome.css</span> file, go to the Firefox Application Menu (The hamburger menu in the upper-right), and go to <span class="code">Help > More troubleshooting information</span>. From there, scroll down to the <span class="code">Profile Folder</span> section, and click to open it in your file explorer. Inside the profile folder, go to <span class="code">chrome/userChrome.css</span>. Create this file if it doesn't exist already. This is the file that we will edit to add custom styles to Firefox.</p>
+					<ul>
+						<li>
+							<p>
+							To hide the default Firefox tabs, add this snippet:<br/>
+								<pre>
+#TabsToolbar {
+  display: none;
+}</pre>
+							</p>
+						</li>
+						<li>
+							<p>To hide the large "Sidetabs" header at the top of the sidebar, add this:<br/>
+							<pre>
+#sidebar-header {
+  display: none;
+}</pre>
+							</p>
+						</li>
+					</ul>
+				</div>
+				</div>
+			</div>
+		</div>
+		<div class="footer">
+			<div>Sidetabs | &#169; Jeb Nicholson 2021</div>
+			<a href="https://github.com/jeb5/SideTabs"><img src="../assets/assisting_images/github_mark_light.png" alt="Github" width="32px"/></a>
+		</div>
+	</body>
+</html>

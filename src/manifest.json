@@ -4,12 +4,20 @@
 	"version": "0.1",
 	"sidebar_action": {
 		"default_icon": {
-			"16": "assets/app_icons/icon16.png",
-			"32": "assets/app_icons/icon32.png",
-			"64": "assets/app_icons/icon64.png"
+			"16": "assets/app_icons/icon_16.png",
+			"32": "assets/app_icons/icon_32.png",
+			"64": "assets/app_icons/icon_64.png"
 		},
 		"default_title": "Sidetabs",
 		"default_panel": "sidebar/sidebar.html"
+	},
+	"browser_action": {
+		"default_icon": {
+			"16": "assets/app_icons/icon_16.png",
+			"32": "assets/app_icons/icon_32.png",
+			"64": "assets/app_icons/icon_64.png"
+		},
+		"default_title": "Open Sidetabs"
 	},
 	"permissions": [
 		"tabs",
@@ -21,11 +29,14 @@
 		"contextualIdentities",
 		"theme"
 	],
-	"web_accessible_resources": ["assets/icons/*", "assets/*"],
+	"background": {
+		"scripts": ["./background.js"]
+	},
+	"web_accessible_resources": ["assets/icons/*", "assets/*", "welcome/*", "assets/*/*"],
 	"commands": {
 		"_execute_sidebar_action": {
 			"suggested_key": {
-				"default": "MacCtrl+R"
+				"default": "MacCtrl+Alt+R"
 			}
 		}
 	}
