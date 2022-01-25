@@ -20,19 +20,23 @@ const SortableList = SortableContainer(({ parentDiv }: { parentDiv: ReactElement
 export default function Sidebar() {
 	type stateType = { tabs: { [id: string]: Tab }; tabOrder: number[] };
 
-	const [state, setState] = React.useState<stateType>({ tabs: {}, tabOrder: [] }); //State is combined to prevent unnecessary re-renders when both peices of state change in succession.
+	const [state, setState] = React.useState<stateType>({ tabs: {}, tabOrder: [] }); //State is combined to prevent unnecessary re-renders when both pieces of state change in succession.
+	const [tabsHashOnDragStart, setTabsHashOnDragStart] = React.useState<string>("");
 
 	React.useEffect(() => {
-		async function getTabs() {
-			const WIN_ID = (await browser.windows.getCurrent()).id!;
-			const browserTabs = await browser.tabs.query({ windowId: browser.windows.WINDOW_ID_CURRENT });
+		async function updateTabs() {
+			const browserTabs = await browser.tabs.query({ currentWindow: true });
 			let newTabs = browserTabs.reduce((acc, tab) => ({ ...acc, [tab.id!]: new Tab(tab) }), {});
 			let tempTabOrder = new Array(browserTabs.length);
 			browserTabs.forEach(tab => (tempTabOrder[tab.index] = tab.id));
 			setState({ tabs: newTabs, tabOrder: tempTabOrder });
+		}
+		async function setupTabs() {
+			await updateTabs();
+			const WIN_ID = (await browser.windows.getCurrent()).id!;
 			setupTabListeners(WIN_ID);
 		}
-		getTabs();
+		setupTabs();
 	}, []);
 
 	//to prevent state from being stale, these callback functions use the callback version  of setState().
@@ -111,7 +115,11 @@ export default function Sidebar() {
 		);
 	}
 
-	const handleDragEnd: SortEndHandler = ({ oldIndex, newIndex, collection }) => {
+	const handleSortStart = () => {
+		setTabsHashOnDragStart(JSON.stringify(state.tabOrder));
+	};
+	const handleDragEnd: SortEndHandler = ({ oldIndex, newIndex }) => {
+		if (tabsHashOnDragStart !== JSON.stringify(state.tabOrder)) return; //ideally tab changes would cancel the drag, but that doesn't appear to be possible with RSHoc so disregarding drags that have occurred amidst tab changes will suffice for now
 		if (oldIndex === newIndex) return;
 		const movedTabId = state.tabOrder[oldIndex];
 		setState(({ tabs, tabOrder }) => {
@@ -129,8 +137,9 @@ export default function Sidebar() {
 
 	const sortableListProps = {
 		onSortEnd: handleDragEnd,
+		onSortStart: handleSortStart,
 		lockToContainerEdges: true,
-		lockOffset: "0px",
+		lockOffset: "-5px",
 		transitionDuration: 150,
 		helperClass: "dragging",
 		distance: 4,
