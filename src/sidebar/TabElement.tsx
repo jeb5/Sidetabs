@@ -1,10 +1,10 @@
 import React from "react";
 import Tab from "./Tab";
 import { showTabMenu } from "./contextMenu";
-import CLOSE_ICON from "../assets/icons/close.svg";
-import AUDIO_PLAYING_ICON from "../assets/icons/music_note.svg";
-import AUDIO_MUTE_ICON from "../assets/icons/music_note_off.svg";
-import DEFAULT_TAB_ICON from "../assets/icons/firefox_default_icon.svg";
+import CLOSE_ICON from "parcel-svg:../assets/icons/close.svg";
+import AUDIO_PLAYING_ICON from "parcel-svg:../assets/icons/music_note.svg";
+import AUDIO_MUTE_ICON from "parcel-svg:../assets/icons/music_note_off.svg";
+import DEFAULT_TAB_ICON from "parcel-svg:../assets/icons/firefox_default_icon.svg";
 
 export default function TabElement({ tab }: { tab: Tab }) {
 	const showContextMenu = () => {

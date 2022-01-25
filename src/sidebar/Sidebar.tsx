@@ -1,11 +1,11 @@
 import Tab, { newTab } from "./Tab";
 import TabElement from "./TabElement";
-import "./sidebarStyles.css";
+// import "./sidebarStyles.css";
 import browser from "webextension-polyfill";
 import React, { ReactElement } from "react";
 import { SortableContainer, SortableElement, SortEndHandler } from "react-sortable-hoc";
 
-import NewTabIcon from "../assets/icons/new_tab.svg";
+import NewTabIcon from "parcel-svg:../assets/icons/new_tab.svg";
 
 const arrWithReposition = (arr: any[], from: number, to: number) => {
 	const result = [...arr];
