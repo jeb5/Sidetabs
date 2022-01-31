@@ -1,11 +1,9 @@
 import Tab, { newTab } from "./Tab";
-import TabElement from "./TabElement";
-// import "./sidebarStyles.css";
 import browser from "webextension-polyfill";
 import React, { ReactElement } from "react";
-import { SortableContainer, SortableElement, SortEndHandler } from "react-sortable-hoc";
 
 import NewTabIcon from "parcel-svg:../assets/icons/new_tab.svg";
+import TabsList from "./TabsList";
 
 const arrWithReposition = (arr: any[], from: number, to: number) => {
 	const result = [...arr];
@@ -13,9 +11,6 @@ const arrWithReposition = (arr: any[], from: number, to: number) => {
 	result.splice(to, 0, removed);
 	return result;
 };
-
-const SortableEl = SortableElement(({ element }: { element: ReactElement }) => element);
-const SortableList = SortableContainer(({ parentDiv }: { parentDiv: ReactElement }) => parentDiv);
 
 export default function Sidebar() {
 	type stateType = { tabs: { [id: string]: Tab }; tabOrder: number[] };
@@ -118,10 +113,10 @@ export default function Sidebar() {
 	const handleSortStart = () => {
 		setTabsHashOnDragStart(JSON.stringify(state.tabOrder));
 	};
-	const handleDragEnd: SortEndHandler = ({ oldIndex, newIndex }) => {
-		if (tabsHashOnDragStart !== JSON.stringify(state.tabOrder)) return; //ideally tab changes would cancel the drag, but that doesn't appear to be possible with RSHoc so disregarding drags that have occurred amidst tab changes will suffice for now
-		if (oldIndex === newIndex) return;
-		const movedTabId = state.tabOrder[oldIndex];
+	const handleTabSwap = (tabId: number, tabToSwapWithId: number) => {
+		if (tabsHashOnDragStart !== JSON.stringify(state.tabOrder)) return; //ideally tab changes would cancel the drag, but that doesn't appear to be possible with DnDKit so disregarding drags that have occurred amidst tab changes will suffice for now
+		const oldIndex = state.tabOrder.indexOf(tabId);
+		const newIndex = state.tabOrder.indexOf(tabToSwapWithId);
 		setState(({ tabs, tabOrder }) => {
 			const newTabOrder = arrWithReposition(tabOrder, oldIndex, newIndex);
 			const newTabs = Object.fromEntries(
@@ -132,56 +127,17 @@ export default function Sidebar() {
 				tabOrder: newTabOrder,
 			};
 		});
-		browser.tabs.move(movedTabId, { index: newIndex });
+		browser.tabs.move(tabId, { index: newIndex });
 	};
 
-	const sortableListProps = {
-		onSortEnd: handleDragEnd,
-		onSortStart: handleSortStart,
-		lockToContainerEdges: true,
-		lockOffset: "-5px",
-		transitionDuration: 150,
-		helperClass: "dragging",
-		distance: 4,
-	};
 	const pinnedTabs = state.tabOrder.filter(tabId => state.tabs[tabId].pinned).map(tabId => state.tabs[tabId]);
 	const regularTabs = state.tabOrder.filter(tabId => !state.tabs[tabId].pinned).map(tabId => state.tabs[tabId]);
 	return (
 		<>
-			<SortableList
-				{...sortableListProps}
-				lockAxis={"y"}
-				parentDiv={
-					<div className="tabsDiv pinnedTabs">
-						{pinnedTabs.map(tab => (
-							<SortableEl
-								collection="pinned"
-								index={tab.index}
-								key={"tab-" + tab.id}
-								element={<TabElement tab={tab} />}
-							/>
-						))}
-					</div>
-				}
-			/>
+			<TabsList tabs={pinnedTabs} onReorder={handleTabSwap} onStart={handleSortStart}></TabsList>
 			{pinnedTabs.length ? <hr /> : null}
-			<SortableList
-				{...sortableListProps}
-				lockAxis={"y"}
-				parentDiv={
-					<div className="tabsDiv regularTabs">
-						{regularTabs.map(tab => (
-							<SortableEl
-								collection="regular"
-								index={tab.index}
-								key={"tab-" + tab.id}
-								element={<TabElement tab={tab} />}
-							/>
-						))}
-					</div>
-				}
-			/>
-			<hr />
+			<TabsList tabs={regularTabs} onReorder={handleTabSwap} onStart={handleSortStart}></TabsList>
+			{regularTabs.length ? <hr /> : null}
 			<div className="newTabBar" onClick={() => newTab()}>
 				<div className="addBtn">
 					<NewTabIcon className="icon" />

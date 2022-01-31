@@ -6,7 +6,7 @@
 	/* --theme-tab-border-color: 0, 0, 0, 0; */
 	/* --theme-tab-load-color: 79, 183, 248; */
 	/* --theme-tab-selected-color: 66, 65, 77; */
-	--theme-bg-color: 50, 50, 50;
+	--theme-bg-color: 30, 30, 30;
 	--theme-tab-text-color: 0, 255, 0;
 	--theme-tab-background-text-color: 0, 0, 255;
 	--theme-line-separator-color: 0, 0, 0;
@@ -28,7 +28,7 @@ body {
 	height: 100vh;
 }
 #sidebar {
-	padding: 3px;
+	padding: 0 3px;
 	height: 100%;
 	display: flex;
 	flex-direction: column;
@@ -54,11 +54,12 @@ hr {
 	margin: 0px auto;
 	opacity: 0.8;
 }
-.tabsDiv {
-	overflow-y: scroll;
-}
 #sidebar > *:not(.regularTabs) {
 	flex-shrink: 0;
+}
+.tabsDiv {
+	overflow-y: scroll;
+	margin: 5px 0;
 }
 .tabsDiv:empty {
 	display: none;
@@ -67,12 +68,20 @@ hr {
 	display: flex;
 	align-items: center;
 	border-radius: 3px;
-	margin: var(--tab-gap) 0;
-	box-sizing: border-box;
-	position: relative;
 	overflow: hidden;
+	box-sizing: border-box;
 	height: var(--tab-height);
 	border: 1px solid transparent;
+}
+.sortableTab {
+	position: relative;
+	margin: var(--tab-gap) 0;
+}
+.sortableTab:first-child {
+	margin-top: 0;
+}
+.sortableTab:last-child {
+	margin-bottom: 0;
 }
 .iconPlusIndicator {
 	flex-shrink: 0;
@@ -129,7 +138,7 @@ hr {
 .tab > * {
 	z-index: 2;
 }
-.tab.dragging {
+.sortableTab.dragging {
 	z-index: 4;
 	pointer-events: initial !important;
 }
