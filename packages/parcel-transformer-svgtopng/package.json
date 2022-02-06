@@ -1,0 +1,14 @@
+{
+	"name": "parcel-transformer-svgtopng",
+	"version": "0.1.1",
+	"main": "transformer.js",
+	"type": "commonjs",
+	"engines": {
+		"parcel": "2.x"
+	},
+	"dependencies": {
+		"@parcel/plugin": "^2.2.1",
+		"color": "^4.0.1",
+		"sharp": "0.29.3"
+	}
+}

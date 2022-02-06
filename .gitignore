@@ -7,3 +7,4 @@ Sidetabs_Prod
 extension
 .DS_Store
 design
+packages/parcel-transformer-svgtopng/dist

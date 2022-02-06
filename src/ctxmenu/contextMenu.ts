@@ -1,18 +1,24 @@
-import { containers } from "./containers";
-import Tab, { newTab, restoreClosedTab } from "./Tab";
+import { containers } from "../sidebar/containers";
+import Tab, { newTab, restoreClosedTab } from "../sidebar/Tab";
 import browser from "webextension-polyfill";
-
+import ctxIcons from "./ctxmenuIcons";
 export function showTabMenu(tab: Tab) {
 	setMenu([
-		{ title: "New Tab", onclick: () => newTab({ openerTabId: tab.id }) },
-		{ title: "Reopen Closed Tab", onclick: () => restoreClosedTab() },
+		{
+			title: "New Tab",
+			onclick: () => newTab({ openerTabId: tab.id }),
+			icons: ctxIcons.newTab,
+		},
+		{ title: "Reopen Closed Tab", onclick: () => restoreClosedTab(), icons: ctxIcons.reopenTab },
 		{ type: "separator" },
-		{ title: "Reload Tab", onclick: () => tab.reload() },
+		{ title: "Reload Tab", onclick: () => tab.reload(), icons: ctxIcons.reloadTab },
 		tab.mutedInfo?.muted
-			? { title: "Unmute Tab", onclick: () => tab.unmute() }
-			: { title: "Mute Tab", onclick: () => tab.mute() },
-		tab.pinned ? { title: "Unpin Tab", onclick: () => tab.unpin() } : { title: "Pin Tab", onclick: () => tab.pin() },
-		{ title: "Duplicate Tab", onclick: () => tab.duplicate() },
+			? { title: "Unmute Tab", onclick: () => tab.unmute(), icons: ctxIcons.unmuteTab }
+			: { title: "Mute Tab", onclick: () => tab.mute(), icons: ctxIcons.muteTab },
+		tab.pinned
+			? { title: "Unpin Tab", onclick: () => tab.unpin(), icons: ctxIcons.unpinTab }
+			: { title: "Pin Tab", onclick: () => tab.pin(), icons: ctxIcons.pinTab },
+		{ title: "Duplicate Tab", onclick: () => tab.duplicate(), icons: ctxIcons.duplicateTab },
 		{
 			title: "Reopen in Container",
 			enabled: !!containers.length && tab.getReopenable(),
@@ -30,10 +36,10 @@ export function showTabMenu(tab: Tab) {
 				})),
 			],
 		},
-		{ title: "Unload Tab", onclick: () => tab.discard(), enabled: tab.getDiscardable() },
-		{ title: "Bookmark Tab", onclick: () => tab.bookmark() },
+		{ title: "Unload Tab", onclick: () => tab.discard(), enabled: tab.getDiscardable(), icons: ctxIcons.unloadTab },
+		{ title: "Bookmark Tab", onclick: () => tab.bookmark(), icons: ctxIcons.bookmarkTab },
 		{ type: "separator" },
-		{ title: "Close Tab", onclick: () => tab.close() },
+		{ title: "Close Tab", onclick: () => tab.close(), icons: ctxIcons.closeTab },
 	]);
 }
 document.addEventListener("contextmenu", event => {

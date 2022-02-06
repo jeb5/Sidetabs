@@ -3,3 +3,7 @@ declare module "*.svg" {
 	const content: React.SFC<React.SVGProps<SVGSVGElement>>;
 	export default content;
 }
+declare module "parcel-svgtopng:*" {
+	const content: string;
+	export default content;
+}

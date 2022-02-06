@@ -7,6 +7,13 @@
 		],
 		"parcel-svg:*": [
 			"..."
+		],
+		"parcel-svgtopng:*.svg": [
+			"parcel-transformer-svgtopng",
+			"..."
+		],
+		"parcel-svgtopng:*": [
+			"..."
 		]
 	}
 }

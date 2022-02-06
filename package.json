@@ -2,6 +2,9 @@
 	"name": "sidetabs",
 	"version": "1.0.0",
 	"description": "A Firefox extension that shows vertical tabs in the sidebar.",
+	"workspaces": [
+		"packages/parcel-transformer-svgtopng"
+	],
 	"scripts": {
 		"watch": "parcel watch ./src/manifest.json --no-hmr --target webext-dev --dist-dir ./extension",
 		"devbuild": "NODE_ENV=development parcel build ./src/manifest.json --target webext-dev --dist-dir ./extension",
@@ -34,16 +37,15 @@
 	},
 	"homepage": "https://github.com/jeb5/SideTabs#readme",
 	"devDependencies": {
-		"@parcel/config-webextension": "^2.0.1",
-		"@parcel/optimizer-data-url": "^2.0.1",
-		"@parcel/transformer-image": "^2.0.1",
-		"@parcel/transformer-svg-react": "^2.0.1",
+		"@parcel/config-webextension": "^2.2.1",
+		"@parcel/transformer-svg-react": "^2.2.1",
 		"@types/color": "^3.0.2",
 		"@types/md5": "^2.3.1",
 		"@types/react-dom": "^17.0.11",
 		"@types/webextension-polyfill": "^0.8.2",
 		"concurrently": "^7.0.0",
-		"parcel": "^2.0.1",
+		"parcel": "^2.2.1",
+		"parcel-transformer-svgtopng": "file:packages/parcel-transformer-svgtopng",
 		"typescript": "^4.5.2",
 		"web-ext": "^6.5.0"
 	},

@@ -1,14 +1,13 @@
 import React from "react";
 import Tab from "./Tab";
-import { showTabMenu } from "./contextMenu";
-import CLOSE_ICON from "parcel-svg:../assets/icons/close.svg";
+import { showTabMenu } from "../ctxmenu/contextMenu";
+import CLOSE_ICON from "parcel-svg:../assets/icons/Close.svg";
 import AUDIO_PLAYING_ICON from "parcel-svg:../assets/icons/music_note.svg";
 import AUDIO_MUTE_ICON from "parcel-svg:../assets/icons/music_note_off.svg";
-import DEFAULT_TAB_ICON from "parcel-svg:../assets/icons/firefox_default_icon.svg";
+import DEFAULT_TAB_ICON from "parcel-svg:../assets/icons/Firefox Default.svg";
 
 export default function TabElement({ tab }: { tab: Tab }) {
 	const showContextMenu = () => {
-		console.log(tab.cookieStoreId);
 		showTabMenu(tab);
 	};
 
