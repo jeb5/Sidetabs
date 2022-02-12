@@ -5,6 +5,7 @@ import CLOSE_ICON from "parcel-svg:../assets/icons/Close.svg";
 import AUDIO_PLAYING_ICON from "parcel-svg:../assets/icons/music_note.svg";
 import AUDIO_MUTE_ICON from "parcel-svg:../assets/icons/music_note_off.svg";
 import DEFAULT_TAB_ICON from "parcel-svg:../assets/icons/Firefox Default.svg";
+import Browser from "webextension-polyfill";
 
 export default function TabElement({ tab }: { tab: Tab }) {
 	const showContextMenu = () => {
@@ -14,6 +15,9 @@ export default function TabElement({ tab }: { tab: Tab }) {
 	const [loading, setLoading] = React.useState(tab.getLoading());
 	const [justLoaded, setJustLoaded] = React.useState(false); //Means the tab was loaded in the last 500 ms.
 	const [useDefaultIcon, setUseDefaultIcon] = React.useState(false);
+
+	const tabIsDraggingOverRef = React.useRef(false);
+	const tabDragTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
 	React.useEffect(() => {
 		setLoading(tab.getLoading());
@@ -46,6 +50,20 @@ export default function TabElement({ tab }: { tab: Tab }) {
 			className={tabClasses.join(" ")}
 			onClick={() => {
 				tab.activate();
+			}}
+			onMouseEnter={() => {
+				Browser.tabs.warmup(tab.id!);
+			}}
+			onDragExit={() => {
+				tabIsDraggingOverRef.current = false;
+			}}
+			onDragEnter={() => {
+				tabIsDraggingOverRef.current = true;
+				if (tabDragTimeoutRef.current) clearTimeout(tabDragTimeoutRef.current);
+				tabDragTimeoutRef.current = setTimeout(() => {
+					console.log(tabIsDraggingOverRef.current);
+					if (tabIsDraggingOverRef.current) tab.activate();
+				}, 500);
 			}}>
 			<div style={containerColorStyle} className="containerIndicator"></div>
 			<div className="iconPlusIndicator">
