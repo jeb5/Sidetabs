@@ -8,12 +8,13 @@
 	"scripts": {
 		"watch": "parcel watch ./src/manifest.json --no-hmr --target webext-dev --dist-dir ./extension",
 		"devbuild": "NODE_ENV=development parcel build ./src/manifest.json --target webext-dev --dist-dir ./extension",
-		"build": "parcel build ./src/manifest.json --target webext-dev --no-source-maps --dist-dir ./Sidetabs_Prod",
+		"build": "rm -rf ./Sidetabs_Prod && parcel build ./src/manifest.json --target webext-prod --dist-dir ./Sidetabs_Prod",
 		"run": "web-ext run --source-dir ./extension --keep-profile-changes --firefox-profile=./.ff_profile",
 		"dev": "npm run devbuild; concurrently \"npm run watch\" \"npm run run\""
 	},
+	"type": "module",
 	"browserslist": [
-		"last 1 Firefox version"
+		"Firefox >= 90"
 	],
 	"targets": {
 		"webext-dev": {
@@ -21,6 +22,11 @@
 				"inline": true,
 				"inlineSources": true
 			}
+		},
+		"webext-prod": {
+			"sourceMap": false,
+			"context": "browser",
+			"outputFormat": "global"
 		}
 	},
 	"webExt": {

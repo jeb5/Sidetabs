@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Sidetabs",
-	"version": "0.1",
+	"version": "0.2.1",
 	"sidebar_action": {
 		"default_icon": {
 			"16": "assets/app_icons/icon_16.png",
