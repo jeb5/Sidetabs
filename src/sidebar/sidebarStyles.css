@@ -32,6 +32,7 @@ body {
 	height: 100%;
 	display: flex;
 	flex-direction: column;
+	margin-top: -2px; /* Keeps top tab square with sidebar edges */
 }
 #backgroundImagePanel {
 	position: absolute;
@@ -59,7 +60,7 @@ hr {
 }
 .tabsDiv {
 	overflow-y: scroll;
-	margin: 5px 0;
+	margin: var(--tab-gap) 0;
 }
 .tabsDiv:empty {
 	display: none;
