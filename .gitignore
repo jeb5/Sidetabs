@@ -1,10 +1,9 @@
 node_modules
-Sidetabs_Prod
+prod-extension
+dev-extension
 .parcel-cache
 .vscode
 .ff_profile/*
 !.ff_profile/__preserve_dir
-extension
 .DS_Store
-design
 packages/parcel-transformer-svgtopng/dist

@@ -6,10 +6,10 @@
 		"packages/parcel-transformer-svgtopng"
 	],
 	"scripts": {
-		"watch": "parcel watch ./src/manifest.json --no-hmr --target webext-dev --dist-dir ./extension",
-		"devbuild": "NODE_ENV=development parcel build ./src/manifest.json --target webext-dev --dist-dir ./extension",
-		"build": "rm -rf ./Sidetabs_Prod && parcel build ./src/manifest.json --target webext-prod --dist-dir ./Sidetabs_Prod",
-		"run": "web-ext run --source-dir ./extension --keep-profile-changes --firefox-profile=./.ff_profile",
+		"watch": "parcel watch ./src/manifest.json --no-hmr --target dev-extension",
+		"devbuild": "NODE_ENV=development parcel build ./src/manifest.json --target dev-extension --no-cache",
+		"build": "rm -rf ./Sidetabs_Prod && parcel build ./src/manifest.json --target prod-extension --no-cache",
+		"run": "web-ext run --source-dir ./dev-extension --keep-profile-changes --firefox-profile=./.ff_profile",
 		"dev": "npm run devbuild; concurrently \"npm run watch\" \"npm run run\""
 	},
 	"type": "module",
@@ -17,16 +17,18 @@
 		"Firefox >= 90"
 	],
 	"targets": {
-		"webext-dev": {
+		"dev-extension": {
 			"sourceMap": {
 				"inline": true,
 				"inlineSources": true
-			}
+			},
+			"distDir": "./dev-extension"
 		},
-		"webext-prod": {
+		"prod-extension": {
 			"sourceMap": false,
 			"context": "browser",
-			"outputFormat": "global"
+			"outputFormat": "global",
+			"distDir": "./prod-extension"
 		}
 	},
 	"webExt": {

@@ -229,6 +229,7 @@ hr {
 }
 .newTabBar > .newTabLabel {
 	margin-left: 2px;
+	color: rgb(var(--theme-tab-text-color));
 }
 svg.icon {
 	width: 100%;
