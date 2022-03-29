@@ -1,53 +1,36 @@
 import React, { useState } from "react";
+import DragAndDrop from "react-vertical-dnd";
+import TabElement from "./TabElement";
 
-import {
-	DndContext,
-	closestCenter,
-	KeyboardSensor,
-	PointerSensor,
-	useSensor,
-	useSensors,
-	DragEndEvent,
-} from "@dnd-kit/core";
-import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { restrictToVerticalAxis, restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers";
-
-import SortableTab from "./SortableTab";
 import Tab from "./Tab";
 
-export default function TabsList(props: {
-	tabs: Tab[];
-	onReorder: (tabId: number, tabToSwapWithId: number) => void;
-	onStart: () => void;
-}) {
-	const sensors = useSensors(
-		useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
-		useSensor(KeyboardSensor, {
-			coordinateGetter: sortableKeyboardCoordinates,
-		})
-	);
-
-	function handleDragEnd(event: DragEndEvent) {
-		const { active, over } = event;
-		if (over?.id && active.id !== over.id) {
-			props.onReorder(Number(active.id), Number(over.id));
-		}
+export default function TabsList(props: { tabs: Tab[]; onReorder: (tabId: number, tabToSwapWithId: number) => void }) {
+	function handleDragEnd(fromIndex: number, toIndex: number) {
+		props.onReorder(fromIndex, toIndex);
 	}
+	const [dragging, setDragging] = useState(false);
 
 	return (
-		<div className="tabsDiv">
-			<DndContext
-				sensors={sensors}
-				collisionDetection={closestCenter}
-				onDragEnd={handleDragEnd}
-				onDragStart={props.onStart}
-				modifiers={[restrictToFirstScrollableAncestor, restrictToVerticalAxis]}>
-				<SortableContext items={props.tabs.map(({ id }) => String(id!))} strategy={verticalListSortingStrategy}>
-					{props.tabs.map(tab => (
-						<SortableTab key={String(tab.id)} id={String(tab.id)} tab={tab} />
-					))}
-				</SortableContext>
-			</DndContext>
+		<div className={`tabsDiv${dragging ? " reordering" : ""}`}>
+			<DragAndDrop
+				items={props.tabs.map(({ id }, index) => ({ index, id: String(id) }))}
+				onDragEnd={(from, to) => {
+					handleDragEnd(from, to);
+					setTimeout(() => setDragging(false), 300);
+				}}
+				onDragStart={() => {
+					setDragging(true);
+				}}
+				render={items => (
+					<>
+						{items.map(([item, dragprops, isDragging]) => (
+							<div className={`sortableTab${isDragging ? " dragging" : ""}`} {...dragprops} key={item.id}>
+								<TabElement tab={props.tabs[item.index]} beingDragged={isDragging} />
+							</div>
+						))}
+					</>
+				)}
+			/>
 		</div>
 	);
 }

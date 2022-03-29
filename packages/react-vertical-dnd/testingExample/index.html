@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<style>
+			.draggable {
+				/* position: absolute; */
+				user-select: none;
+				background: orangered;
+				border: 1px solid black;
+				margin: 2px;
+				padding: 5px;
+				width: 50vw;
+			}
+			.dragging {
+				z-index: 10;
+			}
+			.listContainer {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				flex-direction: column;
+				height: 100vh;
+			}
+		</style>
+		<title>Document</title>
+	</head>
+	<body>
+		<div id="reactRoot"></div>
+	</body>
+	<script src="index.tsx" type="module"></script>
+</html>

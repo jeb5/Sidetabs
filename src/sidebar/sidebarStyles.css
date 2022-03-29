@@ -205,8 +205,11 @@ hr {
 .tab:not(.activeTab) {
 	--tab-text-color: var(--theme-tab-background-text-color);
 }
-.tab:hover:not(.activeTab) {
+.tabsDiv .tab:hover:not(.activeTab) {
 	background: rgba(var(--theme-tab-hover-color));
+}
+.tabsDiv.reordering {
+	pointer-events: none !important;
 }
 .tab:hover > .tabCloseBtn {
 	display: block;

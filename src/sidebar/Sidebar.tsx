@@ -14,7 +14,6 @@ const arrWithReposition = (arr: any[], from: number, to: number) => {
 
 export default function Sidebar() {
 	type stateType = { tabs: { [id: string]: Tab }; tabOrder: number[] };
-
 	const [state, setState] = React.useState<stateType>({ tabs: {}, tabOrder: [] }); //State is combined to prevent unnecessary re-renders when both pieces of state change in succession.
 	const [tabsHashOnDragStart, setTabsHashOnDragStart] = React.useState<string>("");
 
@@ -110,15 +109,10 @@ export default function Sidebar() {
 		);
 	}
 
-	const handleSortStart = () => {
-		setTabsHashOnDragStart(JSON.stringify(state.tabOrder));
-	};
-	const handleTabSwap = (tabId: number, tabToSwapWithId: number) => {
-		if (tabsHashOnDragStart !== JSON.stringify(state.tabOrder)) return; //ideally tab changes would cancel the drag, but that doesn't appear to be possible with DnDKit so disregarding drags that have occurred amidst tab changes will suffice for now
-		const oldIndex = state.tabOrder.indexOf(tabId);
-		const newIndex = state.tabOrder.indexOf(tabToSwapWithId);
+	const handleTabReorder = (fromIndex: number, toIndex: number) => {
+		const tabId = state.tabOrder[fromIndex];
 		setState(({ tabs, tabOrder }) => {
-			const newTabOrder = arrWithReposition(tabOrder, oldIndex, newIndex);
+			const newTabOrder = arrWithReposition(tabOrder, fromIndex, toIndex);
 			const newTabs = Object.fromEntries(
 				Object.entries(tabs).map(([id, tab]) => [id, { ...tab, index: newTabOrder.indexOf(Number(id)) } as Tab])
 			);
@@ -127,16 +121,16 @@ export default function Sidebar() {
 				tabOrder: newTabOrder,
 			};
 		});
-		browser.tabs.move(tabId, { index: newIndex });
+		browser.tabs.move(tabId, { index: toIndex });
 	};
 
 	const pinnedTabs = state.tabOrder.filter(tabId => state.tabs[tabId].pinned).map(tabId => state.tabs[tabId]);
 	const regularTabs = state.tabOrder.filter(tabId => !state.tabs[tabId].pinned).map(tabId => state.tabs[tabId]);
 	return (
 		<>
-			<TabsList tabs={pinnedTabs} onReorder={handleTabSwap} onStart={handleSortStart}></TabsList>
+			<TabsList tabs={pinnedTabs} onReorder={handleTabReorder}></TabsList>
 			{pinnedTabs.length ? <hr /> : null}
-			<TabsList tabs={regularTabs} onReorder={handleTabSwap} onStart={handleSortStart}></TabsList>
+			<TabsList tabs={regularTabs} onReorder={handleTabReorder}></TabsList>
 			{regularTabs.length ? <hr /> : null}
 			<div className="newTabBar" onClick={() => newTab()}>
 				<div className="addBtn">

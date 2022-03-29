@@ -1,0 +1,24 @@
+{
+	"name": "react-vertical-dnd",
+	"version": "1.0.0",
+	"description": "",
+	"source": "src/reactDragAndDrop.tsx",
+	"main": "dist/main.js",
+	"types": "dist/types.d.ts",
+	"module": "dist/module.js",
+	"scripts": {
+		"run-test": "parcel serve ./testingExample/index.html",
+		"build": "parcel build"
+	},
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"parcel": "^2.4.0"
+	},
+	"dependencies": {
+		"@types/react": "^17.0.41",
+		"react": "^17.0.2",
+		"react-dom": "^17.0.2",
+		"typescript": "^4.5.5"
+	}
+}

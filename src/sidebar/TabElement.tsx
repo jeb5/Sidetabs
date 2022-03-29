@@ -7,7 +7,7 @@ import AUDIO_MUTE_ICON from "parcel-svg:../assets/icons/music_note_off.svg";
 import DEFAULT_TAB_ICON from "parcel-svg:../assets/icons/Firefox Default.svg";
 import Browser from "webextension-polyfill";
 
-export default function TabElement({ tab }: { tab: Tab }) {
+export default function TabElement({ tab, beingDragged }: { tab: Tab; beingDragged: boolean }) {
 	const showContextMenu = () => {
 		showTabMenu(tab);
 	};
@@ -58,6 +58,7 @@ export default function TabElement({ tab }: { tab: Tab }) {
 				tabIsDraggingOverRef.current = false;
 			}}
 			onDragEnter={() => {
+				if (beingDragged) return;
 				tabIsDraggingOverRef.current = true;
 				if (tabDragTimeoutRef.current) clearTimeout(tabDragTimeoutRef.current);
 				tabDragTimeoutRef.current = setTimeout(() => {
