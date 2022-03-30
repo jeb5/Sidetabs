@@ -132,9 +132,9 @@ export default function Sidebar() {
 	const regularTabs = state.tabOrder.filter(tabId => !state.tabs[tabId].pinned).map(tabId => state.tabs[tabId]);
 	return (
 		<>
-			<TabsList tabs={pinnedTabs} onReorder={handleTabReorder}></TabsList>
+			<TabsList tabs={pinnedTabs} onReorder={handleTabReorder} className="pinnedTabs" />
 			{pinnedTabs.length ? <hr /> : null}
-			<TabsList tabs={regularTabs} onReorder={handleTabReorder}></TabsList>
+			<TabsList tabs={regularTabs} onReorder={handleTabReorder} className="regularTabs" />
 			{regularTabs.length ? <hr /> : null}
 			<div className="newTabBar" onClick={() => newTab()}>
 				<div className="addBtn">

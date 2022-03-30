@@ -33,6 +33,8 @@ body {
 	display: flex;
 	flex-direction: column;
 	margin-top: -2px; /* Keeps top tab square with sidebar edges */
+	overflow-y: hidden;
+	scrollbar-width: none;
 }
 #backgroundImagePanel {
 	position: absolute;
@@ -55,12 +57,19 @@ hr {
 	margin: 0px auto;
 	opacity: 0.8;
 }
-#sidebar > *:not(.regularTabs) {
+#sidebar > * {
 	flex-shrink: 0;
+}
+#sidebar > .regularTabs {
+	flex-shrink: 3;
+}
+#sidebar > .pinnedTabs {
+	flex-shrink: 2;
 }
 .tabsDiv {
 	overflow-y: scroll;
 	margin: var(--tab-gap) 0;
+	scrollbar-width: none;
 }
 .tabsDiv:empty {
 	display: none;

@@ -4,14 +4,18 @@ import TabElement from "./TabElement";
 
 import { Tab } from "./Tab";
 
-export default function TabsList(props: { tabs: Tab[]; onReorder: (tabId: number, tabToSwapWithId: number) => void }) {
+export default function TabsList(props: {
+	tabs: Tab[];
+	onReorder: (tabId: number, tabToSwapWithId: number) => void;
+	className: string;
+}) {
 	function handleDragEnd(fromIndex: number, toIndex: number) {
 		props.onReorder(fromIndex, toIndex);
 	}
 	const [dragging, setDragging] = useState(false);
 
 	return (
-		<div className={`tabsDiv${dragging ? " reordering" : ""}`}>
+		<div className={`tabsDiv${dragging ? " reordering" : ""}${" " + props.className}`}>
 			<DragAndDrop
 				items={props.tabs.map(({ id }, index) => ({ index, id: String(id) }))}
 				onDragEnd={(from, to) => {
