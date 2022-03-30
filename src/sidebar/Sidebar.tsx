@@ -1,4 +1,4 @@
-import Tab, { newTab } from "./Tab";
+import { newTab, Tab } from "./Tab";
 import browser from "webextension-polyfill";
 import React from "react";
 
@@ -12,15 +12,17 @@ const arrWithReposition = (arr: any[], from: number, to: number) => {
 	return result;
 };
 
+//Decoupling the extension from the tabs API would be ideal. On every tab change, sidetabs would recieve the updated complete tabs state, and update it's UI accordingly.
+//However, browser.tabs.query(...) doesn't consistently return the up-to-date state of the tabs. After a tab update, even after 100ms, the tabs state returned by query is sometimes stale.
+
 export default function Sidebar() {
 	type stateType = { tabs: { [id: string]: Tab }; tabOrder: number[] };
 	const [state, setState] = React.useState<stateType>({ tabs: {}, tabOrder: [] }); //State is combined to prevent unnecessary re-renders when both pieces of state change in succession.
-	const [tabsHashOnDragStart, setTabsHashOnDragStart] = React.useState<string>("");
 
 	React.useEffect(() => {
 		async function updateTabs() {
 			const browserTabs = await browser.tabs.query({ currentWindow: true });
-			let newTabs = browserTabs.reduce((acc, tab) => ({ ...acc, [tab.id!]: new Tab(tab) }), {});
+			let newTabs = browserTabs.reduce((acc, tab) => ({ ...acc, [tab.id!]: tab }), {});
 			let tempTabOrder = new Array(browserTabs.length);
 			browserTabs.forEach(tab => (tempTabOrder[tab.index] = tab.id));
 			setState({ tabs: newTabs, tabOrder: tempTabOrder });
@@ -59,7 +61,7 @@ export default function Sidebar() {
 		browser.tabs.onCreated.addListener(tab => {
 			if (tab.windowId !== WIN_ID) return;
 			setState(({ tabs, tabOrder }) => ({
-				tabs: { ...tabs, [tab.id!]: new Tab(tab) },
+				tabs: { ...tabs, [tab.id!]: tab },
 				tabOrder: [...tabOrder.slice(0, tab.index), tab.id!, ...tabOrder.slice(tab.index)],
 			}));
 		});
@@ -99,11 +101,13 @@ export default function Sidebar() {
 			});
 		});
 		browser.tabs.onUpdated.addListener(
-			(tabId, changeInfo) => {
-				setState(({ tabs, tabOrder }) => ({
-					tabs: { ...tabs, [tabId]: { ...tabs[tabId], ...changeInfo } },
-					tabOrder,
-				}));
+			(tabId, changeInfo, newTabState) => {
+				setState(({ tabs, tabOrder }) => {
+					return {
+						tabs: { ...tabs, [tabId]: newTabState },
+						tabOrder,
+					};
+				});
 			},
 			{ windowId: WIN_ID }
 		);

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import DragAndDrop from "react-vertical-dnd";
 import TabElement from "./TabElement";
 
-import Tab from "./Tab";
+import { Tab } from "./Tab";
 
 export default function TabsList(props: { tabs: Tab[]; onReorder: (tabId: number, tabToSwapWithId: number) => void }) {
 	function handleDragEnd(fromIndex: number, toIndex: number) {

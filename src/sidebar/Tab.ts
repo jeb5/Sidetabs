@@ -1,97 +1,49 @@
 import browser from "webextension-polyfill";
 import { containers } from "./containers";
 
-function Wrapper<T extends object>(): new (init: T) => T {
-	return class {
-		constructor(init: T) {
-			Object.assign(this, init);
-		}
-	} as any;
-}
-export default class Tab extends Wrapper<browser.Tabs.Tab>() {
-	constructor(tabData: browser.Tabs.Tab) {
-		super(tabData);
-		this.activate = this.activate;
-		this.close = this.close;
-		this.reload = this.reload;
-		this.mute = this.mute;
-		this.unmute = this.unmute;
-		this.duplicate = this.duplicate;
-		this.pin = this.pin;
-		this.unpin = this.unpin;
-		this.bookmark = this.bookmark;
-		this.discard = this.discard;
-		this.reopenWithCookieStoreId = this.reopenWithCookieStoreId;
-		this.getDiscardable = this.getDiscardable;
-		this.getReopenable = this.getReopenable;
-		this.getContainer = this.getContainer;
-		this.getLoading = this.getLoading;
-		this.getMuted = this.getMuted;
-	}
-	getDiscardable() {
-		return !this.active && !this.discarded;
-	}
-	getMuted() {
-		return this.mutedInfo?.muted;
-	}
-	getReopenable() {
-		const { protocol } = new URL(this.url || "");
-		return protocol === "http:" || protocol === "https:" || this.url === "about:newtab";
-	}
-	getContainer() {
-		return containers.find(({ cookieStoreId }) => cookieStoreId === this.cookieStoreId);
-	}
-	getLoading() {
-		return this.status === "loading";
-	}
-	async activate() {
-		await browser.tabs.update(this.id!, { active: true });
-	}
-	async close() {
-		await browser.tabs.remove(this.id!);
-	}
-	async reload() {
-		await browser.tabs.reload(this.id!);
-	}
-	async discard() {
-		await browser.tabs.discard(this.id!);
-	}
-	async reopenWithCookieStoreId(cookieStoreId?: string) {
+export type Tab = browser.Tabs.Tab;
+
+const tabMethods = {
+	getDiscardable: (tab: Tab) => !tab.active && !tab.discarded,
+	getMuted: (tab: Tab) => tab.mutedInfo?.muted,
+	getReopenable: (tab: Tab) => {
+		const { protocol } = new URL(tab.url || "");
+		return protocol === "http:" || protocol === "https:" || tab.url === "about:newtab";
+	},
+	getContainer: (tab: Tab) => containers.find(({ cookieStoreId }) => cookieStoreId === tab.cookieStoreId),
+	getLoading: (tab: Tab) => tab.status === "loading",
+	activate: (tab: Tab) => browser.tabs.update(tab.id!, { active: true }),
+	warmup: (tab: Tab) => browser.tabs.warmup(tab.id!),
+	close: (tab: Tab) => browser.tabs.remove(tab.id!),
+	reload: (tab: Tab) => browser.tabs.reload(tab.id!),
+	discard: (tab: Tab) => browser.tabs.discard(tab.id!),
+	reopenWithCookieStoreId: async (tab: Tab, cookieStoreId?: string) => {
 		await browser.tabs.create({
-			active: this.active,
+			active: tab.active,
 			...(cookieStoreId ? { cookieStoreId } : {}),
-			discarded: this.discarded,
-			...(this.discarded ? { title: this.title } : {}),
-			index: this.index,
-			openerTabId: this.openerTabId,
-			openInReaderMode: this.isInReaderMode,
-			pinned: this.pinned,
-			...(this.url !== "about:newtab" ? { url: this.url } : {}),
+			discarded: tab.discarded,
+			...(tab.discarded ? { title: tab.title } : {}),
+			index: tab.index,
+			openerTabId: tab.openerTabId,
+			openInReaderMode: tab.isInReaderMode,
+			pinned: tab.pinned,
+			...(tab.url !== "about:newtab" ? { url: tab.url } : {}),
 		});
-		await this.close();
-	}
-	async mute() {
-		await browser.tabs.update(this.id!, { muted: true });
-	}
-	async unmute() {
-		await browser.tabs.update(this.id!, { muted: false });
-	}
-	async pin() {
-		await browser.tabs.update(this.id!, { pinned: true });
-	}
-	async unpin() {
-		await browser.tabs.update(this.id!, { pinned: false });
-	}
-	async duplicate() {
-		await browser.tabs.duplicate(this.id!);
-	}
-	async bookmark() {
-		await browser.bookmarks.create({
-			title: this.title,
-			url: this.url,
-		});
-	}
-}
+		await browser.tabs.remove(tab.id!);
+	},
+	mute: async (tab: Tab) => browser.tabs.update(tab.id!, { muted: true }),
+	unmute: async (tab: Tab) => browser.tabs.update(tab.id!, { muted: false }),
+	pin: async (tab: Tab) => browser.tabs.update(tab.id!, { pinned: true }),
+	unpin: async (tab: Tab) => browser.tabs.update(tab.id!, { pinned: false }),
+	duplicate: async (tab: Tab) => browser.tabs.duplicate(tab.id!),
+	bookmark: async (tab: Tab) =>
+		browser.bookmarks.create({
+			title: tab.title,
+			url: tab.url,
+		}),
+};
+
+export default tabMethods;
 
 export async function restoreClosedTab() {
 	const lastClosed = await browser.sessions.getRecentlyClosed();
