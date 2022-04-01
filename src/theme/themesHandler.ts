@@ -20,9 +20,8 @@ type Theme = {
 };
 export type ThemeImages = { image: string; alignment: string; tiling: string }[];
 export type ThemeColors = {
-	[cssVar: string]: string | Color;
+	[cssVar: string]: Color;
 };
-//TODO: Is a theme color ever a string? aren't they all Color objects? Can I remove this, and delete some type-checking code?
 export type SidebarTheme = {
 	colors: ThemeColors;
 	images?: ThemeImages;
@@ -124,17 +123,23 @@ export default function observeSchemeUpdate(callback: (newScheme: SidebarTheme) 
 	schemeUpdateListeners.push(callback);
 }
 
+function getThemeFingerprint(theme: Theme) {
+	//extension urls are not consistent accross different firefox profiles.
+	const cleanedJSON = JSON.stringify(theme).replace(/moz-extension:\/\/[\w-]*\//gm, "EXTENSION:");
+	return md5(cleanedJSON);
+}
+
 function detectExceptionThemes(theme: Theme, windowInDarkMode: boolean): SidebarTheme | null {
 	// --- Exception themes ---
 
-	switch (md5(JSON.stringify(theme))) {
-		case "2ce2e83daebfbe7578356a7f0a2a072b": //Alpenglow
-			// Alpenglow is the only dynamic (light/dark) theme that I know of, but theme.getCurrent() only returns the light version.
-			if (windowInDarkMode) return DEFAULT_THEMES.ALPENGLOW_DARK;
-			return DEFAULT_THEMES.ALPENGLOW_LIGHT;
-		case "cc4847db92ef0dcf5b691a6c870b6ba6": //Alpenglow (forced dark), a popular theme
-			return DEFAULT_THEMES.ALPENGLOW_DARK;
+	console.log("Theme fingerprint is", getThemeFingerprint(theme));
 
+	switch (getThemeFingerprint(theme)) {
+		case "267e0e07e5cd597938953b5a4d7e6717": //Alpenglow
+			// Alpenglow is the only dynamic (light/dark) theme that I know of, but theme.getCurrent() only returns the light version.
+			return windowInDarkMode ? DEFAULT_THEMES.ALPENGLOW_DARK : DEFAULT_THEMES.ALPENGLOW_LIGHT;
+		case "518c16a72b2a6dfa94711a719b100317": //Alpenglow (forced dark), a popular theme
+			return DEFAULT_THEMES.ALPENGLOW_DARK;
 		default:
 			return null;
 	}
