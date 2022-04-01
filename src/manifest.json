@@ -2,6 +2,10 @@
 	"manifest_version": 2,
 	"name": "Sidetabs",
 	"version": "0.3.3",
+	"icons": {
+		"48": "assets/app_icons/sidetabs.svg",
+		"96": "assets/app_icons/sidetabs.svg"
+	},
 	"sidebar_action": {
 		"default_icon": "assets/app_icons/sidetabs.svg",
 		"default_title": "Sidetabs",
