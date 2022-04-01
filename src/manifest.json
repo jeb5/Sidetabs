@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Sidetabs",
-	"version": "0.3.3",
+	"version": "0.3.4",
 	"icons": {
 		"48": "assets/app_icons/sidetabs.svg",
 		"96": "assets/app_icons/sidetabs.svg"

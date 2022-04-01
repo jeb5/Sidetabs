@@ -9,7 +9,7 @@
 	"scripts": {
 		"watch": "parcel watch ./src/manifest.json --no-hmr --target dev-extension",
 		"devbuild": "NODE_ENV=development parcel build ./src/manifest.json --target dev-extension --no-cache",
-		"build": "rm -rf ./Sidetabs_Prod && parcel build ./src/manifest.json --target prod-extension --no-cache",
+		"build": "rm -rf ./prod-extension && parcel build ./src/manifest.json --target prod-extension --no-cache",
 		"run": "web-ext run --source-dir ./dev-extension --keep-profile-changes --firefox-profile=./.ff_profile",
 		"dev": "npm run devbuild; concurrently \"npm run watch\" \"npm run run\""
 	},
