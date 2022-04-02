@@ -2,6 +2,10 @@
 
 A Firefox extension that shows vertical tabs in the sidebar.
 
+## Installation
+
+Sidetabs is on the [Firefox Add-ons Marketplace](https://addons.mozilla.org/en-US/firefox/addon/sidetabs/).
+
 ## Development
 
 _Requires NPM version `>= 8.3.0`._
