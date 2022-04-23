@@ -127,14 +127,18 @@ export default function Sidebar() {
 		});
 		browser.tabs.move(tabId, { index: toIndex });
 	};
+	const handlePinnedTabReorder = handleTabReorder;
+	const handleRegularTabReorder = (fromIndex: number, toIndex: number) => {
+		handleTabReorder(fromIndex + pinnedTabs.length, toIndex + pinnedTabs.length);
+	};
 
 	const pinnedTabs = state.tabOrder.filter(tabId => state.tabs[tabId].pinned).map(tabId => state.tabs[tabId]);
 	const regularTabs = state.tabOrder.filter(tabId => !state.tabs[tabId].pinned).map(tabId => state.tabs[tabId]);
 	return (
 		<>
-			<TabsList tabs={pinnedTabs} onReorder={handleTabReorder} className="pinnedTabs" />
+			<TabsList tabs={pinnedTabs} onReorder={handlePinnedTabReorder} className="pinnedTabs" />
 			{pinnedTabs.length ? <hr /> : null}
-			<TabsList tabs={regularTabs} onReorder={handleTabReorder} className="regularTabs" />
+			<TabsList tabs={regularTabs} onReorder={handleRegularTabReorder} className="regularTabs" />
 			{regularTabs.length ? <hr /> : null}
 			<div className="newTabBar" onClick={() => newTab()}>
 				<div className="addBtn">
