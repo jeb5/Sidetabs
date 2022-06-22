@@ -38,7 +38,7 @@ type DragAndDropProps<T extends RearrangeableItem> = {
 	items: T[];
 	render: ([item, dragProps]: [item: T, props: DragProps, itemIsDragging: boolean][]) => React.ReactElement;
 	onDragEnd: (fromIndex: number, toIndex: number) => any;
-	onDragStart?: () => any;
+	onDragStart?: (item: RearrangeableItem, event: React.DragEvent<HTMLElement>) => any;
 };
 
 function getElementYPosition(element: HTMLElement): number {
@@ -107,7 +107,7 @@ const DragAndDrop = <T extends RearrangeableItem>({ render, items, onDragEnd, on
 	const dragBeginning = (event: React.DragEvent<HTMLElement>, item: RearrangeableItem) => {
 		event.dataTransfer.setDragImage(document.createElement("div"), 0, 0);
 		if (items.length < 2) return;
-		if (onDragStart) onDragStart();
+		if (onDragStart) onDragStart(item, event);
 		if (DIFT) {
 			clearTimeout(DIFT.timeout);
 			setDIFT(null);

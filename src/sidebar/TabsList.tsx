@@ -3,6 +3,7 @@ import DragAndDrop from "react-vertical-dnd";
 import TabElement from "./TabElement";
 
 import { Tab } from "./Tab";
+import { urlbar } from "webextension-polyfill";
 
 export default function TabsList(props: {
 	tabs: Tab[];
@@ -22,7 +23,15 @@ export default function TabsList(props: {
 					handleDragEnd(from, to);
 					setTimeout(() => setDragging(false), 300);
 				}}
-				onDragStart={() => {
+				onDragStart={(item, dragEvent) => {
+					const tab = props.tabs.find(tab => tab.id === Number(item.id))!;
+					const { url, title } = tab;
+					console.log(url, title, "started dragging");
+					dragEvent.dataTransfer.dropEffect = "copy";
+					dragEvent.dataTransfer.effectAllowed = "copy";
+					dragEvent.dataTransfer.setData("text/uri-list", url!);
+					dragEvent.dataTransfer.setData("text/plain", url!);
+					dragEvent.dataTransfer.setData("text/x-moz-url", url! + "\n" + title!);
 					setDragging(true);
 				}}
 				render={items => (

@@ -69,7 +69,7 @@ const $dec653fb90a2b8bf$var$DragAndDrop = ({ render: render , items: items , onD
     const dragBeginning = (event, item)=>{
         event.dataTransfer.setDragImage(document.createElement("div"), 0, 0);
         if (items.length < 2) return;
-        if (onDragStart) onDragStart();
+        if (onDragStart) onDragStart(item, event);
         if (DIFT) {
             clearTimeout(DIFT.timeout);
             setDIFT(null);

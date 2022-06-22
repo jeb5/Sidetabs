@@ -61,7 +61,6 @@ export default function TabElement({ tab, beingDragged }: { tab: Tab; beingDragg
 				tabIsDraggingOverRef.current = true;
 				if (tabDragTimeoutRef.current) clearTimeout(tabDragTimeoutRef.current);
 				tabDragTimeoutRef.current = setTimeout(() => {
-					console.log(tabIsDraggingOverRef.current);
 					if (tabIsDraggingOverRef.current) tabMethods.activate(tab);
 				}, 500);
 			}}>
