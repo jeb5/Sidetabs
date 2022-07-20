@@ -25,5 +25,5 @@ Build extension for production: `npm run build`
 _Notes for building sidetabs:_
 
 - use `web-ext build` rather than `zip` to package extension.
-- an issue with the firefox extension validator means it won't recognise sidebar.js as a javascript module, causing `import.meta` to be invalid syntax. By adding a dummy import to the start of sidebar.js, it will be recognised as a module.
+- an issue with the firefox extension validator means it won't recognise sidebar.js & settings.js as javascript modules, causing `import.meta` to be invalid syntax. By adding a dummy import to the start of these files, they will be recognised as modules.
   - after modifying any files after the build, be sure to test. Messing up the syntax of the dummy import will break the entire extension. It should be `import test from "./test.js";` and `export default ""` in `test.js`
