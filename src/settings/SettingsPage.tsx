@@ -11,6 +11,7 @@ import "../extensionPages.css";
 import HIGHLIGHTS_ICON from "parcel-svg:../assets/icons/Highlights.svg";
 import THEMES_ICON from "parcel-svg:../assets/icons/Themes.svg";
 import TOOLBAR_ICON from "parcel-svg:../assets/icons/Toolbar.svg";
+import SIDETABS_ICON from "parcel-svg:../assets/app_icons/sidetabs.svg";
 
 const SettingsPage = () => {
 	const [optionsLoaded, setOptionsLoaded] = useState(false);
@@ -41,7 +42,7 @@ const SettingsPage = () => {
 		<>
 			<div className="options-side-pane">
 				<header>
-					<img src="../assets/app_icons/sidetabs_light.png" alt="sidetabs logo" />
+					<SIDETABS_ICON className="sidetabs-icon" />
 					<h1>Options</h1>
 				</header>
 				<p>
