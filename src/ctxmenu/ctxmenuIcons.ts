@@ -20,6 +20,14 @@ import closeTab16 from "parcel-svgtopng:../assets/icons/Close.svg?width=16&heigh
 import closeTab32 from "parcel-svgtopng:../assets/icons/Close.svg?width=32&height=32&fillColor=black";
 import unloadTab16 from "parcel-svgtopng:../assets/icons/Store Data.svg?width=16&height=16&fillColor=black";
 import unloadTab32 from "parcel-svgtopng:../assets/icons/Store Data.svg?width=32&height=32&fillColor=black";
+import clearCookies16 from "parcel-svgtopng:../assets/icons/Delete Cookies.svg?width=16&height=16&fillColor=black";
+import clearCookies32 from "parcel-svgtopng:../assets/icons/Delete Cookies.svg?width=32&height=32&fillColor=black";
+import clearStorage16 from "parcel-svgtopng:../assets/icons/Delete Storage.svg?width=16&height=16&fillColor=black";
+import clearStorage32 from "parcel-svgtopng:../assets/icons/Delete Storage.svg?width=32&height=32&fillColor=black";
+import clearData16 from "parcel-svgtopng:../assets/icons/Delete Data.svg?width=16&height=16&fillColor=black";
+import clearData32 from "parcel-svgtopng:../assets/icons/Delete Data.svg?width=32&height=32&fillColor=black";
+import options16 from "parcel-svgtopng:../assets/icons/Preferences.svg?width=16&height=16&fillColor=black";
+import options32 from "parcel-svgtopng:../assets/icons/Preferences.svg?width=32&height=32&fillColor=black";
 
 export default {
 	newTab: {
@@ -65,5 +73,21 @@ export default {
 	unloadTab: {
 		16: unloadTab16,
 		32: unloadTab32,
+	},
+	clearCookies: {
+		16: clearCookies16,
+		32: clearCookies32,
+	},
+	clearStorage: {
+		16: clearStorage16,
+		32: clearStorage32,
+	},
+	clearData: {
+		16: clearData16,
+		32: clearData32,
+	},
+	options: {
+		16: options16,
+		32: options32,
 	},
 };

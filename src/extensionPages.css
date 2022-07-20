@@ -1,0 +1,31 @@
+@font-face {
+	font-family: "Metropolis";
+	font-display: fallback;
+	font-weight: bold;
+	font-style: normal;
+	src: url("assets/fonts/Metropolis-Bold.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Metropolis";
+	font-display: fallback;
+	font-weight: normal;
+	font-style: normal;
+	src: url("assets/fonts/Metropolis-Regular.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Metropolis";
+	font-display: fallback;
+	font-weight: normal;
+	font-style: italic;
+	src: url("assets/fonts/Metropolis-RegularItalic.ttf") format("truetype");
+}
+body {
+	background: #0f0f0f;
+	/* color: #f0f0f0; */
+	color:white;
+	font-family: "Metropolis", sans-serif;
+}
+a {
+	color: #0290c3;
+	text-decoration: none;
+}

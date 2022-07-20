@@ -2,6 +2,8 @@ import browser from "webextension-polyfill";
 import Color from "color";
 import md5 from "md5";
 import * as DEFAULT_THEMES from "./defaultThemes";
+import React, { useContext, useEffect, useState } from "react";
+import { OptionForm, OptionsContext } from "../options";
 
 type Theme = {
 	// Theme type because for some reason @types/webextension-polyfill doesn't have this type
@@ -27,7 +29,7 @@ export type SidebarTheme = {
 	images?: ThemeImages;
 };
 
-let schemeUpdateListeners: ((newScheme: SidebarTheme) => any)[] = [];
+// let schemeUpdateListeners: ((newScheme: SidebarTheme) => any)[] = [];
 
 const themeStyleColorMappings: { [cssVar: string]: string[] } = {
 	"--theme-tab-text-color": ["tab_text", "bookmark_text", "toolbar_text", "tab_background_text"],
@@ -41,7 +43,11 @@ const themeStyleColorMappings: { [cssVar: string]: string[] } = {
 	"--theme-icons-color": ["icons", "tab_background_text"],
 };
 
-async function updateThemeStyle(theme: Theme) {
+async function updateThemeStyle(
+	theme: Theme,
+	includePrimaryImage: boolean = true,
+	includeAdditionalImages: boolean = true
+) {
 	const newTheme = { colors: theme.colors || {}, images: theme.images || {}, properties: theme.properties || {} };
 	// console.log("Theme has updated:", theme, "hash: ", md5(JSON.stringify(theme)));
 
@@ -60,15 +66,16 @@ async function updateThemeStyle(theme: Theme) {
 		: DEFAULT_THEMES.DEFAULT_LIGHT_SIDEBAR_THEME;
 	// --------------------------------
 
-	const images =
-		newTheme.images.additional_backgrounds?.map((image, index) => {
-			return {
-				image,
-				alignment: newTheme.properties.additional_backgrounds_alignment?.[index] || "center",
-				tiling: newTheme.properties.additional_backgrounds_tiling?.[index] || "no-repeat",
-			};
-		}) || [];
-	if (newTheme.images.theme_frame) {
+	const images = includeAdditionalImages
+		? newTheme.images.additional_backgrounds?.map((image, index) => {
+				return {
+					image,
+					alignment: newTheme.properties.additional_backgrounds_alignment?.[index] || "center",
+					tiling: newTheme.properties.additional_backgrounds_tiling?.[index] || "no-repeat",
+				};
+		  }) || []
+		: [];
+	if (newTheme.images.theme_frame && includePrimaryImage) {
 		images.unshift({
 			image: newTheme.images.theme_frame,
 			alignment: "right top",
@@ -108,20 +115,19 @@ async function updateThemeStyle(theme: Theme) {
 	newSidebarTheme.colors = { ...newSidebarTheme.colors, ...extraColors };
 	// ---------------------
 
-	schemeUpdateListeners.forEach(listener => listener(newSidebarTheme!));
+	// schemeUpdateListeners.forEach(listener => listener(newSidebarTheme!));
+	return newSidebarTheme;
 	// console.log("New sidebar theme:", newSidebarTheme);
 }
 
-browser.theme.onUpdated.addListener(({ theme }) => {
-	const newTheme = theme as Theme;
-	if (newTheme) updateThemeStyle(newTheme);
-});
+// browser.theme.onUpdated.addListener(({ theme }) => {
+// 	const newTheme = theme as Theme;
+// 	if (newTheme) updateThemeStyle(newTheme);
+// });
 
-(async () => updateThemeStyle(await browser.theme.getCurrent()))();
-
-export default function observeSchemeUpdate(callback: (newScheme: SidebarTheme) => any) {
-	schemeUpdateListeners.push(callback);
-}
+// export default function observeSchemeUpdate(callback: (newScheme: SidebarTheme) => any) {
+// 	schemeUpdateListeners.push(callback);
+// }
 
 function getThemeFingerprint(theme: Theme) {
 	//extension urls are not consistent accross different firefox profiles.
@@ -196,3 +202,43 @@ export async function stylesFromSidebarTheme(theme: SidebarTheme) {
 		${cssImageVar}
 	}`;
 }
+
+const useTheme = (extensionOptions: OptionForm) => {
+	const [theme, setTheme] = useState<SidebarTheme | null>(null);
+	useEffect(() => {
+		if (extensionOptions["theme/mode"] === "dark") return setTheme(DEFAULT_THEMES.DEFAULT_DARK_SIDEBAR_THEME);
+		if (extensionOptions["theme/mode"] === "light") return setTheme(DEFAULT_THEMES.DEFAULT_LIGHT_SIDEBAR_THEME);
+
+		const showImages = extensionOptions["theme/showPrimaryImage"];
+		const showAdditionalImages = extensionOptions["theme/showAdditionalImages"];
+
+		const setNewTheme = async (newTheme: Theme) => {
+			if (newTheme) setTheme(await updateThemeStyle(newTheme, showImages, showAdditionalImages));
+		};
+
+		const themeListener = async ({ theme }: { theme: browser.Theme.ThemeUpdateInfoThemeType }) => {
+			const newTheme = theme as Theme;
+			if (newTheme) await setNewTheme(newTheme);
+		};
+
+		browser.theme.getCurrent().then(newTheme => setNewTheme(newTheme));
+
+		browser.theme.onUpdated.addListener(themeListener);
+		return () => browser.theme.onUpdated.removeListener(themeListener);
+	}, [extensionOptions]);
+	return theme;
+};
+
+export const ThemeSetter = () => {
+	const extensionOptions = useContext(OptionsContext);
+	const theme = useTheme(extensionOptions);
+	//TODO: Add support for image-inclusion options
+	useEffect(() => {
+		if (theme) {
+			stylesFromSidebarTheme(theme).then(css => {
+				document.getElementById("themeStyles")!.innerHTML = css;
+			});
+		}
+	}, [theme]);
+	return null;
+};

@@ -1,7 +1,17 @@
 {
 	"manifest_version": 2,
 	"name": "Sidetabs",
-	"version": "0.3.5",
+	"version": "0.4",
+	"browser_specific_settings": {
+		"gecko": {
+			"strict_min_version": "90.0",
+			"id": "sidetabs@jebnicholson.com"
+		}
+	},
+	"options_ui": {
+		"open_in_tab": true,
+		"page": "settings/settings.html"
+	},
 	"icons": {
 		"48": "assets/app_icons/sidetabs.svg",
 		"96": "assets/app_icons/sidetabs.svg"
@@ -23,8 +33,11 @@
 		"sessions",
 		"cookies",
 		"contextualIdentities",
-		"theme"
+		"theme",
+		"storage",
+		"browsingData"
 	],
+	"optional_permissions": ["<all_urls>"],
 	"background": {
 		"scripts": ["./background.js"]
 	},

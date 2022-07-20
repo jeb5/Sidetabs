@@ -3,7 +3,6 @@ import DragAndDrop from "react-vertical-dnd";
 import TabElement from "./TabElement";
 
 import { Tab } from "./Tab";
-import { urlbar } from "webextension-polyfill";
 
 export default function TabsList(props: {
 	tabs: Tab[];

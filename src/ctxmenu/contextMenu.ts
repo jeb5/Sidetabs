@@ -1,75 +1,145 @@
 import { containers } from "../sidebar/containers";
-import tabMethods, { Tab, newTab, restoreClosedTab } from "../sidebar/Tab";
+import TabMethods, { Tab, newTab, restoreClosedTab } from "../sidebar/Tab";
 import browser from "webextension-polyfill";
 import ctxIcons from "./ctxmenuIcons";
-export function showTabMenu(tab: Tab) {
-	setMenu([
-		{
-			title: "New Tab",
-			onclick: () => newTab({ openerTabId: tab.id }),
-			icons: ctxIcons.newTab,
-		},
-		{ title: "Reopen Closed Tab", onclick: () => restoreClosedTab(), icons: ctxIcons.reopenTab },
-		{ type: "separator" },
-		{ title: "Reload Tab", onclick: () => tabMethods.reload(tab), icons: ctxIcons.reloadTab },
-		tab.mutedInfo?.muted
-			? { title: "Unmute Tab", onclick: () => tabMethods.unmute(tab), icons: ctxIcons.unmuteTab }
-			: { title: "Mute Tab", onclick: () => tabMethods.mute(tab), icons: ctxIcons.muteTab },
-		tab.pinned
-			? { title: "Unpin Tab", onclick: () => tabMethods.unpin(tab), icons: ctxIcons.unpinTab }
-			: { title: "Pin Tab", onclick: () => tabMethods.pin(tab), icons: ctxIcons.pinTab },
-		{ title: "Duplicate Tab", onclick: () => tabMethods.duplicate(tab), icons: ctxIcons.duplicateTab },
-		{
+import React, { useContext } from "react";
+import { ctxMenuOption, OptionForm, OptionsContext } from "../options";
+
+//Returns the MenuStructure array for a tab-relevant context menu
+function tabMenuItems(tab: Tab, options: OptionForm): MenuStructure[] {
+	const ctxMenuItems: {
+		[key in ctxMenuOption | "close"]: MenuStructure;
+	} = {
+		reload: { title: "Reload Tab", onclick: () => TabMethods.reload(tab), icons: ctxIcons.reloadTab },
+		mute: tab.mutedInfo?.muted
+			? { title: "Unmute Tab", onclick: () => TabMethods.unmute(tab), icons: ctxIcons.unmuteTab }
+			: { title: "Mute Tab", onclick: () => TabMethods.mute(tab), icons: ctxIcons.muteTab },
+		pin: tab.pinned
+			? { title: "Unpin Tab", onclick: () => TabMethods.unpin(tab), icons: ctxIcons.unpinTab }
+			: { title: "Pin Tab", onclick: () => TabMethods.pin(tab), icons: ctxIcons.pinTab },
+		duplicate: { title: "Duplicate Tab", onclick: () => TabMethods.duplicate(tab), icons: ctxIcons.duplicateTab },
+		reopen: {
 			title: "Reopen in Container",
-			enabled: !!containers.length && tabMethods.getReopenable(tab),
+			enabled: !!containers.length && TabMethods.getReopenable(tab),
 			children: [
 				{
 					title: "Default",
 					enabled: !(!tab.cookieStoreId || tab.cookieStoreId === "firefox-default"),
-					onclick: () => tabMethods.reopenWithCookieStoreId(tab),
+					onclick: () => TabMethods.reopenWithCookieStoreId(tab),
 				},
 				...containers.map(container => ({
 					title: container.name,
 					icons: { 16: container.iconUrl },
 					enabled: container.cookieStoreId != tab.cookieStoreId,
-					onclick: () => tabMethods.reopenWithCookieStoreId(tab, container.cookieStoreId),
+					onclick: () => TabMethods.reopenWithCookieStoreId(tab, container.cookieStoreId),
 				})),
 			],
 		},
-		{
+		unload: {
 			title: "Unload Tab",
-			onclick: () => tabMethods.discard(tab),
-			enabled: tabMethods.getDiscardable(tab),
+			onclick: () => TabMethods.discard(tab),
+			enabled: TabMethods.getDiscardable(tab),
 			icons: ctxIcons.unloadTab,
 		},
-		{ title: "Bookmark Tab", onclick: () => tabMethods.bookmark(tab), icons: ctxIcons.bookmarkTab },
-		{ type: "separator" },
-		{ title: "Close Tab", onclick: () => tabMethods.close(tab), icons: ctxIcons.closeTab },
-	]);
+		bookmark: { title: "Bookmark Tab", onclick: () => TabMethods.bookmark(tab), icons: ctxIcons.bookmarkTab },
+		clearCookies: {
+			title: "Clear Site Cookies",
+			onclick: () => {
+				TabMethods.clearCookies(tab);
+				TabMethods.reload(tab);
+			},
+			icons: ctxIcons.clearCookies,
+		},
+		clearLocalStorage: {
+			title: "Clear Site Storage",
+			onclick: () => {
+				TabMethods.clearStorage(tab);
+				// TabMethods.reload(tab);
+			},
+			icons: ctxIcons.clearStorage,
+		},
+		clearData: {
+			title: "Clear all Site Data",
+			onclick: () => {
+				TabMethods.clearAllData(tab);
+				TabMethods.reload(tab);
+			},
+			icons: ctxIcons.clearData,
+		},
+		close: { title: "Close Tab", onclick: () => TabMethods.close(tab), icons: ctxIcons.closeTab },
+	};
+
+	return [
+		...options["ctxMenu/menuItems"].map(item => ctxMenuItems[item]),
+		...(options["ctxMenu/showCloseOption"] ? [{ type: "separator" } as MenuStructure, ctxMenuItems.close] : []),
+	];
 }
-document.addEventListener("contextmenu", event => {
-	if ((event.target as HTMLElement).closest(".tab")) return;
-	setMenu([
-		{ title: "New Tab", onclick: () => newTab(), icons: ctxIcons.newTab },
+
+//Returns the MenuStructure array for items unrelated to a specific tab
+function defaultMenuItems(tab?: Tab): MenuStructure[] {
+	return [
+		{
+			title: "New Tab",
+			onclick: () => newTab(tab ? { openerTabId: tab.id } : undefined),
+			icons: ctxIcons.newTab,
+		},
 		{ title: "Reopen Closed Tab", onclick: () => restoreClosedTab(), icons: ctxIcons.reopenTab },
-	]);
-});
+	];
+}
+// document.addEventListener("contextmenu", event => {
+// 	if ((event.target as HTMLElement).closest(".tab")) return;
+// 	setMenu([
+// 		{ title: "New Tab", onclick: () => newTab(), icons: ctxIcons.newTab },
+// 		{ title: "Reopen Closed Tab", onclick: () => restoreClosedTab(), icons: ctxIcons.reopenTab },
+// 	]);
+// });
 
 interface MenuStructure extends browser.Menus.CreateCreatePropertiesType {
 	children?: MenuStructure[];
 }
-function setMenu(structure: MenuStructure[]) {
+function setMenu(structure: MenuStructure[], showIcons: boolean = false) {
 	browser.menus.overrideContext({ showDefaults: false });
 	browser.menus.removeAll();
-	for (const contextObj of structure) createContext(contextObj);
+	for (const contextObj of structure) createContext(contextObj, showIcons);
 }
-function createContext(menu: MenuStructure, parentId?: string | number) {
-	const { children, ...createProps } = menu;
+function createContext(menu: MenuStructure, showIcons: boolean = false, parentId?: string | number) {
+	const { children, icons, ...createProps } = menu;
 	if (parentId != undefined) createProps.parentId = parentId;
 	const id = browser.menus.create({
 		contexts: ["all"],
 		viewTypes: ["sidebar"],
 		...createProps,
+		...(showIcons ? { icons } : {}),
 	});
-	for (const childContextObj of children || []) createContext(childContextObj, id);
+	for (const childContextObj of children || []) createContext(childContextObj, showIcons, id);
+}
+
+export function useContextMenu(tab?: Tab) {
+	const options = useContext(OptionsContext);
+	const showIcons = options["ctxMenu/showIcons"];
+	if (tab) {
+		return function showContextMenu(event: React.MouseEvent) {
+			event.stopPropagation();
+			const menuItems: MenuStructure[] = [
+				...defaultMenuItems(tab),
+				{ type: "separator" },
+				...tabMenuItems(tab, options),
+			];
+			setMenu(menuItems, showIcons);
+		};
+	} else {
+		return function showContextMenu(event: React.MouseEvent) {
+			event.stopPropagation();
+			const menuItems: MenuStructure[] = [
+				...defaultMenuItems(),
+				...(options["ctxMenu/showSidetabsOptions"]
+					? [
+							{ type: "separator" } as MenuStructure,
+							{ title: "Sidetabs Options", onclick: () => browser.runtime.openOptionsPage(), icons: ctxIcons.options },
+					  ]
+					: []),
+			];
+			setMenu(menuItems, showIcons);
+		};
+	}
 }

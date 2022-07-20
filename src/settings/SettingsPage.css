@@ -1,0 +1,89 @@
+body {
+	height: 100vh;
+	padding: 0;
+	margin: 0;
+}
+#reactRoot {
+	display: flex;
+	height: 100%;
+}
+.options-side-pane {
+	width: 350px;
+	padding: 50px 30px 50px 75px;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: flex-start;
+	box-sizing: border-box;
+}
+.options-panel-scroll-box {
+	overflow-y: scroll;
+	flex-grow: 1;
+	height: 100%;
+	padding: 50px 75px 50px 50px;
+	box-sizing: border-box;
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+}
+.options-panel {
+	background: #181818;
+	box-shadow: 0 2px 7px 0 #000000aa;
+	border-radius: 3px;
+	padding: 15px 45px;
+	min-width: 500px;
+	max-width: 800px;
+	font-size: 0.95em;
+	user-select: none;
+}
+.options-panel h2 {
+	margin-bottom: 30px;
+	font-size: 1.8em;
+	display: flex;
+	align-items: center;
+}
+.options-panel h2 svg {
+	fill: white;
+	width: 24px;
+	margin-right: 16px;
+	align-items: center;
+}
+.options-panel section {
+	margin-bottom: 60px;
+}
+.option-field {
+	margin: 15px 0px;
+}
+.options-side-pane > header {
+	display: flex;
+	align-items: center;
+}
+.options-side-pane > header > img {
+	width: 50px;
+}
+.options-side-pane > header > h1 {
+	font-size: 2.5em;
+	margin-left: 15px;
+}
+
+.reset-button {
+	background: none;
+	border: none;
+	outline: none;
+	border-radius: 0;
+	font-weight: normal;
+	font-size: 0.9em;
+	color: #0290c3;
+	cursor: pointer;
+	padding: 0;
+}
+.options-side-pane > .big-gap {
+	flex-grow: 1;
+}
+.options-side-pane > p {
+	font-size: 0.9em;
+}
+.instructions-signpost > a {
+	font-size: 1em;
+}

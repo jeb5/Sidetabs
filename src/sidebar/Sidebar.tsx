@@ -1,9 +1,11 @@
 import { newTab, Tab } from "./Tab";
 import browser from "webextension-polyfill";
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import NewTabIcon from "parcel-svg:../assets/icons/Tab New.svg";
 import TabsList from "./TabsList";
+import { useContextMenu } from "../ctxmenu/contextMenu";
+import { OptionsContext } from "../options";
 
 const arrWithReposition = (arr: any[], from: number, to: number) => {
 	const result = [...arr];
@@ -17,9 +19,12 @@ const arrWithReposition = (arr: any[], from: number, to: number) => {
 
 export default function Sidebar() {
 	type stateType = { tabs: { [id: string]: Tab }; tabOrder: number[] };
-	const [state, setState] = React.useState<stateType>({ tabs: {}, tabOrder: [] }); //State is combined to prevent unnecessary re-renders when both pieces of state change in succession.
+	const [state, setState] = useState<stateType>({ tabs: {}, tabOrder: [] }); //State is combined to prevent unnecessary re-renders when both pieces of state change in succession.
 
-	React.useEffect(() => {
+	const showContextMenu = useContextMenu();
+	const extensionOptions = useContext(OptionsContext);
+
+	useEffect(() => {
 		async function updateTabs() {
 			const browserTabs = await browser.tabs.query({ currentWindow: true });
 			let newTabs = browserTabs.reduce((acc, tab) => ({ ...acc, [tab.id!]: tab }), {});
@@ -135,17 +140,21 @@ export default function Sidebar() {
 	const pinnedTabs = state.tabOrder.filter(tabId => state.tabs[tabId].pinned).map(tabId => state.tabs[tabId]);
 	const regularTabs = state.tabOrder.filter(tabId => !state.tabs[tabId].pinned).map(tabId => state.tabs[tabId]);
 	return (
-		<>
+		<div id="sidebar" onContextMenu={showContextMenu}>
 			<TabsList tabs={pinnedTabs} onReorder={handlePinnedTabReorder} className="pinnedTabs" />
 			{pinnedTabs.length ? <hr /> : null}
 			<TabsList tabs={regularTabs} onReorder={handleRegularTabReorder} className="regularTabs" />
-			{regularTabs.length ? <hr /> : null}
-			<div className="newTabBar" onClick={() => newTab()}>
-				<div className="addBtn">
-					<NewTabIcon className="icon" />
-				</div>
-				<div className="newTabLabel">New Tab</div>
-			</div>
-		</>
+			{extensionOptions["appearance/newTabButton"] && (
+				<>
+					{regularTabs.length ? <hr /> : null}
+					<div className="newTabBar" onClick={() => newTab()}>
+						<div className="addBtn">
+							<NewTabIcon className="icon" />
+						</div>
+						<div className="newTabLabel">New Tab</div>
+					</div>
+				</>
+			)}
+		</div>
 	);
 }

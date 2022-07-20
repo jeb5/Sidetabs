@@ -1,0 +1,60 @@
+.multi-order-options {
+	background: #0f0f0f;
+	border: 1px solid grey;
+	margin: 0px 20px;
+	width: 250px;
+	padding: 20px 0 30px 0;
+}
+.multi-order-option {
+	display: flex;
+	justify-content: center;
+	min-height: 250px;
+}
+.multi-order-label,
+.multi-order-item {
+	padding: 5px 30px 5px 35px;
+	user-select: none;
+}
+.multi-order-item-selected {
+	background: #0066aa;
+}
+.multi-order-item-dragging {
+	background: #ffffff11;
+	z-index: 5;
+	cursor: grabbing;
+}
+.multi-order-centre {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+.multi-order-button {
+	background: none;
+	border: none;
+	outline: none;
+	border-radius: 0;
+	font-size: 1.5em;
+	font-weight: bold;
+	cursor: pointer;
+	color: white;
+}
+.multi-order-button:disabled {
+	visibility: hidden;
+	cursor: auto;
+}
+.multi-order-label {
+	font-weight: bold;
+	margin-bottom: 15px;
+}
+.multi-order-item-icon > svg {
+	width: 16px;
+	fill: white;
+	margin-right: 10px;
+}
+.multi-order-item:not(.multi-order-item-dragging) .multi-order-item-icon > svg {
+	cursor: grab;
+}
+.multi-order-item {
+	display: flex;
+}

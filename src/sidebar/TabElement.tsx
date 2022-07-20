@@ -1,15 +1,13 @@
 import React from "react";
 import tabMethods, { Tab } from "./Tab";
-import { showTabMenu } from "../ctxmenu/contextMenu";
 import CLOSE_ICON from "parcel-svg:../assets/icons/Close.svg";
 import AUDIO_PLAYING_ICON from "parcel-svg:../assets/icons/music_note.svg";
 import AUDIO_MUTE_ICON from "parcel-svg:../assets/icons/music_note_off.svg";
 import DEFAULT_TAB_ICON from "parcel-svg:../assets/icons/Firefox Default.svg";
+import { useContextMenu } from "../ctxmenu/contextMenu";
 
 export default function TabElement({ tab, beingDragged }: { tab: Tab; beingDragged: boolean }) {
-	const showContextMenu = () => {
-		showTabMenu(tab);
-	};
+	const showContextMenu = useContextMenu(tab);
 
 	const [loading, setLoading] = React.useState(tabMethods.getLoading(tab));
 	const [justLoaded, setJustLoaded] = React.useState(false); //Means the tab was loaded in the last 500 ms.

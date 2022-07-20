@@ -22,12 +22,18 @@
 	--tab-height: 30px;
 	--tab-gap: 5px;
 }
+html {
+	background: var(--theme-bg-color);
+}
 body {
 	/* background: var(--theme-bg-image); */
 	color: white;
 	height: 100vh;
 }
-#sidebar {
+#reactRoot {
+	height: 100%;
+}
+#sidebar {/* #sidebar ought to be full height, to capture all onContextMenu events*/
 	padding: 0 3px;
 	height: 100%;
 	display: flex;

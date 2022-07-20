@@ -1,24 +1,3 @@
-@font-face {
-	font-family: "Metropolis";
-	font-display: fallback;
-	font-weight: bold;
-	font-style: normal;
-	src: url("../assets/fonts/Metropolis-Bold.ttf") format("truetype");
-}
-@font-face {
-	font-family: "Metropolis";
-	font-display: fallback;
-	font-weight: normal;
-	font-style: normal;
-	src: url("../assets/fonts/Metropolis-Regular.ttf") format("truetype");
-}
-@font-face {
-	font-family: "Metropolis";
-	font-display: fallback;
-	font-weight: normal;
-	font-style: italic;
-	src: url("../assets/fonts/Metropolis-RegularItalic.ttf") format("truetype");
-}
 .heading {
 	display: flex;
 	flex-direction: column;
@@ -49,8 +28,9 @@
 	/* border: 1px solid grey; */
 }
 .mainSection {
-	background: #ffffff20;
-	padding: 15px;
+	background: #181818;
+	box-shadow: 0 2px 7px 0 #000000aa;
+	padding: 20px;
 	margin: 10px 0px;
 	overflow: auto;
 	border-radius: 3px;
@@ -59,9 +39,6 @@ body {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	background-color: #0f0f0f;
-	color: #f0f0f0;
-	font-family: "Metropolis", sans-serif;
 }
 .kbd {
 	display: inline-block;
@@ -103,4 +80,7 @@ h2 {
 	flex-direction: row;
 	justify-content: space-between;
 	align-items: flex-end;
+}
+.optionsLink {
+	text-align: center;
 }
