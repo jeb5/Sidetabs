@@ -23,7 +23,7 @@
 	--tab-gap: 5px;
 }
 html {
-	background: var(--theme-bg-color);
+	background: rgba(var(--theme-bg-color));
 }
 body {
 	/* background: var(--theme-bg-image); */

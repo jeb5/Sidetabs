@@ -232,7 +232,6 @@ const useTheme = (extensionOptions: OptionForm) => {
 export const ThemeSetter = () => {
 	const extensionOptions = useContext(OptionsContext);
 	const theme = useTheme(extensionOptions);
-	//TODO: Add support for image-inclusion options
 	useEffect(() => {
 		if (theme) {
 			stylesFromSidebarTheme(theme).then(css => {
