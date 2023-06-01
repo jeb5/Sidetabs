@@ -7,8 +7,8 @@
 		"parcel": "2.x"
 	},
 	"dependencies": {
-		"@parcel/plugin": "^2.2.1",
-		"color": "^4.0.1",
-		"sharp": "0.29.3"
+		"@parcel/plugin": "^2.9.1",
+		"color": "^4.2.3",
+		"sharp": "0.32.1"
 	}
 }

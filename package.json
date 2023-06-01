@@ -4,7 +4,8 @@
 	"description": "A Firefox extension that shows vertical tabs in the sidebar.",
 	"workspaces": [
 		"packages/parcel-transformer-svgtopng",
-		"packages/react-vertical-dnd"
+		"packages/react-vertical-dnd",
+		"packages/react-popup-manager"
 	],
 	"scripts": {
 		"watch": "parcel watch ./src/manifest.json --no-hmr --target dev-extension",
@@ -46,31 +47,29 @@
 	},
 	"homepage": "https://github.com/jeb5/SideTabs#readme",
 	"devDependencies": {
-		"@parcel/config-webextension": "^2.2.1",
-		"@parcel/packager-ts": "^2.4.0",
-		"@parcel/transformer-svg-react": "^2.2.1",
-		"@parcel/transformer-typescript-types": "^2.4.0",
-		"@types/color": "^3.0.2",
-		"@types/md5": "^2.3.1",
-		"@types/react-dom": "^17.0.11",
-		"@types/webextension-polyfill": "^0.8.2",
-		"concurrently": "^7.0.0",
-		"parcel": "^2.2.1",
-		"parcel-transformer-svgtopng": "file:packages/parcel-transformer-svgtopng",
-		"react-vertical-dnd": "file:packages/react-vertical-dnd",
-		"typescript": "^4.5.2",
-		"web-ext": "^6.5.0"
+		"@parcel/config-webextension": "^2.9.1",
+		"@parcel/packager-ts": "^2.9.1",
+		"@parcel/transformer-svg-react": "^2.9.1",
+		"@parcel/transformer-typescript-types": "^2.9.1",
+		"@types/color": "^3.0.3",
+		"@types/md5": "^2.3.2",
+		"@types/react-dom": "^18.2.4",
+		"@types/webextension-polyfill": "^0.10.0",
+		"concurrently": "^8.0.1",
+		"parcel": "^2.9.1",
+		"sharp": "^0.32.1",
+		"typescript": "^5.0.4",
+		"web-ext": "^7.6.2"
 	},
 	"dependencies": {
-		"@dnd-kit/core": "^5.0.1",
-		"@dnd-kit/modifiers": "^5.0.0",
-		"@dnd-kit/sortable": "^6.0.0",
-		"@dnd-kit/utilities": "^3.1.0",
-		"color": "^4.0.1",
+		"color": "^4.2.3",
 		"md5": "^2.3.0",
-		"react": "^17.0.2",
-		"react-dom": "^17.0.2",
-		"react-hook-form": "^7.33.1",
-		"webextension-polyfill": "^0.8.0"
+		"parcel-transformer-svgtopng": "file:packages/parcel-transformer-svgtopng",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"react-hook-form": "^7.44.2",
+		"react-popup-manager": "file:packages/react-popup-manager",
+		"react-vertical-dnd": "file:packages/react-vertical-dnd",
+		"webextension-polyfill": "^0.10.0"
 	}
 }

@@ -9,7 +9,7 @@
 //	- Drag and drop between components (Seems difficult...)
 //  + The ability to handle items of multiple sizes
 //  + The ability to handle list mutations (items added, items removed)
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const DRAG_SPEED = 150; //translation transform time in ms
 export type DragProps = {

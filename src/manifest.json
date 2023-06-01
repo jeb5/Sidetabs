@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Sidetabs",
-	"version": "0.42",
+	"version": "0.50",
 	"browser_specific_settings": {
 		"gecko": {
 			"strict_min_version": "90.0",

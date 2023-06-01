@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import { CheckBoxOption } from "./CheckBoxOption";
 import browser from "webextension-polyfill";
 import { useForm } from "react-hook-form";
@@ -12,6 +12,7 @@ import HIGHLIGHTS_ICON from "parcel-svg:../assets/icons/Highlights.svg";
 import THEMES_ICON from "parcel-svg:../assets/icons/Themes.svg";
 import TOOLBAR_ICON from "parcel-svg:../assets/icons/Toolbar.svg";
 import SIDETABS_ICON from "parcel-svg:../assets/app_icons/sidetabs.svg";
+import usePopupManager from "react-popup-manager";
 
 const SettingsPage = () => {
 	const [optionsLoaded, setOptionsLoaded] = useState(false);
@@ -36,10 +37,22 @@ const SettingsPage = () => {
 		}
 	}, [watchForm()]);
 
+	const { popupsInfo, PopupRenderer } = usePopupManager({
+		confirmReset: (close: () => void, confirmResetYes: () => void) => {
+			return (
+				<div>
+					<div>Are you sure you want to reset?</div>
+					<button onClick={confirmResetYes}>Yes, reset</button>
+				</div>
+			);
+		},
+	});
+
 	const sidetabsVersion = useMemo(() => browser.runtime.getManifest().version, []);
 
 	return optionsLoaded ? (
 		<>
+			<PopupRenderer />
 			<div className="options-side-pane">
 				<header>
 					<SIDETABS_ICON className="sidetabs-icon" />
@@ -52,9 +65,11 @@ const SettingsPage = () => {
 				<button
 					className="reset-button"
 					onClick={() => {
-						if (confirm("Are you sure you want to reset all options to their default values?")) {
-							resetForm(SettingsDefault);
-						}
+						popupsInfo.confirmReset.trigger(() => {
+							// resetForm(SettingsDefault);
+							alert("Reseting...!");
+							popupsInfo.confirmReset.setOpen(false);
+						});
 					}}>
 					Reset all to defaults
 				</button>
@@ -131,4 +146,9 @@ const SettingsPage = () => {
 	) : null;
 };
 
-ReactDOM.render(<SettingsPage />, document.getElementById("reactRoot"));
+const root = ReactDOM.createRoot(document.getElementById("reactRoot")!);
+root.render(
+	<React.StrictMode>
+		<SettingsPage />
+	</React.StrictMode>
+);

@@ -4,6 +4,7 @@
 	font-weight: bold;
 	font-style: normal;
 	src: url("assets/fonts/Metropolis-Bold.ttf") format("truetype");
+	/*BUG: Parcel prepending "/welcome" to URLs, font cannot load */
 }
 @font-face {
 	font-family: "Metropolis";

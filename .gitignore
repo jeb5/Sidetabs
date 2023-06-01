@@ -6,4 +6,5 @@ dev-extension
 .ff_profile/*
 !.ff_profile/__preserve_dir
 .DS_Store
-packages/parcel-transformer-svgtopng/dist
+**/node_modules
+**/dist
