@@ -2,7 +2,7 @@
 	"name": "react-vertical-dnd",
 	"version": "1.0.0",
 	"description": "",
-	"source": "src/reactDragAndDrop.tsx",
+	"source": "src/reactDragAndDrop.ts",
 	"main": "dist/main.js",
 	"types": "dist/types.d.ts",
 	"module": "dist/module.js",

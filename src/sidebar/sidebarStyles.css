@@ -208,9 +208,21 @@ hr {
 	border-radius: 3px;
 }
 .containerIndicator {
-	width: 2px;
-	margin-right: 1px;
+	width: 1.5px;
+	/* margin-right: 1px; */
+	/* margin-left: -1.5px; */
 	align-self: stretch;
+	/* flex-shrink: 0; */
+	position: relative;
+}
+.containerIndicator::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: 1.5px;
+	/* background: red; */
 }
 .tab.activeTab {
 	background: rgba(var(--theme-tab-selected-color));
@@ -263,28 +275,25 @@ svg.defaultTabIcon {
 /* #sidebar {
 	transition: padding 100ms ease;
 } */
-.iconPlusIndicator {
+/* .iconPlusIndicator {
 	transition: margin 100ms ease;
+} */
+
+.tabText {
+	transition: opacity 200ms ease;
 }
 
 @media all and (max-width: 70px) {
 	/*The aim is to have each tab be 30x30 px*/
 	.tabText {
-		display: none;
+		position: absolute;
+		left: -800px; /* Send it offscreen */
+		/* (Avoids margins having layout impact, while also avoiding display: none, which would prevent an opacity transition) */
+		opacity: 0;
 	}
 	.tab:hover > .tabCloseBtn, .tabCloseBtn:hover {
 		display: none;
 	}
-	.iconPlusIndicator {
-		margin: 0 3px; /*Decreases by 2*/
-	}
-	#sidebar {
-		/*decreases by 1*/
-		/* padding: 0 2px; */
-	}
-	/* .tab.activeTab {
-		background-color: red;
-	} */
 }
 @media all and (max-width: 95px) {
 	.newTabLabel {

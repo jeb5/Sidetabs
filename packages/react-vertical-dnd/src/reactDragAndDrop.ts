@@ -9,7 +9,7 @@
 //	- Drag and drop between components (Seems difficult...)
 //  + The ability to handle items of multiple sizes
 //  + The ability to handle list mutations (items added, items removed)
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const DRAG_SPEED = 150; //translation transform time in ms
 export type DragProps = {
@@ -58,7 +58,7 @@ const DragAndDrop = <T extends RearrangeableItem>({ render, items, onDragEnd, on
 	const [elementTranslations, setElementTranslations] = useState<{ [id: string]: number }>({});
 	const [DIFT, setDIFT] = useState<{
 		id: string;
-		timeout: number;
+		timeout: ReturnType<typeof setTimeout>;
 		element: HTMLElement;
 		newTranslateY: number;
 	} | null>(null); // set while dragged item transitions to it's final position using CSS.
