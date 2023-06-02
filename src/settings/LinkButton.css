@@ -1,0 +1,18 @@
+.link-button {
+	display: flex;
+	color: #0290C3;
+	align-items: center;
+	font-size: 15px;
+	font-weight: bold;
+}
+
+.link-button>svg {
+	width: 1em;
+	height: 1em;
+	margin-right: 0.5em;
+	transform: translateY(-0.07em);
+}
+
+.link-button>svg * {
+	fill: #0290C3;
+}

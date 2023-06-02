@@ -3,10 +3,12 @@ body {
 	padding: 0;
 	margin: 0;
 }
+
 #reactRoot {
 	display: flex;
 	height: 100%;
 }
+
 .options-side-pane {
 	width: 350px;
 	padding: 50px 30px 50px 75px;
@@ -17,6 +19,7 @@ body {
 	align-items: flex-start;
 	box-sizing: border-box;
 }
+
 .options-panel-scroll-box {
 	overflow-y: scroll;
 	flex-grow: 1;
@@ -27,43 +30,66 @@ body {
 	justify-content: center;
 	align-items: flex-start;
 }
+
 .options-panel {
-	background: #181818;
-	box-shadow: 0 2px 7px 0 #000000aa;
-	border-radius: 3px;
-	padding: 15px 45px;
 	min-width: 500px;
 	max-width: 800px;
 	font-size: 0.95em;
 	user-select: none;
 }
+
 .options-panel h2 {
 	margin-bottom: 30px;
 	font-size: 1.8em;
 	display: flex;
 	align-items: center;
 }
+
 .options-panel h2 svg {
 	fill: white;
 	width: 24px;
 	margin-right: 16px;
 	align-items: center;
 }
-.options-panel section {
-	margin-bottom: 60px;
+
+.options-panel .subsection {
+	margin: 30px 45px 60px 45px;
 }
+
+section {
+	background: #181818;
+	box-shadow: 0 2px 7px 0 #000000aa;
+	border-radius: 3px;
+	padding-bottom: 20px;
+	margin-bottom: 50px;
+}
+
+section>.section-header {
+	background: #272727;
+	padding: 15px 45px;
+}
+
+.section-header>h1 {
+	font-size: xx-large;
+	font-weight: bold;
+	color: white;
+}
+
 .option-field {
 	margin: 15px 0px;
 }
-.options-side-pane > header {
+
+.options-side-pane>header {
 	display: flex;
 	align-items: center;
 }
-.options-side-pane > header > .sidetabs-icon {
+
+.options-side-pane>header>.sidetabs-icon {
 	width: 50px;
-	fill:white;
+	fill: white;
 }
-.options-side-pane > header > h1 {
+
+.options-side-pane>header>h1 {
 	font-size: 2.5em;
 	margin-left: 15px;
 }
@@ -79,12 +105,15 @@ body {
 	cursor: pointer;
 	padding: 0;
 }
-.options-side-pane > .big-gap {
+
+.options-side-pane>.big-gap {
 	flex-grow: 1;
 }
-.options-side-pane > p {
+
+.options-side-pane>p {
 	font-size: 0.9em;
 }
-.instructions-signpost > a {
-	font-size: 1em;
+
+.section-header p {
+	margin-bottom: 30px;
 }
