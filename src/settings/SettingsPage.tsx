@@ -42,9 +42,12 @@ const SettingsPage = () => {
 	const { popupsInfo, PopupRenderer } = usePopupManager({
 		confirmReset: (close: () => void, confirmResetYes: () => void) => {
 			return (
-				<div>
+				<div className="reset-popup">
 					<div>Are you sure you want to reset?</div>
-					<button onClick={confirmResetYes}>Yes, reset</button>
+					<div className="reset-popup-buttons">
+						<LinkButton onClick={close}>Cancel</LinkButton>
+						<LinkButton onClick={confirmResetYes}>Reset</LinkButton>
+					</div>
 				</div>
 			);
 		},
@@ -68,7 +71,6 @@ const SettingsPage = () => {
 					onClick={() => {
 						popupsInfo.confirmReset.trigger(() => {
 							resetForm(SettingsDefault);
-							alert("Reseting...!");
 							popupsInfo.confirmReset.setOpen(false);
 						});
 					}}>

@@ -64,6 +64,10 @@ section {
 	margin-bottom: 50px;
 }
 
+section:last-child {
+	margin-bottom: 0;
+}
+
 section>.section-header {
 	background: #272727;
 	padding: 15px 45px;
@@ -116,4 +120,31 @@ section>.section-header {
 
 .section-header p {
 	margin-bottom: 30px;
+}
+
+.popup-dimmer {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: #000000aa;
+	z-index: 10;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.reset-popup {
+	background: #181818;
+	box-shadow: 0 2px 7px 0 #000000aa;
+	border-radius: 3px;
+	padding: 30px;
+}
+
+.reset-popup-buttons {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 40px;
+	gap: 20px;
 }
