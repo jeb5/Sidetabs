@@ -20,7 +20,7 @@ body {
 	box-sizing: border-box;
 }
 
-.options-panel-scroll-box {
+.options-scroll-box {
 	overflow-y: scroll;
 	flex-grow: 1;
 	height: 100%;
@@ -31,52 +31,11 @@ body {
 	align-items: flex-start;
 }
 
-.options-panel {
+.options {
 	min-width: 500px;
 	max-width: 800px;
 	font-size: 0.95em;
 	user-select: none;
-}
-
-.options-panel h2 {
-	margin-bottom: 30px;
-	font-size: 1.8em;
-	display: flex;
-	align-items: center;
-}
-
-.options-panel h2 svg {
-	fill: white;
-	width: 24px;
-	margin-right: 16px;
-	align-items: center;
-}
-
-.options-panel .subsection {
-	margin: 30px 45px 60px 45px;
-}
-
-section {
-	background: #181818;
-	box-shadow: 0 2px 7px 0 #000000aa;
-	border-radius: 3px;
-	padding-bottom: 20px;
-	margin-bottom: 50px;
-}
-
-section:last-child {
-	margin-bottom: 0;
-}
-
-section>.section-header {
-	background: #272727;
-	padding: 15px 45px;
-}
-
-.section-header>h1 {
-	font-size: xx-large;
-	font-weight: bold;
-	color: white;
 }
 
 .option-field {

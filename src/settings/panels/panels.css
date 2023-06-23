@@ -1,0 +1,40 @@
+.options h2 {
+	margin-bottom: 30px;
+	font-size: 1.8em;
+	display: flex;
+	align-items: center;
+}
+
+.options h2 svg {
+	fill: white;
+	width: 24px;
+	margin-right: 16px;
+	align-items: center;
+}
+
+.options .subsection {
+	margin: 30px 45px 60px 45px;
+}
+
+section {
+	background: #181818;
+	box-shadow: 0 2px 7px 0 #000000aa;
+	border-radius: 3px;
+	padding-bottom: 20px;
+	margin-bottom: 50px;
+}
+
+section:last-child {
+	margin-bottom: 0;
+}
+
+section>.section-header {
+	background: #272727;
+	padding: 15px 45px;
+}
+
+.section-header>h1 {
+	font-size: xx-large;
+	font-weight: bold;
+	color: white;
+}

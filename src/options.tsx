@@ -25,6 +25,11 @@ export interface OptionForm {
 	"ctxMenu/menuItems": ctxMenuOption[];
 	"ctxMenu/showCloseOption": boolean;
 	"ctxMenu/showSidetabsOptions": boolean;
+	"autohiding/autohide": boolean;
+	"autohiding/sidebarwidth": number;
+	"autohiding/debounceDelay": number;
+	"hiddenElements/tabs": boolean;
+	"hiddenElements/sidebarHeader": boolean;
 }
 
 export const SettingsDefault: OptionForm = {
@@ -37,14 +42,19 @@ export const SettingsDefault: OptionForm = {
 	"ctxMenu/menuItems": ["reload", "mute", "pin", "duplicate", "reopen", "bookmark", "clearData"],
 	"ctxMenu/showCloseOption": true,
 	"ctxMenu/showSidetabsOptions": true,
+	"autohiding/autohide": false,
+	"autohiding/sidebarwidth": 190,
+	"autohiding/debounceDelay": 150,
+	"hiddenElements/tabs": false,
+	"hiddenElements/sidebarHeader": false,
 };
 
 /*
 TODO: Implement New Pinned Tabs Option
 */
 
-export async function getOption(key: keyof OptionForm): Promise<string | boolean | string[]> {
-	return ((await browser.storage.local.get(key)) as string | boolean | string[]) || SettingsDefault[key];
+export async function getOption(key: keyof OptionForm): Promise<string | boolean | number | string[]> {
+	return ((await browser.storage.local.get(key)) as string | boolean | number | string[]) || SettingsDefault[key];
 }
 export async function setOption(key: string, value: any) {
 	return await browser.storage.local.set({ [key]: value });

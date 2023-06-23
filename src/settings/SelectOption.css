@@ -1,0 +1,14 @@
+.select-option select {
+	display: inline-block;
+	text-align: right;
+	border: none;
+	background: #282828;
+	border-radius: 3px;
+	height: 1.5em;
+	color: inherit;
+	margin-left: 10px;
+}
+
+.select-option.disabled {
+	color: #888;
+}
