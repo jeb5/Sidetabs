@@ -4,9 +4,12 @@ import { OptionForm } from "../../options";
 import "./panels.css";
 import LinkButton from "../LinkButton";
 import INFORMATION_ICON from "parcel-svg:../../assets/icons/Information.svg";
-import SIDE_DOCK_ICON from "parcel-svg:../../assets/icons/SideDock.svg";
+import SIDE_DOCK_ICON from "parcel-svg:../../assets/icons/Side Dock.svg";
+import POPUP_BLOCK_ICON from "parcel-svg:../../assets/icons/Popup Block.svg";
 import { CheckBoxOption } from "../CheckBoxOption";
 import { SelectOption } from "../SelectOption";
+import CodeCopy from "../CodeCopy";
+import generateUserChrome from "../GenerateUserChrome";
 
 export default function AdvancedOptionsPanel({
 	registerForm,
@@ -17,7 +20,11 @@ export default function AdvancedOptionsPanel({
 	controlForm: Control<OptionForm>;
 	watchForm: UseFormWatch<OptionForm>;
 }) {
+
 	const autohiding = watchForm("autohiding/autohide");
+	const userChromeContent = generateUserChrome(watchForm());
+
+
 	return (
 		<section>
 			<div className="section-header">
@@ -50,10 +57,23 @@ export default function AdvancedOptionsPanel({
 				}>
 					Hide/show delay
 				</SelectOption>
+			</div>
+			<div className="subsection">
+				<h2>
+					<POPUP_BLOCK_ICON />
+					<div>Hidden Elements</div>
+				</h2>
 				{/*TODO: Implement pinnedTabsAsIcons*/}
-				{/* <CheckBoxOption formRegister={registerForm("appearance/pinnedTabsAsIcons")}>
-							Display pinned tabs as favicon-only
-						</CheckBoxOption> */}
+				<CheckBoxOption formRegister={registerForm("hiddenElements/tabs")}>
+					Hide Firefox's default tabs
+				</CheckBoxOption>
+				<CheckBoxOption formRegister={registerForm("hiddenElements/sidebarHeader")}>
+					Hide the sidebar header
+				</CheckBoxOption>
+			</div>
+			<div className="subsection">
+				<h2 className="css-code-copy-label">Copy into your UserChrome.css file:</h2>
+				<CodeCopy className="css-code-copy" text={userChromeContent} />
 			</div>
 		</section>
 	);

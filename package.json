@@ -54,6 +54,7 @@
 		"@types/color": "^3.0.3",
 		"@types/md5": "^2.3.2",
 		"@types/react-dom": "^18.2.4",
+		"@types/react-syntax-highlighter": "^15.5.7",
 		"@types/webextension-polyfill": "^0.10.0",
 		"concurrently": "^8.0.1",
 		"parcel": "^2.9.1",
@@ -69,6 +70,7 @@
 		"react-dom": "^18.2.0",
 		"react-hook-form": "^7.44.2",
 		"react-popup-manager": "file:packages/react-popup-manager",
+		"react-syntax-highlighter": "^15.5.0",
 		"react-vertical-dnd": "file:packages/react-vertical-dnd",
 		"webextension-polyfill": "^0.10.0"
 	}

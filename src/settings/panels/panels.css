@@ -38,3 +38,8 @@ section>.section-header {
 	font-weight: bold;
 	color: white;
 }
+
+h2.css-code-copy-label {
+	font-size: 19px; 
+	margin: 20px 0 15px 0;
+}

@@ -1,0 +1,21 @@
+.code-copy {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+}
+
+.code-copy pre {
+	width: 100%;
+	border: 1.5px solid white;
+	padding: 10px;
+	margin: 0 0 10px 0;
+	box-sizing: border-box;
+	min-height: 300px;
+	max-height: 300px;
+	overflow-y: scroll;
+	user-select: text;
+}
+
+.code-copy.copying a {
+	pointer-events: none;
+}
