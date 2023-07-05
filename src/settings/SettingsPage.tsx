@@ -8,7 +8,7 @@ import "../extensionPages.css";
 import INFORMATION_ICON from "parcel-svg:../assets/icons/Information.svg";
 import SIDETABS_ICON from "parcel-svg:../assets/app_icons/sidetabs.svg";
 import usePopupManager from "react-popup-manager";
-import LinkButton from "./LinkButton";
+import LinkButton from "./components/LinkButton";
 import GeneralOptionsPanel from "./panels/GeneralOptionsPanel";
 import AdvancedOptionsPanel from "./panels/AdvancedOptionsPanel";
 

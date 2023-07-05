@@ -4,10 +4,11 @@ import TOOLBAR_ICON from "parcel-svg:../../assets/icons/Toolbar.svg";
 import HIGHLIGHTS_ICON from "parcel-svg:../../assets/icons/Highlights.svg";
 import { Control, UseFormRegister } from "react-hook-form";
 import { OptionForm, ctxMenuItems } from "../../options";
-import { RadioOption } from "../RadioOption";
-import { MultiOrderOption } from "../MultiOrderOption";
-import { CheckBoxOption } from "../CheckBoxOption";
+import { RadioOption } from "../components/RadioOption";
+import { MultiOrderOption } from "../components/MultiOrderOption";
+import { CheckBoxOption } from "../components/CheckBoxOption";
 import "./panels.css"
+import Subsection from "../components/Subsection";
 
 export default function GeneralOptionsPanel({ registerForm, controlForm }: { registerForm: UseFormRegister<OptionForm>, controlForm: Control<OptionForm> }) {
 	return (
@@ -15,11 +16,7 @@ export default function GeneralOptionsPanel({ registerForm, controlForm }: { reg
 			<div className="section-header">
 				<h1>General Options</h1>
 			</div>
-			<div className="subsection">
-				<h2>
-					<HIGHLIGHTS_ICON />
-					<div>Appearance</div>
-				</h2>
+			<Subsection title="Appearance" icon={<HIGHLIGHTS_ICON />}>
 				<CheckBoxOption formRegister={registerForm("appearance/newTabButton")}>
 					Show a “New Tab” button below the tabs in the sidebar
 				</CheckBoxOption>
@@ -27,12 +24,8 @@ export default function GeneralOptionsPanel({ registerForm, controlForm }: { reg
 				{/* <CheckBoxOption formRegister={registerForm("appearance/pinnedTabsAsIcons")}>
 							Display pinned tabs as favicon-only
 						</CheckBoxOption> */}
-			</div>
-			<div className="subsection">
-				<h2>
-					<THEMES_ICON />
-					<div>Theme</div>
-				</h2>
+			</Subsection>
+			<Subsection title="Themes" icon={<THEMES_ICON />}>
 				<RadioOption
 					options={[
 						{ value: "custom", label: "Automatically generate theme colors from active browser theme" },
@@ -47,12 +40,8 @@ export default function GeneralOptionsPanel({ registerForm, controlForm }: { reg
 				<CheckBoxOption formRegister={registerForm("theme/showAdditionalImages")}>
 					Show all custom images from the active browser theme
 				</CheckBoxOption>
-			</div>
-			<div className="subsection">
-				<h2>
-					<TOOLBAR_ICON />
-					<div>Context Menu</div>
-				</h2>
+			</Subsection>
+			<Subsection title="Context Menu" icon={<TOOLBAR_ICON />}>
 				<CheckBoxOption formRegister={registerForm("ctxMenu/showIcons")}>
 					Show icons beside items in the context menu
 				</CheckBoxOption>
@@ -75,7 +64,7 @@ export default function GeneralOptionsPanel({ registerForm, controlForm }: { reg
 					Select items from the availiable list and click the arrow to add them to your menu items. Drag the menu
 					items to rearrange them.
 				</p>
-			</div>
+			</Subsection>
 		</section>
 	)
 };

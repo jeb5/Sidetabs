@@ -1,0 +1,11 @@
+.warning-label {
+	display: flex;
+	color: #FCD100;
+	align-items: center;
+}
+.warning-label svg {
+	width: 55px;
+	height: 55px;
+	fill: #FCD100;
+	margin-right: 12px;
+}

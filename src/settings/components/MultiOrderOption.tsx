@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Control, Controller } from "react-hook-form";
 import DragAndDrop from "react-vertical-dnd";
 import "./MultiOrderOption.css";
-import REORDER_ICON from "parcel-svg:../assets/icons/Drag Handles.svg";
+import REORDER_ICON from "parcel-svg:../../assets/icons/Drag Handles.svg";
 
 const arrWithReposition = (arr: any[], from: number, to: number) => {
 	const result = [...arr];
@@ -36,9 +36,8 @@ export const MultiOrderOption = <T,>(props: {
 							.filter(optionName => !value.includes(optionName))
 							.map(optionName => (
 								<div
-									className={`multi-order-item${
-										selectedItem === "a/" + optionName ? " multi-order-item-selected" : ""
-									}`}
+									className={`multi-order-item${selectedItem === "a/" + optionName ? " multi-order-item-selected" : ""
+										}`}
 									key={optionName}
 									onClick={event => {
 										event.stopPropagation();
@@ -73,14 +72,13 @@ export const MultiOrderOption = <T,>(props: {
 							onDragEnd={(from, to) => {
 								onChange(arrWithReposition(value, from, to));
 							}}
-							onDragStart={(item, dragEvent) => {}}
+							onDragStart={(item, dragEvent) => { }}
 							render={items => (
 								<>
 									{items.map(([option, dragProps, isDragging]) => (
 										<div
-											className={`multi-order-item${
-												selectedItem === "c/" + option.name ? " multi-order-item-selected" : ""
-											}${isDragging ? " multi-order-item-dragging" : ""}`}
+											className={`multi-order-item${selectedItem === "c/" + option.name ? " multi-order-item-selected" : ""
+												}${isDragging ? " multi-order-item-dragging" : ""}`}
 											{...dragProps}
 											key={option.name}
 											onClick={event => {

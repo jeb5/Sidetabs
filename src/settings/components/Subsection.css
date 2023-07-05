@@ -1,0 +1,39 @@
+.subsection {
+	margin: 30px 45px 60px 45px;
+}
+.subsection-title svg {
+	fill: white;
+	align-items: center;
+}
+
+.subsection-title {
+	margin-bottom: 30px;
+	display: flex;
+	align-items: baseline;
+}
+.subsection-title > span {
+	display: flex;
+	align-items: center;
+}
+
+.subsection-main-label {
+	font-size: 1.8em;
+	font-weight: bold;
+}
+.subsection-main-label > svg {
+	width: 24px;
+	margin-right: 16px;
+}
+
+.subsection-experimental-label {
+	font-size: 1em;
+	font-style: italic;
+	color: #ddd;
+	fill: #ddd;
+}
+.subsection-experimental-label > svg {
+	width: 16px;
+	margin-right: 7px;
+	margin-left: 15px;
+	transform: translateY(-3px);
+}

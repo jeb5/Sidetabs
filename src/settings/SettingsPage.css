@@ -77,10 +77,6 @@ body {
 	font-size: 0.9em;
 }
 
-.section-header p {
-	margin-bottom: 30px;
-}
-
 .popup-dimmer {
 	position: fixed;
 	top: 0;
