@@ -20,20 +20,3 @@ section>.section-header {
 	font-weight: bold;
 	color: white;
 }
-
-h2.css-code-copy-label {
-	font-size: 19px; 
-	margin: 20px 0 15px 0;
-}
-
-.abc-warning {
-	margin: 30px 0 10px 0;
-}
-
-.section-header p {
-	margin-bottom: 30px;
-}
-
-.css-code-copy-container {
-	margin: 60px 45px 40px 45px;
-}

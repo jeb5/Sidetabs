@@ -1,0 +1,22 @@
+.dialog-content {
+	max-width: 600px;
+	min-width: 400px;
+	width: 100%;
+	background: #181818;
+}
+dialog {
+	padding: 0;
+	border: none;
+	animation: appear 0.15s ease-out;
+}
+
+@keyframes appear {
+	from {
+		opacity: 0;
+		transform: scale(0.9);
+	}
+}
+
+dialog::backdrop {
+	background: #00000099;
+}

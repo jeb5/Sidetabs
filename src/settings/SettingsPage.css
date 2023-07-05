@@ -103,3 +103,11 @@ body {
 	margin-top: 40px;
 	gap: 20px;
 }
+
+.bottom-buttons {
+	display: flex;
+	justify-content: flex-end;
+}
+.bottom-buttons > a {
+	margin-left: 15px;
+}

@@ -1,5 +1,5 @@
-import React from "react";
-import { Control, UseFormRegister, UseFormWatch } from "react-hook-form";
+import React, { useCallback, useEffect } from "react";
+import { Control, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
 import { OptionForm } from "../../options";
 import "./panels.css";
 import LinkButton from "../components/LinkButton";
@@ -12,21 +12,61 @@ import CodeCopy from "../components/CodeCopy";
 import generateUserChrome from "../GenerateUserChrome";
 import WarningLabel from "../components/WarningLabel";
 import Subsection from "../components/Subsection";
+import Dialog from "../components/Dialog";
+import "./AdvancedOptionsPanel.css"
+
+const dangerKeys = ["autohiding/autohide", "hiddenElements/sidebarHeader", "hiddenElements/tabs"] as (keyof OptionForm)[];
 
 export default function AdvancedOptionsPanel({
 	registerForm,
 	controlForm,
 	watchForm,
+	setFormValue
 }: {
 	registerForm: UseFormRegister<OptionForm>;
 	controlForm: Control<OptionForm>;
 	watchForm: UseFormWatch<OptionForm>;
+	setFormValue: UseFormSetValue<OptionForm>;
 }) {
 	const autohiding = watchForm("autohiding/autohide");
 	const userChromeContent = generateUserChrome(watchForm());
 
+	const [warningDialogOpen, setWarningDialogOpen] = React.useState(false);
+
+	const [anyEnabledSettings, setAnyEnabledSettings] = React.useState(false);
+	const [aesIntitalized, setAesInitialized] = React.useState(false);
+	useEffect(() => {
+		const formValues = watchForm();
+		const newAnyEnabled = dangerKeys.some((key) => formValues[key]);
+		if (newAnyEnabled && !anyEnabledSettings && aesIntitalized) {
+			//Some settings have become enabled. Popup should trigger
+			setWarningDialogOpen(true);
+		}
+		setAnyEnabledSettings(newAnyEnabled);
+		setAesInitialized(true);
+	}, [watchForm()]);
+
+	const warningCancelCallback = () => {
+		for (const key of dangerKeys)
+			setFormValue(key, false);
+		setWarningDialogOpen(false);
+	}
+
 	return (
 		<section>
+			<Dialog open={warningDialogOpen} dismissCallback={() => warningCancelCallback()}>
+				<div className="warning-dialog-content">
+					<div className="warning-dialog-inner-content">
+						<div className="warning-dialog-heading">
+							These settings will only affect Sidetabs once you manually update your UserChrome.css file with the generated CSS
+						</div>
+						<WarningLabel className="warning-dialog-warning-label">This is advanced configuration. Please only proceed if you understand how to safely modify your UserChrome.css file.</WarningLabel>
+					</div>
+					<div className="bottom-buttons">
+						<LinkButton onClick={() => warningCancelCallback()}>Cancel</LinkButton>
+						<LinkButton onClick={() => setWarningDialogOpen(false)}>Continue</LinkButton>
+					</div></div>
+			</Dialog>
 			<div className="section-header">
 				<h1>Advanced Browser Configuration</h1>
 				<p>

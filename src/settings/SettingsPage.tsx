@@ -19,6 +19,7 @@ const SettingsPage = () => {
 		watch: watchForm,
 		reset: resetForm,
 		control: controlForm,
+		setValue: setFormValue,
 	} = useForm<OptionForm>({ defaultValues: SettingsDefault });
 
 	useEffect(() => {
@@ -78,7 +79,7 @@ const SettingsPage = () => {
 			<div className="options-scroll-box">
 				<main className="options">
 					<GeneralOptionsPanel controlForm={controlForm} registerForm={registerForm} />
-					<AdvancedOptionsPanel controlForm={controlForm} registerForm={registerForm} watchForm={watchForm} />
+					<AdvancedOptionsPanel controlForm={controlForm} registerForm={registerForm} watchForm={watchForm} setFormValue={setFormValue} />
 				</main>
 			</div >
 		</>
