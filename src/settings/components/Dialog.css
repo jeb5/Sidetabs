@@ -1,5 +1,5 @@
 .dialog-content {
-	max-width: 600px;
+	max-width: min(700px, calc(100vw - 200px));
 	min-width: 400px;
 	width: 100%;
 	background: #181818;

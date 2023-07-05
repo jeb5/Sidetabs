@@ -14,6 +14,7 @@ import WarningLabel from "../components/WarningLabel";
 import Subsection from "../components/Subsection";
 import Dialog from "../components/Dialog";
 import "./AdvancedOptionsPanel.css"
+import UserchromeExplanationDialog from "../UserchromeExplanationDialog";
 
 const dangerKeys = ["autohiding/autohide", "hiddenElements/sidebarHeader", "hiddenElements/tabs"] as (keyof OptionForm)[];
 
@@ -32,6 +33,7 @@ export default function AdvancedOptionsPanel({
 	const userChromeContent = generateUserChrome(watchForm());
 
 	const [warningDialogOpen, setWarningDialogOpen] = React.useState(false);
+	const [userchromeExplanationDialogOpen, setUserchromeExplanationDialogOpen] = React.useState(false);
 
 	const [anyEnabledSettings, setAnyEnabledSettings] = React.useState(false);
 	const [aesIntitalized, setAesInitialized] = React.useState(false);
@@ -54,6 +56,7 @@ export default function AdvancedOptionsPanel({
 
 	return (
 		<section>
+			<UserchromeExplanationDialog open={userchromeExplanationDialogOpen} dismissCallback={() => setUserchromeExplanationDialogOpen(false)} />
 			<Dialog open={warningDialogOpen} dismissCallback={() => warningCancelCallback()}>
 				<div className="warning-dialog-content">
 					<div className="warning-dialog-inner-content">
@@ -75,7 +78,7 @@ export default function AdvancedOptionsPanel({
 					the generated CSS into your userChrome.css file, and restart your
 					browser to apply the change.
 				</p>
-				<LinkButton onClick={() => alert("mhm")} icon={<INFORMATION_ICON />}>
+				<LinkButton onClick={() => setUserchromeExplanationDialogOpen(true)} icon={<INFORMATION_ICON />}>
 					How to modify your userChrome.css file
 				</LinkButton>
 				<WarningLabel className="abc-warning">

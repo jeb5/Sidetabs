@@ -1,0 +1,35 @@
+.userchrome-explanation-dialog {
+	color: white;
+	max-height: calc(100vh - 100px);
+	display: flex;
+	flex-direction: column;
+}
+.userchrome-explanation-header {
+	background: #272727;
+	display: flex;
+	align-items: center;
+	padding: 30px 40px;
+}
+.userchrome-explanation-header > h2 {
+	margin: 0;
+}
+.userchrome-explanation-header > svg {
+	width: 28px;
+	height: 28px;
+	margin-right: 16px;
+	fill: white;
+}
+.userchrome-explanation-content {
+	overflow-y: scroll;
+	padding: 15px 45px 30px 45px;
+	font-size: 0.9em;
+}
+
+.userchrome-explanation-section {
+	margin: 40px 0;
+}
+
+
+.userchrome-explanation-content .bottom-buttons {
+	margin-top: 25px;
+}
