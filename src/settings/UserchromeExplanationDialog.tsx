@@ -2,7 +2,7 @@ import React from "react";
 import "./UserchromeExplanationDialog.css";
 import Dialog from "./components/Dialog";
 import DOCUMENT_ICON from "parcel-svg:../assets/icons/Document.svg";
-import LinkButton from "./components/LinkButton";
+import LinkButton from "../shared-components/LinkButton";
 import WarningLabel from "./components/WarningLabel";
 
 export default function UserchromeExplanationDialog({
