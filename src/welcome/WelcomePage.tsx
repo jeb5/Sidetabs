@@ -5,7 +5,9 @@ import "./WelcomePage.css";
 import CUSTOM_DIAGRAM from "parcel-svg:../assets/assisting_images/customise_diagram.svg";
 import SIDETABS_ICON from "parcel-svg:../assets/app_icons/sidetabs.svg";
 import PREFERENCES_ICON from "parcel-svg:../assets/icons/Preferences.svg";
-import LinkButton from "../shared-components/LinkButton";
+
+//BUG: Link back to settings page doesn't work- parcel not resolving the correct path (Welcome and settings pages built differently)
+//TODO: Add GH/FF links to bottom of page
 
 const WelcomePage = () => {
 	return (
@@ -17,13 +19,8 @@ const WelcomePage = () => {
 							<SIDETABS_ICON />
 							<h1>Sidetabs</h1>
 						</div>
-						<LinkButton
-							// href={browser.runtime.getURL("../settings/settings.html")}
-							href={"https://www.google.com"}
-							icon={<PREFERENCES_ICON />}
-						>
-							Sidetabs Preferences
-						</LinkButton>
+						{/* I SHOULD be able to import LinkButton here, but because welcome.html and settings.html are technically in the same "bundle group", parcel gets all annoyed about the css import in LinkButton FOR SOME REASON and won't let me do it*/}
+						<a className="linkButtonDupe" href={browser.runtime.getURL("../settings/settings.html")} ><PREFERENCES_ICON /><span>Sidetabs Preferences</span></a>
 					</header>
 					<main>
 						<section>
@@ -64,40 +61,38 @@ const WelcomePage = () => {
 								<a href="https://color.firefox.com">Firefox Color</a>.
 							</p>
 						</section>
-						<section>
+						<section className="customising-section">
 							<h2>Customising Firefox</h2>
-							<p>
-								If you want to completely switch to using vertical tabs, you'll
-								probably want to hide the un-closable “Sidetabs” header at the
-								top of the sidebar, and hide the horizontal tabs.
-							</p>
-							<p>
-								You can achieve this by modifying your browser's{" "}
-								<strong>UserChome.css</strong> file. Instructions for doing this
-								can be found in Preferences.
-							</p>
-							<div className="custom-diagram">
-								<CUSTOM_DIAGRAM />
+							<div>
+								<div>
+									<p>
+										If you want to completely switch to using vertical tabs, you'll
+										probably want to hide the un-closable “Sidetabs” header at the
+										top of the sidebar, and hide the horizontal tabs.
+									</p>
+									<p>
+										You can achieve this by modifying your browser's{" "}
+										<strong>UserChome.css</strong> file. Instructions for doing this
+										can be found in Preferences.
+									</p>
+									<a className="linkButtonDupe" href={browser.runtime.getURL("../settings/settings.html")} ><PREFERENCES_ICON /><span>Sidetabs Preferences</span></a>
+								</div>
+								<div className="custom-diagram">
+									<CUSTOM_DIAGRAM />
+								</div>
 							</div>
-							{/* <LinkButton
-								href={browser.runtime.getURL("../settings/settings.html")}
-								icon={<PREFERENCES_ICON />}
-							>
-								Preferences
-							</LinkButton> */}
 						</section>
 						<section>
 							<h2>Support</h2>
 							<p>
-								If you have any problems or feature requests, please open an
-								issue on Github. I may not have time to implement many new
+								If you have any problems or feature requests, please <a href="https://github.com/jeb5/SideTabs/issues">open an
+									issue on Github</a>. I may not have time to implement many new
 								features, so Pull Requests would also be welcome.
 							</p>
 						</section>
 					</main>
 				</div>
 			</div>
-			<div className="diagram-svg"></div>
 		</>
 	);
 };

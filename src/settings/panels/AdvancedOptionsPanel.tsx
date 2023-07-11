@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { Control, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
 import { OptionForm } from "../../options";
 import "./panels.css";
-import LinkButton from "../../shared-components/LinkButton";
+import LinkButton from "../components/LinkButton";
 import INFORMATION_ICON from "parcel-svg:../../assets/icons/Information.svg";
 import SIDE_DOCK_ICON from "parcel-svg:../../assets/icons/Side Dock.svg";
 import POPUP_BLOCK_ICON from "parcel-svg:../../assets/icons/Popup Block.svg";

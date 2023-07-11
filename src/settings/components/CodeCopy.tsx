@@ -1,6 +1,6 @@
 import React from 'react';
 import "./CodeCopy.css";
-import LinkButton from '../../shared-components/LinkButton';
+import LinkButton from './LinkButton';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { nightOwl } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 
