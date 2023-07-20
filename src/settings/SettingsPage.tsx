@@ -10,6 +10,8 @@ import usePopupManager from "react-popup-manager";
 import LinkButton from "./components/LinkButton";
 import GeneralOptionsPanel from "./panels/GeneralOptionsPanel";
 import AdvancedOptionsPanel from "./panels/AdvancedOptionsPanel";
+// @ts-expect-error: Parcel allow this
+import welcomePage from "../welcome/welcome.html"
 
 const SettingsPage = () => {
 	const [optionsLoaded, setOptionsLoaded] = useState(false);
@@ -73,7 +75,7 @@ const SettingsPage = () => {
 					Reset all to defaults
 				</LinkButton>
 				<div className="big-gap"></div>
-				<LinkButton href={browser.runtime.getURL("../welcome/welcome.html")} icon={<INFORMATION_ICON />}>Extension instructions</LinkButton>
+				<LinkButton href={welcomePage} icon={<INFORMATION_ICON />}>Extension instructions</LinkButton>
 			</div >
 			<div className="options-scroll-box">
 				<main className="options">

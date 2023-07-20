@@ -41,7 +41,7 @@
 	"background": {
 		"scripts": ["./background.js"]
 	},
-	"web_accessible_resources": ["assets/icons/*", "assets/*", "welcome/*", "assets/*/*"],
+	"web_accessible_resources": ["assets/icons/*", "assets/*", "assets/*/*"],
 	"commands": {
 		"_execute_sidebar_action": {
 			"suggested_key": {
