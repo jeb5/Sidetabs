@@ -1,77 +1,54 @@
 {
-	"name": "sidetabs",
-	"version": "1.0.0",
-	"description": "A Firefox extension that shows vertical tabs in the sidebar.",
-	"workspaces": [
-		"packages/parcel-transformer-svgtopng",
-		"packages/react-vertical-dnd",
-		"packages/react-popup-manager"
-	],
-	"scripts": {
-		"watch": "parcel watch ./src/manifest.json --no-hmr --target dev-extension",
-		"devbuild": "NODE_ENV=development parcel build ./src/manifest.json --target dev-extension --no-cache",
-		"build": "rm -rf ./prod-extension && parcel build ./src/manifest.json --target prod-extension --no-cache",
-		"run": "web-ext run --source-dir ./dev-extension --keep-profile-changes --firefox-profile=./.ff_profile",
-		"dev": "npm run devbuild; concurrently \"npm run watch\" \"npm run run\""
-	},
-	"type": "module",
-	"browserslist": [
-		"Firefox >= 90"
-	],
-	"targets": {
-		"dev-extension": {
-			"sourceMap": {
-				"inline": true,
-				"inlineSources": true
-			},
-			"distDir": "./dev-extension"
-		},
-		"prod-extension": {
-			"sourceMap": false,
-			"context": "browser",
-			"outputFormat": "global",
-			"distDir": "./prod-extension"
-		}
-	},
-	"webExt": {
-		"sourceDir": "extension"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/jeb5/SideTabs.git"
-	},
-	"author": "jeb5",
-	"license": "ISC",
-	"bugs": {
-		"url": "https://github.com/jeb5/SideTabs/issues"
-	},
-	"homepage": "https://github.com/jeb5/SideTabs#readme",
-	"devDependencies": {
-		"@parcel/config-webextension": "^2.9.1",
-		"@parcel/packager-ts": "^2.9.1",
-		"@parcel/transformer-svg-react": "^2.9.1",
-		"@parcel/transformer-typescript-types": "^2.9.1",
-		"@types/color": "^3.0.3",
-		"@types/md5": "^2.3.2",
-		"@types/react-dom": "^18.2.4",
-		"@types/react-syntax-highlighter": "^15.5.7",
-		"@types/webextension-polyfill": "^0.10.0",
-		"concurrently": "^8.0.1",
-		"parcel": "^2.9.1",
-		"sharp": "^0.31.1",
-		"typescript": "^5.0.4",
-		"web-ext": "^7.6.2"
-	},
-	"dependencies": {
-		"color": "^4.2.3",
-		"md5": "^2.3.0",
-		"parcel-transformer-svgtopng": "file:packages/parcel-transformer-svgtopng",
-		"react": "^18.2.0",
-		"react-dom": "^18.2.0",
-		"react-hook-form": "^7.44.2",
-		"react-popup-manager": "file:packages/react-popup-manager",
-		"react-syntax-highlighter": "^15.5.0",
-		"react-vertical-dnd": "file:packages/react-vertical-dnd",
-		"webextension-polyfill": "^0.10.0"
-	}
+  "name": "sidetabs",
+  "version": "0.50",
+  "displayName": "Sidetabs",
+  "author": "Jeb Nicholson",
+  "type": "module",
+  "description": "A Firefox extension that shows vertical tabs in the sidebar.",
+  "scripts": {
+    "build": "vite build",
+    "watch": "vite build --watch --mode development --minify false",
+    "serve": "web-ext run --start-url \"about:debugging#/runtime/this-firefox\"  --source-dir ./dist/ --keep-profile-changes --firefox-profile=./.ff_profile"
+  },
+  "workspaces": [
+    "packages/react-vertical-dnd",
+    "packages/react-popup-manager",
+    "packages/rollup-svgtopng-plugin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeb5/SideTabs.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jeb5/SideTabs/issues"
+  },
+  "homepage": "https://github.com/jeb5/SideTabs#readme",
+  "devDependencies": {
+    "@types/chrome": "^0.0.248",
+    "@types/color": "^3.0.5",
+    "@types/md5": "^2.3.4",
+    "@types/react": "^18.2.34",
+    "@types/react-dom": "^18.2.14",
+    "@types/react-syntax-highlighter": "^15.5.9",
+    "@types/webextension-polyfill": "^0.10.5",
+    "@vitejs/plugin-react": "^4.1.1",
+    "typescript": "^5.2.2",
+    "vite": "~4.5.0",
+    "web-ext": "^7.8.0"
+  },
+  "dependencies": {
+    "@samrum/vite-plugin-web-extension": "github:jeb5/vite-plugin-web-extension",
+    "color": "^4.2.3",
+    "md5": "^2.3.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.47.0",
+    "react-popup-manager": "file:packages/react-popup-manager",
+    "react-syntax-highlighter": "^15.5.0",
+    "react-vertical-dnd": "file:packages/react-vertical-dnd",
+    "rollup-svgtopng-plugin": "file:packages/rollup-svgtopng-plugin",
+    "vite-plugin-svgr": "^4.1.0",
+    "webextension-polyfill": "^0.10.0"
+  }
 }
