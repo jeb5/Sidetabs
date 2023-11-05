@@ -1,6 +1,13 @@
 # SideTabs
+![Mozilla Add-on Version](https://img.shields.io/amo/v/sidetabs?link=https%3A%2F%2Faddons.mozilla.org%2Fen-US%2Ffirefox%2Faddon%2Fsidetabs%2F)
+![Mozilla Add-on Users](https://img.shields.io/amo/users/sidetabs?link=https%3A%2F%2Faddons.mozilla.org%2Fen-US%2Ffirefox%2Faddon%2Fsidetabs%2F)
+![GitHub License](https://img.shields.io/github/license/jeb5/sidetabs)
+![Pull requests](https://img.shields.io/badge/pull_requests-welcome-green)
 
-A Firefox extension that shows vertical tabs in the sidebar.
+
+<span style="font-size: large;">A Firefox extension that shows tabs in the sidebar.</span>
+
+
 
 ## Installation
 
@@ -12,14 +19,15 @@ _Requires NPM version `>= 8.3.0`._
 
 Install dependencies: `npm install`
 
-Build extension for development: `npm run devbuild`
+Build extension: `npm run build`
 
-Run built extension in Firefox: `npm run run`
+Watch for changes and rebuild: `npm run watch`
 
-Auto Build & Run in development mode: `npm run dev`
+Serve extension in Firefox: `npm run serve`
 
-Build extension for production: `npm run build`
-
-## Building
+## Building for production
 
 - use `web-ext build` to package extension.
+
+## License
+Sidetabs is licensed under [GNU GPLv3](/LICENSE).
