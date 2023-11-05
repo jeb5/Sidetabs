@@ -1,9 +1,9 @@
 import React from "react";
 import tabMethods, { Tab } from "./Tab";
-import { ReactComponent as CLOSE_ICON } from "../../assets/icons/Close.svg";
-import { ReactComponent as AUDIO_PLAYING_ICON } from "../../assets/icons/music_note.svg";
-import { ReactComponent as AUDIO_MUTE_ICON } from "../../assets/icons/music_note_off.svg";
-import { ReactComponent as DEFAULT_TAB_ICON } from "../../assets/icons/Firefox Default.svg";
+import CLOSE_ICON from "../../assets/icons/Close.svg?react";
+import AUDIO_PLAYING_ICON from "../../assets/icons/music_note.svg?react";
+import AUDIO_MUTE_ICON from "../../assets/icons/music_note_off.svg?react";
+import DEFAULT_TAB_ICON from "../../assets/icons/Firefox Default.svg?react";
 import { useContextMenu } from "../ctxmenu/contextMenu";
 
 export default function TabElement({

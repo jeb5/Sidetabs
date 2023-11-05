@@ -23,9 +23,9 @@ export default function TabsList(props: {
 					setTimeout(() => setDragging(false), 300);
 				}}
 				onDragStart={(item, dragEvent) => {
-					const tab = props.tabs.find(tab => tab.id === Number(item.id))!;
+					const tab = props.tabs.find((tab) => tab.id === Number(item.id))!;
 					const { url, title } = tab;
-					console.log(url, title, "started dragging");
+					// console.log(url, title, "started dragging");
 					dragEvent.dataTransfer.dropEffect = "copy";
 					dragEvent.dataTransfer.effectAllowed = "copy";
 					dragEvent.dataTransfer.setData("text/uri-list", url!);

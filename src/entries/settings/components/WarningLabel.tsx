@@ -1,5 +1,5 @@
 import React from "react";
-import { ReactComponent as WARNING_ICON } from "../../../assets/icons/Warning.svg";
+import WARNING_ICON from "../../../assets/icons/Warning.svg?react";
 import "./WarningLabel.css";
 
 export default function WarningLabel({

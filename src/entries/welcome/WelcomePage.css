@@ -3,21 +3,21 @@
 	font-display: fallback;
 	font-weight: bold;
 	font-style: normal;
-	src: url("../assets/fonts/Metropolis-Bold.ttf") format("truetype");
+	src: url("/fonts/Metropolis-Bold.ttf") format("truetype");
 }
 @font-face {
 	font-family: "Metropolis";
 	font-display: fallback;
 	font-weight: normal;
 	font-style: normal;
-	src: url("../assets/fonts/Metropolis-Regular.ttf") format("truetype");
+	src: url("/fonts/Metropolis-Regular.ttf") format("truetype");
 }
 @font-face {
 	font-family: "Metropolis";
 	font-display: fallback;
 	font-weight: normal;
 	font-style: italic;
-	src: url("../assets/fonts/Metropolis-RegularItalic.ttf") format("truetype");
+	src: url("/fonts/Metropolis-RegularItalic.ttf") format("truetype");
 }
 a {
 	color: #0290c3;
@@ -129,7 +129,7 @@ section.customising-section > div {
 section.customising-section > div > div > p:first-of-type {
 	margin-top: 0;
 }
-section.customising-section  .custom-diagram {
+section.customising-section  .customise-diagram {
 	width: 300px;
 	flex-shrink: 0;
 	margin-left: 20px;

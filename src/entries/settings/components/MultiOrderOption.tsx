@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Control, Controller } from "react-hook-form";
 import DragAndDrop from "react-vertical-dnd";
 import "./MultiOrderOption.css";
-import { ReactComponent as REORDER_ICON } from "../../../assets/icons/Drag Handles.svg";
+import REORDER_ICON from "../../../assets/icons/Drag Handles.svg?react";
 
 const arrWithReposition = (arr: any[], from: number, to: number) => {
   const result = [...arr];

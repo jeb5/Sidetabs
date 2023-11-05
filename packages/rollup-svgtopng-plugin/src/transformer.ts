@@ -13,7 +13,7 @@ import queryString from "query-string";
 const PREFIX = "svgpng:";
 const RESOLVED_PREFIX = "\0" + PREFIX; // To prevent other plugins from trying to load this id
 
-//Imports are of the form svgpng:./path/to/file.svg?width=100&height=100&fillColor=red
+//Imports are of the form: "svgpng:./path/to/file.svg?width=100&height=100&fillColor=red"
 
 export default function svgtopng(): Plugin {
   return {

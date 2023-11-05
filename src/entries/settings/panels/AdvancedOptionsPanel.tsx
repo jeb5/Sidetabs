@@ -8,9 +8,9 @@ import {
 import { OptionForm } from "../../options";
 import "./panels.css";
 import LinkButton from "../components/LinkButton";
-import { ReactComponent as INFORMATION_ICON } from "../../../assets/icons/Information.svg";
-import { ReactComponent as SIDE_DOCK_ICON } from "../../../assets/icons/Side Dock.svg";
-import { ReactComponent as POPUP_BLOCK_ICON } from "../../../assets/icons/Popup Block.svg";
+import INFORMATION_ICON from "../../../assets/icons/Information.svg?react";
+import SIDE_DOCK_ICON from "../../../assets/icons/Side Dock.svg?react";
+import POPUP_BLOCK_ICON from "../../../assets/icons/Popup Block.svg?react";
 import { CheckBoxOption } from "../components/CheckBoxOption";
 import { SelectOption } from "../components/SelectOption";
 import CodeCopy from "../components/CodeCopy";

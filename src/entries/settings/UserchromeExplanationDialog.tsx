@@ -1,7 +1,7 @@
 import React from "react";
 import "./UserchromeExplanationDialog.css";
 import Dialog from "./components/Dialog";
-import { ReactComponent as DOCUMENT_ICON } from "../../assets/icons/Document.svg";
+import DOCUMENT_ICON from "../../assets/icons/Document.svg?react";
 import LinkButton from "./components/LinkButton";
 import WarningLabel from "./components/WarningLabel";
 

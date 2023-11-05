@@ -1,7 +1,7 @@
 import React from "react";
-import { ReactComponent as THEMES_ICON } from "../../../assets/icons/Themes.svg";
-import { ReactComponent as TOOLBAR_ICON } from "../../../assets/icons/Toolbar.svg";
-import { ReactComponent as HIGHLIGHTS_ICON } from "../../../assets/icons/Highlights.svg";
+import THEMES_ICON from "../../../assets/icons/Themes.svg?react";
+import TOOLBAR_ICON from "../../../assets/icons/Toolbar.svg?react";
+import HIGHLIGHTS_ICON from "../../../assets/icons/Highlights.svg?react";
 import { Control, UseFormRegister } from "react-hook-form";
 import { OptionForm, ctxMenuItems } from "../../options";
 import { RadioOption } from "../components/RadioOption";

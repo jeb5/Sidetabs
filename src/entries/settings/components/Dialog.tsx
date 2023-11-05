@@ -6,7 +6,6 @@ export default function Dialog({ children, open, dismissCallback }: { children: 
 	const [refActive, setRefActive] = React.useState(false);
 
 	React.useEffect(() => {
-		console.log({ open, refActive, dialogRef: dialogRef.current });
 		if (!refActive) return;
 		if (open) dialogRef.current?.showModal();
 		else dialogRef.current?.close();

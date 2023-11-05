@@ -1,5 +1,5 @@
 import React from "react";
-import { ReactComponent as EXPERIMENTS_ICON } from "../../../assets/icons/Experiments.svg";
+import EXPERIMENTS_ICON from "../../../assets/icons/Experiments.svg?react";
 import "./Subsection.css";
 
 export default function Subsection({
