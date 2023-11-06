@@ -19,6 +19,8 @@ _Requires NPM version `>= 8.3.0`._
 
 Install dependencies: `npm install`
 
+Build subpackages: `npm run build --workspaces`
+
 Build extension: `npm run build`
 
 Watch for changes and rebuild: `npm run watch`
@@ -27,7 +29,4 @@ Serve extension in Firefox: `npm run serve`
 
 ## Building for production
 
-- use `web-ext build` to package extension.
-
-## License
-Sidetabs is licensed under [GNU GPLv3](/LICENSE).
+use `web-ext build` to package extension.

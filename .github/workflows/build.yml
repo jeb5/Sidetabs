@@ -1,0 +1,43 @@
+name: Build extension
+run-name: Building Sidetabs 🚀
+on: [push]
+
+env:
+  ARTIFACT_NAME: Sidetabs bundle + source code
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Zip Repository
+        run: zip -r sidetabs-source.zip . -x .git/\*
+      - name: Upload source code
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ./sidetabs-source.zip
+          if-no-files-found: error
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 19
+          cache: 'npm'
+      - name: Install web-ext
+        run: npm i -g web-ext
+      - name: Install dependencies
+        run: npm ci
+      - name: Build sub-packages
+        run: npm run build --workspaces
+      - name: Build extension
+        run: npm run build
+      - name: Bundle extension
+        run: npx web-ext build --artifacts-dir web-ext-artifacts
+        working-directory: ./dist
+      - name: Upload extension bundle
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ./dist/web-ext-artifacts/*.zip
+          if-no-files-found: error

@@ -1,8 +1,7 @@
 .DS_Store
 **/dist
 **/node_modules
-prod-extension
-dev-extension
 .vscode
 .ff_profile/*
 !.ff_profile/__preserve_dir
+.parcel-cache
