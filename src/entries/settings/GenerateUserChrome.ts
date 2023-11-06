@@ -35,14 +35,40 @@ export default function generateUserChrome(settings: OptionForm) {
 	if (settings["hiddenElements/tabs"] || settings["hiddenElements/sidebarHeader"]){
 		 userChrome += `
 /* ~~~~~~~~ Hidden elements styles ~~~~~~~~~ */`
-	if (settings["hiddenElements/tabs"]) userChrome += `
+	if (settings["hiddenElements/tabs"]) {
+		if (settings["hiddenElements/titleBar"]) {
+			userChrome += `
 #TabsToolbar {
- display: none !important;
-}`
-	if (settings["hiddenElements/sidebarHeader"]) userChrome += `
+	display: none !important;
+}`;
+		} else {
+			userChrome += `
+#TabsToolbar>:not(.titlebar-buttonbox-container) {
+	display: none !important;
+}
+#navigator-toolbox {
+	/*This rule has no effect on windows*/
+	background: var(--toolbar-bgcolor) !important
+}
+@media not (-moz-platform: macos), (-moz-mac-rtl)  {
+	#TabsToolbar>.titlebar-buttonbox-container {
+		margin-left: auto !important;
+	}
+}
+@media (-moz-platform: macos)  {
+	#TabsToolbar>.titlebar-buttonbox-container {
+		margin-top: 5px;
+		margin-bottom: 5px;
+	}
+}`;
+		}
+	}
+
+	if (settings["hiddenElements/sidebarHeader"])
+		userChrome += `
 #sidebar-header {
- display: none !important;
-} `
+	display: none !important;
+} `;
 	userChrome += `
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 `

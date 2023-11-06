@@ -30,6 +30,7 @@ export interface OptionForm {
 	"autohiding/debounceDelay": number;
 	"hiddenElements/tabs": boolean;
 	"hiddenElements/sidebarHeader": boolean;
+	"hiddenElements/titleBar": boolean;
 }
 
 export const SettingsDefault: OptionForm = {
@@ -47,6 +48,7 @@ export const SettingsDefault: OptionForm = {
 	"autohiding/debounceDelay": 150,
 	"hiddenElements/tabs": false,
 	"hiddenElements/sidebarHeader": false,
+	"hiddenElements/titleBar": false,
 };
 
 /*
