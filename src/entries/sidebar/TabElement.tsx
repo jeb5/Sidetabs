@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import tabMethods, { Tab } from "./Tab";
-import CLOSE_ICON from "../../assets/icons/Close.svg?react";
+import CLOSE_ICON from "../../assets/context_menu_icons/Close.svg?react";
 import AUDIO_PLAYING_ICON from "../../assets/icons/music_note.svg?react";
 import AUDIO_MUTE_ICON from "../../assets/icons/music_note_off.svg?react";
 import DEFAULT_TAB_ICON from "../../assets/icons/Firefox Default.svg?react";

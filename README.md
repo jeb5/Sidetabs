@@ -1,12 +1,10 @@
-# SideTabs
+# Sidetabs
 ![Mozilla Add-on Version](https://img.shields.io/amo/v/sidetabs?link=https%3A%2F%2Faddons.mozilla.org%2Fen-US%2Ffirefox%2Faddon%2Fsidetabs%2F)
 ![Mozilla Add-on Users](https://img.shields.io/amo/users/sidetabs?link=https%3A%2F%2Faddons.mozilla.org%2Fen-US%2Ffirefox%2Faddon%2Fsidetabs%2F)
 ![GitHub License](https://img.shields.io/github/license/jeb5/sidetabs)
 ![Pull requests](https://img.shields.io/badge/pull_requests-welcome-green)
 
-
 <span style="font-size: large;">A Firefox extension that shows tabs in the sidebar.</span>
-
 
 
 ## Installation

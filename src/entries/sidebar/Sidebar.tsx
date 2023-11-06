@@ -2,7 +2,7 @@ import { newTab, Tab } from "./Tab";
 import browser from "webextension-polyfill";
 import React, { useContext, useEffect, useState } from "react";
 
-import NewTabIcon from "../../assets/icons/Tab New.svg?react";
+import NewTabIcon from "../../assets/context_menu_icons/Tab New.svg?react";
 import TabsList from "./TabsList";
 import { useContextMenu } from "../ctxmenu/contextMenu";
 import { OptionsContext } from "../options";

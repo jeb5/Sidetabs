@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./WelcomePage.css";
 import CUSTOMISE_DIAGRAM from "../../assets/assisting_images/customise_diagram.svg?react";
 import SIDETABS_ICON from "../../../public/sidetabs.svg?react";
-import PREFERENCES_ICON from "../../assets/icons/Preferences.svg?react";
+import PREFERENCES_ICON from "../../assets/context_menu_icons/Preferences.svg?react";
 import LinkButton from "../settings/components/LinkButton";
 
 const WelcomePage = () => {
