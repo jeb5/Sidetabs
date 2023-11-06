@@ -55,6 +55,7 @@ export default function TabElement({ tab, beingDragged }: { tab: Tab; beingDragg
 					  }
 					: undefined
 			}
+			title={extensionOptions["behavior/tabtooltip"] ? tab.title : undefined}
 			onMouseEnter={() => {
 				tabMethods.warmup(tab);
 			}}

@@ -28,6 +28,7 @@ export default function GeneralOptionsPanel({
 					Show a “New Tab” button below the tabs in the sidebar
 				</CheckBoxOption>
 				<CheckBoxOption formRegister={registerForm("behavior/middleClickClose")}>Close tabs with a middle click</CheckBoxOption>
+				<CheckBoxOption formRegister={registerForm("behavior/tabtooltip")}>Show tab title in tooltip</CheckBoxOption>
 				{/*TODO: Implement pinnedTabsAsIcons*/}
 				{/* <CheckBoxOption formRegister={registerForm("appearance/pinnedTabsAsIcons")}>
 							Display pinned tabs as favicon-only
@@ -78,3 +79,7 @@ export default function GeneralOptionsPanel({
 		</section>
 	);
 }
+function watchForm(arg0: string) {
+	throw new Error("Function not implemented.");
+}
+

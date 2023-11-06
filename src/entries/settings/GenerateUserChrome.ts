@@ -2,13 +2,19 @@ import { OptionForm } from "../options";
 
 export default function generateUserChrome(settings: OptionForm) {
 	let userChrome = `/* ########  Sidetabs Styles  ######### */
-`
-	if (settings["autohiding/autohide"]) userChrome += `
+`;
+	if (settings["autohiding/autohide"])
+		userChrome += `
 /* ~~~~~~~~ Autohiding styles ~~~~~~~~~ */
 :root {
- --sidebar-hover-width: 36px;
+ --sidebar-hover-width: 36px;${
+		settings["autohiding/expanding"]
+			? `
  --sidebar-visible-width: ${settings["autohiding/sidebarwidth"]}px;
  --sidebar-debounce-delay: ${settings["autohiding/debounceDelay"]}ms;
+ `
+			: ""
+ }
 }
 #sidebar-box {
  display: grid !important;
@@ -23,26 +29,31 @@ export default function generateUserChrome(settings: OptionForm) {
  height: 100% !important;
  width: var(--sidebar-hover-width) !important;
  z-index: 200 !important;
- position: absolute !important;
- transition: width 150ms var(--sidebar-debounce-delay) ease !important;
+ position: absolute !important;${
+		settings["autohiding/expanding"]
+			? `
+ transition: width 150ms var(--sidebar-debounce-delay) ease !important;`
+			: ""
+ }
  min-width: 0 !important;
-}
+}`;
+	if (settings["autohiding/expanding"] && settings["autohiding/autohide"])
+		userChrome += `
 #sidebar:hover {
  width: var(--sidebar-visible-width) !important;
-}
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-`
-	if (settings["hiddenElements/tabs"] || settings["hiddenElements/sidebarHeader"]){
-		 userChrome += `
-/* ~~~~~~~~ Hidden elements styles ~~~~~~~~~ */`
-	if (settings["hiddenElements/tabs"]) {
-		if (settings["hiddenElements/titleBar"]) {
-			userChrome += `
+}`;
+	/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+	if (settings["hiddenElements/tabs"] || settings["hiddenElements/sidebarHeader"] || settings["autohiding/autohide"]) {
+		userChrome += `
+/* ~~~~~~~~ Hidden elements styles ~~~~~~~~~ */`;
+		if (settings["hiddenElements/tabs"]) {
+			if (settings["hiddenElements/titleBar"]) {
+				userChrome += `
 #TabsToolbar {
 	display: none !important;
 }`;
-		} else {
-			userChrome += `
+			} else {
+				userChrome += `
 #TabsToolbar>:not(.titlebar-buttonbox-container) {
 	display: none !important;
 }
@@ -61,20 +72,21 @@ export default function generateUserChrome(settings: OptionForm) {
 		margin-bottom: 5px;
 	}
 }`;
+			}
+		}
+
+		if (settings["hiddenElements/sidebarHeader"] || settings["autohiding/autohide"]) {
+			userChrome += `
+#sidebar-header {
+	display: none !important;
+}`;
+			userChrome += `
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+`;
 		}
 	}
 
-	if (settings["hiddenElements/sidebarHeader"])
-		userChrome += `
-#sidebar-header {
-	display: none !important;
-} `;
 	userChrome += `
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-`
-	}
-
-	userChrome += `
-/* #################################### */`
+/* #################################### */`;
 	return userChrome;
 }

@@ -19,6 +19,7 @@ export interface OptionForm {
 	"appearance/pinnedTabsAsIcons": boolean;
 	"appearance/newTabButton": boolean;
 	"behavior/middleClickClose": boolean;
+	"behavior/tabtooltip": boolean;
 	"theme/mode": "light" | "dark" | "custom";
 	"theme/showPrimaryImage": boolean;
 	"theme/showAdditionalImages": boolean;
@@ -27,6 +28,7 @@ export interface OptionForm {
 	"ctxMenu/showCloseOption": boolean;
 	"ctxMenu/showSidetabsOptions": boolean;
 	"autohiding/autohide": boolean;
+	"autohiding/expanding": boolean;
 	"autohiding/sidebarwidth": number;
 	"autohiding/debounceDelay": number;
 	"hiddenElements/tabs": boolean;
@@ -38,6 +40,7 @@ export const SettingsDefault: OptionForm = {
 	"appearance/pinnedTabsAsIcons": false,
 	"appearance/newTabButton": true,
 	"behavior/middleClickClose": true,
+	"behavior/tabtooltip": false,
 	"theme/mode": "custom",
 	"theme/showPrimaryImage": true,
 	"theme/showAdditionalImages": false,
@@ -46,6 +49,7 @@ export const SettingsDefault: OptionForm = {
 	"ctxMenu/showCloseOption": true,
 	"ctxMenu/showSidetabsOptions": true,
 	"autohiding/autohide": false,
+	"autohiding/expanding": true,
 	"autohiding/sidebarwidth": 190,
 	"autohiding/debounceDelay": 150,
 	"hiddenElements/tabs": false,

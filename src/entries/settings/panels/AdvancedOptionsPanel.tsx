@@ -40,6 +40,7 @@ export default function AdvancedOptionsPanel({
 }) {
   const autohiding = watchForm("autohiding/autohide");
   const hidingTabs = watchForm("hiddenElements/tabs");
+	const expandingOn = watchForm("autohiding/expanding");
 	const userChromeContent = generateUserChrome(watchForm());
 
 	const [warningDialogOpen, setWarningDialogOpen] = React.useState(false);
@@ -99,21 +100,22 @@ export default function AdvancedOptionsPanel({
 				</WarningLabel>
 			</div>
 			<Subsection title="Autohiding" icon={<SIDE_DOCK_ICON />} experimental>
-				<CheckBoxOption formRegister={registerForm("autohiding/autohide")}>
-					Automatically hide the sidebar when not being interacted with
+				<CheckBoxOption formRegister={registerForm("autohiding/autohide")}>Use slim sidebar</CheckBoxOption>
+				<CheckBoxOption formRegister={registerForm("autohiding/expanding")} disabled={!autohiding}>
+					Expand sidebar on hover
 				</CheckBoxOption>
 				<SelectOption
-					disabled={!autohiding}
+					disabled={!autohiding || !expandingOn}
 					formRegister={registerForm("autohiding/sidebarwidth")}
 					items={[170, 180, 190, 200, 210, 220, 230].map((v) => ({
 						value: v,
 						label: `${v}px`,
 					}))}
 				>
-					Sidebar width
+					Expanded sidebar width
 				</SelectOption>
 				<SelectOption
-					disabled={!autohiding}
+					disabled={!autohiding || !expandingOn}
 					formRegister={registerForm("autohiding/debounceDelay")}
 					items={[0, 50, 100, 150, 200, 250].map((v) => ({
 						value: v,
