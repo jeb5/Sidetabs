@@ -18,6 +18,7 @@ export type ctxMenuOption = keyof typeof ctxMenuItems;
 export interface OptionForm {
 	"appearance/pinnedTabsAsIcons": boolean;
 	"appearance/newTabButton": boolean;
+	"behavior/middleClickClose": boolean;
 	"theme/mode": "light" | "dark" | "custom";
 	"theme/showPrimaryImage": boolean;
 	"theme/showAdditionalImages": boolean;
@@ -36,6 +37,7 @@ export interface OptionForm {
 export const SettingsDefault: OptionForm = {
 	"appearance/pinnedTabsAsIcons": false,
 	"appearance/newTabButton": true,
+	"behavior/middleClickClose": true,
 	"theme/mode": "custom",
 	"theme/showPrimaryImage": true,
 	"theme/showAdditionalImages": false,
