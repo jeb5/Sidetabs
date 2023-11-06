@@ -1,5 +1,5 @@
 # Sidetabs
-![Mozilla Add-on Version](https://img.shields.io/amo/v/sidetabs?link=https%3A%2F%2Faddons.mozilla.org%2Fen-US%2Ffirefox%2Faddon%2Fsidetabs%2F)
+[![Mozilla Add-on Version](https://img.shields.io/amo/v/sidetabs?link=https%3A%2F%2Faddons.mozilla.org%2Fen-US%2Ffirefox%2Faddon%2Fsidetabs%2F)][FirefoxAddonsMarketplace]
 ![Mozilla Add-on Users](https://img.shields.io/amo/users/sidetabs?link=https%3A%2F%2Faddons.mozilla.org%2Fen-US%2Ffirefox%2Faddon%2Fsidetabs%2F)
 ![GitHub License](https://img.shields.io/github/license/jeb5/sidetabs)
 ![Pull requests](https://img.shields.io/badge/pull_requests-welcome-green)
@@ -9,7 +9,7 @@
 
 ## Installation
 
-Sidetabs is on the [Firefox Add-ons Marketplace](https://addons.mozilla.org/en-US/firefox/addon/sidetabs/).
+Sidetabs is on the [Firefox Add-ons Marketplace][FirefoxAddonsMarketplace].
 
 ## Development
 
@@ -28,3 +28,5 @@ Serve extension in Firefox: `npm run serve`
 ## Building for production
 
 use `web-ext build` to package extension.
+
+[FirefoxAddonsMarketplace]: https://addons.mozilla.org/en-US/firefox/addon/sidetabs/
