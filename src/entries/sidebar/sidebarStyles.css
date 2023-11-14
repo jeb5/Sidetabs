@@ -97,7 +97,7 @@ hr {
 }
 .iconPlusIndicator {
   flex-shrink: 0;
-  margin: 0 5px;
+  margin: 0 6px; /* Centers 16x16 icon in 28x28 container */
   height: var(--favicon-height);
   width: var(--favicon-height);
   position: relative;
@@ -204,21 +204,18 @@ hr {
   border-radius: 3px;
 }
 .containerIndicator {
-  width: 1.5px;
-  /* margin-right: 1px; */
-  /* margin-left: -1.5px; */
+  width: 0px;
   align-self: stretch;
-  /* flex-shrink: 0; */
   position: relative;
 }
 .containerIndicator::after {
   content: "";
+  background-color: inherit;
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   width: 1.5px;
-  /* background: red; */
 }
 .tab.activeTab {
   background: rgba(var(--theme-tab-selected-color));
