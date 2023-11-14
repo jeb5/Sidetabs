@@ -25,7 +25,6 @@ export function svgB64Colored(inputSvg: string, fillHex: string, addWidthHeight:
 		vbIndex = coloredSVG.indexOf('viewBox="');
 		if (coloredSVG.match(/height="\d+"/) == null)
 			coloredSVG = coloredSVG.slice(0, vbIndex) + `height="${height}" ` + coloredSVG.slice(vbIndex);
-		console.log({ coloredSVG });
 	}
 	const svgBase64Raw = btoa(coloredSVG);
 	const svgBase64 = `data:image/svg+xml;base64,${svgBase64Raw}`;

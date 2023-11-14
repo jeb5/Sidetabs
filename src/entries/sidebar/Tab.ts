@@ -105,3 +105,7 @@ export async function restoreClosedTab() {
 export async function newTab(createOptions: browser.Tabs.CreateCreatePropertiesType = {}) {
 	return await browser.tabs.create(createOptions);
 }
+
+export async function moveTab(tabId: number, toIndex: number) {
+	await browser.tabs.move(tabId, { index: toIndex });
+}

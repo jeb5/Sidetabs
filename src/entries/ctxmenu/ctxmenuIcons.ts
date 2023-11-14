@@ -131,6 +131,4 @@ const icons = Object.fromEntries(
 	])
 );
 
-console.log({ icons });
-
 export default icons;

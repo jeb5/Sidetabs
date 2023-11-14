@@ -10,6 +10,7 @@
 //  + The ability to handle items of multiple sizes
 //  + The ability to handle list mutations (items added, items removed)
 import { useEffect, useRef, useState } from "react";
+import { getElementYPosition } from "./utils";
 
 const DRAG_SPEED = 150; //translation transform time in ms
 export type DragProps = {
@@ -19,7 +20,7 @@ export type DragProps = {
 	ref: React.RefCallback<HTMLElement>;
 };
 
-interface RearrangeableItem {
+export interface RearrangeableItem {
 	id: string;
 }
 
@@ -39,17 +40,6 @@ type DragAndDropProps<T extends RearrangeableItem> = {
 	render: ([item, dragProps]: [item: T, props: DragProps, itemIsDragging: boolean][]) => React.ReactElement;
 	onDragEnd: (fromIndex: number, toIndex: number) => any;
 	onDragStart?: (item: RearrangeableItem, event: React.DragEvent<HTMLElement>) => any;
-};
-
-function getElementYPosition(element: HTMLElement): number {
-	return element.getBoundingClientRect().top + window.scrollY;
-}
-
-export const arrWithReposition = (arr: any[], from: number, to: number) => {
-	const result = [...arr];
-	const [removed] = result.splice(from, 1);
-	result.splice(to, 0, removed);
-	return result;
 };
 
 const DragAndDrop = <T extends RearrangeableItem>({ render, items, onDragEnd, onDragStart }: DragAndDropProps<T>) => {

@@ -63,14 +63,16 @@ hr {
   flex-shrink: 0;
 }
 #sidebar > .regularTabs {
-  flex-shrink: 3;
+  flex-shrink: 2;
 }
 #sidebar > .pinnedTabs {
-  flex-shrink: 2;
+  /* Make the pinned tabs div as big as it wants, capped out at 30%, rounded such that it shows tabs nicely */
+  max-height: calc(round(30%, calc(var(--tab-height) + var(--tab-gap))) + var(--tab-gap));
 }
 .tabsDiv {
   overflow-y: scroll;
-  margin: var(--tab-gap) 0;
+  /* margin: var(--tab-gap) 0; */
+  padding: var(--tab-gap) 0;
   scrollbar-width: none;
 }
 .tabsDiv:empty {
@@ -239,7 +241,7 @@ hr {
   display: flex;
   cursor: pointer;
   opacity: 0.5;
-  margin-top: var(--tab-gap);
+  margin: var(--tab-gap) 0;
   height: var(--tab-height);
   transition: opacity 100ms ease;
 }

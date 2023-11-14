@@ -42,7 +42,6 @@ async function rebuildContainers() {
 		const iconB64Colored = icon_svg ? svgB64Colored(icon_svg, container.colorCode) : null;
 		return { ...container, iconB64Colored } as CustomContainer;
 	});
-	console.log("rebuildContainers", containers);
 }
 browser.contextualIdentities.onRemoved.addListener(rebuildContainers);
 browser.contextualIdentities.onUpdated.addListener(rebuildContainers);

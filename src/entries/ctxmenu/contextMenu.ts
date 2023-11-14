@@ -9,7 +9,6 @@ import { ThemeContext } from "../theme/themesHandler";
 //Returns the MenuStructure array for a tab-relevant context menu
 function tabMenuItems(iconsColor: "black" | "white", tab: Tab, options: OptionForm): MenuStructure[] {
 	const coloredIcons = ctxIcons[iconsColor];
-	console.log(coloredIcons);
 	const ctxMenuItems: {
 		[key in ctxMenuOption | "close"]: MenuStructure;
 	} = {
@@ -103,8 +102,6 @@ function tabMenuItems(iconsColor: "black" | "white", tab: Tab, options: OptionFo
 			icons: coloredIcons.closeTab,
 		},
 	};
-	console.log({ ctxMenuItems });
-
 	return [
 		...options["ctxMenu/menuItems"].map((item) => ctxMenuItems[item]),
 		...(options["ctxMenu/showCloseOption"] ? [{ type: "separator" } as MenuStructure, ctxMenuItems.close] : []),
