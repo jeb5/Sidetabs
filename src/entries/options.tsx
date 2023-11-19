@@ -19,6 +19,7 @@ export interface OptionForm {
 	"appearance/pinnedTabsAsIcons": boolean;
 	"appearance/newTabButton": boolean;
 	"behavior/middleClickClose": boolean;
+	"behavior/scrollToActiveTab": boolean;
 	"behavior/tabtooltip": boolean;
 	"theme/mode": "light" | "dark" | "custom";
 	"theme/showPrimaryImage": boolean;
@@ -40,6 +41,7 @@ export const SettingsDefault: OptionForm = {
 	"appearance/pinnedTabsAsIcons": false,
 	"appearance/newTabButton": true,
 	"behavior/middleClickClose": true,
+	"behavior/scrollToActiveTab": true,
 	"behavior/tabtooltip": false,
 	"theme/mode": "custom",
 	"theme/showPrimaryImage": true,

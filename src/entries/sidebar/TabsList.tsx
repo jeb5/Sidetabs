@@ -1,25 +1,38 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import DragAndDrop, { RearrangeableItem } from "react-vertical-dnd";
 import TabElement from "./TabElement";
 import { Tab } from "./Tab";
-import { usePrevious } from "../utils/utils";
+import { OptionsContext } from "../options";
 
 export default function TabsList(props: { tabs: Tab[]; onReorder: (fromIndex: number, toIndex: number) => void; className: string }) {
 	const [dragging, setDragging] = useState(false);
 
+	const tabsScrollDiv = useRef<HTMLDivElement>(null);
+	const extensionOptions = useContext(OptionsContext);
+
 	//When a new tab is added, set the newestTabId to the id of the new tab, so that it can be scrolled into view.
-	const [newestTabId, setNewestTabId] = useState<string | null>(null);
-	const previousTabs = usePrevious(props.tabs);
+	const [newlyActiveTabId, setNewlyActiveTabId] = useState<string | null>(null);
+	const [activeTabId, lastActiveTabId] = useState<number | null>();
+
 	useEffect(() => {
-		const previousTabsIds = (previousTabs || []).map((tab) => tab.id!);
-		const newTabs = props.tabs.filter((tab) => !previousTabsIds.includes(tab.id!));
-		if (newTabs.length == 1) setNewestTabId(String(newTabs[0].id!));
+		if (!extensionOptions["behavior/scrollToActiveTab"]) return;
+		const newActiveTab = props.tabs.findLast((tab) => tab.active);
+		if (newActiveTab === undefined || newActiveTab.id == activeTabId) return;
+		setNewlyActiveTabId(String(newActiveTab.id));
+		lastActiveTabId(newActiveTab.id);
 	}, [props.tabs]);
 
-	const newestTabRef = (el: HTMLDivElement | null) => {
+	const scrollToNewlyActiveTab = (tabId: string, el: HTMLDivElement | null) => {
 		if (el != null) {
-			el.scrollIntoView({ behavior: "smooth", block: "nearest" });
-			setNewestTabId(null);
+			const tabIndex = props.tabs.findLastIndex((tab) => tab.id === Number(tabId))!;
+			if (tabIndex === 0) {
+				tabsScrollDiv.current!.scrollTo({ top: 0, behavior: "smooth" });
+			} else if (tabIndex === props.tabs.length - 1) {
+				tabsScrollDiv.current!.scrollTo({ top: tabsScrollDiv.current!.scrollHeight, behavior: "smooth" });
+			} else {
+				el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+			}
+			setNewlyActiveTabId(null);
 		}
 	};
 
@@ -41,7 +54,7 @@ export default function TabsList(props: { tabs: Tab[]; onReorder: (fromIndex: nu
 	}
 
 	return (
-		<div className={`tabsDiv${dragging ? " reordering" : ""}${" " + props.className}`}>
+		<div className={`tabsDiv${dragging ? " reordering" : ""}${" " + props.className}`} ref={tabsScrollDiv}>
 			<DragAndDrop
 				items={props.tabs.map(({ id }, index) => ({ index, id: String(id) }))}
 				onDragEnd={handleDragEnd}
@@ -55,7 +68,7 @@ export default function TabsList(props: { tabs: Tab[]; onReorder: (fromIndex: nu
 								key={item.id}
 								ref={(el) => {
 									dragprops.ref(el); // Because dragprops specifies a ref, and we'd otherwise overwrite it
-									if (newestTabId == item.id) newestTabRef(el);
+									if (newlyActiveTabId == item.id) scrollToNewlyActiveTab(item.id, el);
 								}}
 							>
 								<TabElement tab={props.tabs[item.index]} beingDragged={isDragging} />
