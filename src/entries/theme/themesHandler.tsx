@@ -206,7 +206,6 @@ const useTheme = (extensionOptions: OptionForm) => {
 	useEffect(() => {
 		if (extensionOptions["theme/mode"] === "dark") return setTheme(DEFAULT_THEMES.DEFAULT_DARK_SIDEBAR_THEME);
 		if (extensionOptions["theme/mode"] === "light") return setTheme(DEFAULT_THEMES.DEFAULT_LIGHT_SIDEBAR_THEME);
-
 		const showImages = extensionOptions["theme/showPrimaryImage"];
 		const showAdditionalImages = extensionOptions["theme/showAdditionalImages"];
 
@@ -214,14 +213,22 @@ const useTheme = (extensionOptions: OptionForm) => {
 			if (newTheme) setTheme(await updateThemeStyle(newTheme, showImages, showAdditionalImages));
 		};
 
-		const themeListener = async ({ theme }: { theme: browser.Theme.ThemeUpdateInfoThemeType }) => {
-			const newTheme = theme as Theme;
-			if (newTheme) await setNewTheme(newTheme);
+		let themeListener: (e: browser.Theme.ThemeUpdateInfo) => void;
+
+		const setup = async () => {
+			const WIN_ID = (await browser.windows.getCurrent()).id!;
+			themeListener = async ({ theme, windowId }) => {
+				if (windowId !== WIN_ID) return;
+				const newTheme = theme as Theme;
+				if (newTheme) await setNewTheme(newTheme);
+			};
+
+			browser.theme.getCurrent(WIN_ID).then((newTheme) => setNewTheme(newTheme));
+			browser.theme.onUpdated.addListener(themeListener);
 		};
 
-		browser.theme.getCurrent().then((newTheme) => setNewTheme(newTheme));
+		setup();
 
-		browser.theme.onUpdated.addListener(themeListener);
 		return () => browser.theme.onUpdated.removeListener(themeListener);
 	}, [extensionOptions]);
 	return theme;
