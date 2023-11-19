@@ -1,0 +1,12 @@
+.option-field label {
+	line-height: calc(100% + 3px);
+}
+.option-holder {
+	display: flex;
+	gap: 8px;
+	align-items: flex-start;
+}
+
+.option-holder > input {
+	margin: 1.5px 0 0 0;
+}

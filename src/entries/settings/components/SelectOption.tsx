@@ -1,6 +1,7 @@
 import React from "react";
 import { UseFormRegisterReturn } from "react-hook-form";
 import "./SelectOption.css"
+import "./Option.css";
 
 type SelectOptionProps = React.InputHTMLAttributes<HTMLInputElement> & {
 	formRegister: UseFormRegisterReturn;

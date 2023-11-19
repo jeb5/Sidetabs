@@ -1,6 +1,7 @@
 import React from "react";
 import { UseFormRegisterReturn } from "react-hook-form";
 import "./CheckBoxOption.css";
+import "./Option.css";
 
 type CheckBoxOptionProps = React.InputHTMLAttributes<HTMLInputElement> & {
 	formRegister: UseFormRegisterReturn;
@@ -16,9 +17,10 @@ export const CheckBoxOption = (props: CheckBoxOptionProps) => {
 			title={title}
 			style={{ marginLeft: (props.indentLevel ?? 0) * 30 }}
 		>
-			<label>
-				<input {...rest} type="checkbox" {...props.formRegister} /> {props.children}
-			</label>
+			<div className="option-holder">
+				<input {...rest} type="checkbox" {...props.formRegister} />
+				<label>{props.children}</label>
+			</div>
 		</div>
 	);
 };
