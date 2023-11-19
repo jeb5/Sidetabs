@@ -24,8 +24,15 @@ export default function Sidebar() {
 		await moveTab(tabsState.tabOrder[fromIndexAbs], toIndexAbs);
 	}
 
+	function preventScrollCompass(e: React.MouseEvent) {
+		if (e.button == 1) {
+			e.preventDefault();
+			return false;
+		}
+	}
+
 	return (
-		<div id="sidebar" onContextMenu={showContextMenu}>
+		<div id="sidebar" onContextMenu={showContextMenu} onMouseDown={preventScrollCompass}>
 			<TabsList tabs={pinnedTabs} onReorder={(from, to) => handleReorder(from, to, true)} className="pinnedTabs" />
 			{pinnedTabs.length ? <hr /> : null}
 			<TabsList tabs={regularTabs} onReorder={(from, to) => handleReorder(from, to, false)} className="regularTabs" />
