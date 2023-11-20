@@ -218,7 +218,7 @@ const useTheme = (extensionOptions: OptionForm) => {
 		const setup = async () => {
 			const WIN_ID = (await browser.windows.getCurrent()).id!;
 			themeListener = async ({ theme, windowId }) => {
-				if (windowId !== WIN_ID) return;
+				if (windowId !== WIN_ID && windowId != undefined) return;
 				const newTheme = theme as Theme;
 				if (newTheme) await setNewTheme(newTheme);
 			};
