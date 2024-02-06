@@ -3,7 +3,7 @@ run-name: Building Sidetabs 🚀
 on: [push]
 
 env:
-  ARTIFACT_NAME: Sidetabs bundle + source code
+  ARTIFACT_NAME: Sidetabs Bundle + Source code
 
 jobs:
   build:
@@ -13,16 +13,10 @@ jobs:
         uses: actions/checkout@v4
       - name: Zip Repository
         run: zip -r sidetabs-source.zip . -x .git/\*
-      - name: Upload source code
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: ./sidetabs-source.zip
-          if-no-files-found: error
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 19
+          node-version: 20 
           cache: 'npm'
       - name: Install web-ext
         run: npm i -g web-ext
@@ -35,9 +29,14 @@ jobs:
       - name: Bundle extension
         run: npx web-ext build --artifacts-dir web-ext-artifacts
         working-directory: ./dist
-      - name: Upload extension bundle
-        uses: actions/upload-artifact@v3
+      - name: Prepare upload
+        run: |
+          mkdir upload
+          cp ./dist/web-ext-artifacts/*.zip upload
+          cp sidetabs-source.zip upload
+      - name: Upload extension bundle + source code
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}
-          path: ./dist/web-ext-artifacts/*.zip
+          path: upload/*
           if-no-files-found: error
