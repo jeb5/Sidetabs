@@ -48,8 +48,11 @@ export default function TabsList(props: { tabs: Tab[]; onReorder: (fromIndex: nu
 		setDragging(true);
 	};
 
-	function handleDragEnd(fromIndex: number, toIndex: number) {
-		props.onReorder(fromIndex, toIndex);
+	function handleDragEnd(reorderInfo?: { fromIndex: number; toIndex: number }) {
+		if (reorderInfo) {
+			const { fromIndex, toIndex } = reorderInfo;
+			props.onReorder(fromIndex, toIndex);
+		}
 		setTimeout(() => setDragging(false), 300);
 	}
 

@@ -12,7 +12,7 @@
 import { useEffect, useRef, useState } from "react";
 import { getElementYPosition } from "./utils";
 
-const DRAG_SPEED = 150; //translation transform time in ms
+const DRAG_TRANSITION_DURATION = 150; //translation transform time in ms
 export type DragProps = {
 	style: React.CSSProperties;
 	onDragStart: (event: React.DragEvent<HTMLElement>) => void;
@@ -37,8 +37,8 @@ type ActiveDragInfo = {
 
 type DragAndDropProps<T extends RearrangeableItem> = {
 	items: T[];
-	render: ([item, dragProps]: [item: T, props: DragProps, itemIsDragging: boolean][]) => React.ReactElement;
-	onDragEnd: (fromIndex: number, toIndex: number) => any;
+	render: ([item, props, itemIsDragging]: [item: T, props: DragProps, itemIsDragging: boolean][]) => React.ReactElement;
+	onDragEnd: (reorderInfo?: { fromIndex: number, toIndex: number }) => any;
 	onDragStart?: (item: RearrangeableItem, event: React.DragEvent<HTMLElement>) => any;
 };
 
@@ -96,7 +96,7 @@ const DragAndDrop = <T extends RearrangeableItem>({ render, items, onDragEnd, on
 	};
 	const dragBeginning = (event: React.DragEvent<HTMLElement>, item: RearrangeableItem) => {
 		event.dataTransfer.setDragImage(document.createElement("div"), 0, 0);
-		if (items.length < 2) return;
+		if (items.length <= 1) return;
 		if (onDragStart) onDragStart(item, event);
 		if (DIFT) {
 			clearTimeout(DIFT.timeout);
@@ -132,7 +132,7 @@ const DragAndDrop = <T extends RearrangeableItem>({ render, items, onDragEnd, on
 				newElementTranslations[item.id] = (down ? -1 : 1) * draggingInfo.initialElementBounds[draggingInfo.id][1];
 			});
 		}
-		//axis lock
+		//lock to parent
 		const top = draggingInfo.initialElementBounds[items[0].id][0];
 		const bottom = draggingInfo.bottomPosition;
 
@@ -157,14 +157,16 @@ const DragAndDrop = <T extends RearrangeableItem>({ render, items, onDragEnd, on
 			timeout: setTimeout(() => {
 				setDIFT(null);
 				element.style.transition = "";
-			}, DRAG_SPEED),
+			}, DRAG_TRANSITION_DURATION),
 			element,
 			newTranslateY,
 		});
 		setDraggingInfo(null);
 		onDragEnd(
-			draggingInfo.startingIndex,
-			items.findIndex(({ id }) => id === draggingInfo.restingPositionItemId)
+			{
+				fromIndex: draggingInfo.startingIndex,
+				toIndex: items.findIndex(({ id }) => id === draggingInfo.restingPositionItemId)
+			}
 		);
 		setElementTranslations({});
 	};
@@ -195,24 +197,34 @@ const DragAndDrop = <T extends RearrangeableItem>({ render, items, onDragEnd, on
 			if (id in itemIds) newDragElements[id] = dragElements[id];
 		});
 		setDragElements(newDragElements);
-		if (DIFT) {
-			const { id, element, newTranslateY } = DIFT;
-			requestAnimationFrame(() => {
-				element.style.transform = `translateY(${newTranslateY}px)`;
-				element.style.transition = "transform 0s";
+		if (draggingInfo && !(itemIds.includes(draggingInfo.id))) {
+			setDraggingInfo(null);
+			setElementTranslations({});
+			if (DIFT) {
+				clearTimeout(DIFT.timeout);
+				setDIFT(null);
+			}
+			onDragEnd();
+		} else {
+			if (DIFT) {
+				const { element, newTranslateY } = DIFT;
 				requestAnimationFrame(() => {
-					element.style.transform = "";
-					element.style.transition = `transform ${DRAG_SPEED}ms`;
+					element.style.transform = `translateY(${newTranslateY}px)`;
+					element.style.transition = "transform 0s";
+					requestAnimationFrame(() => {
+						element.style.transform = "";
+						element.style.transition = `transform ${DRAG_TRANSITION_DURATION}ms`;
+					});
 				});
-			});
+			}
+			if (draggingInfo) recalculateDraggingInfo(draggingInfo.id, draggingInfo.mouseElementOffset);
 		}
-		if (draggingInfo) recalculateDraggingInfo(draggingInfo?.id, draggingInfo?.mouseElementOffset);
 	}, [items]);
 
 	const renderParameter = items.map((item: T): [T, DragProps, boolean] => {
 		let itemStyle: { [styleName: string]: string } = {};
 		const elementIsDragging = draggingInfo?.id === item.id;
-		if (draggingInfo && !elementIsDragging) itemStyle["transition"] = `transform ${DRAG_SPEED}ms`;
+		if (draggingInfo && !elementIsDragging) itemStyle["transition"] = `transform ${DRAG_TRANSITION_DURATION}ms`;
 		if (item.id in elementTranslations) itemStyle["transform"] = `translateY(${elementTranslations[item.id]}px)`;
 
 		return [

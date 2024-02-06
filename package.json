@@ -1,6 +1,6 @@
 {
 	"name": "sidetabs",
-	"version": "0.62",
+	"version": "0.63",
 	"displayName": "Sidetabs",
 	"author": "Jeb Nicholson",
 	"type": "module",
@@ -25,6 +25,8 @@
 	},
 	"homepage": "https://github.com/jeb5/SideTabs#readme",
 	"devDependencies": {
+		"@parcel/packager-ts": "^2.11.0",
+		"@parcel/transformer-typescript-types": "^2.11.0",
 		"@types/chrome": "^0.0.248",
 		"@types/color": "^3.0.5",
 		"@types/md5": "^2.3.4",
