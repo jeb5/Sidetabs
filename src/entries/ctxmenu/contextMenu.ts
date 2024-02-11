@@ -1,5 +1,6 @@
 import { containers } from "../sidebar/containers";
-import TabMethods, { Tab, newTab, restoreClosedTab } from "../sidebar/Tab";
+import * as TabMethods from "../sidebar/Tab";
+import { Tab } from "../sidebar/Tab";
 import browser from "webextension-polyfill";
 import ctxIcons from "./ctxmenuIcons";
 import React, { useContext } from "react";
@@ -46,6 +47,7 @@ function tabMenuItems(iconsColor: "black" | "white", tab: Tab, options: OptionFo
 		},
 		reopen: {
 			title: "Reopen in Container",
+			icons: coloredIcons.reopenInContainer,
 			enabled: !!containers.length && TabMethods.getReopenable(tab),
 			children: [
 				{
@@ -109,27 +111,31 @@ function tabMenuItems(iconsColor: "black" | "white", tab: Tab, options: OptionFo
 }
 
 //Returns the MenuStructure array for items unrelated to a specific tab
-function defaultMenuItems(iconsColor: "black" | "white", tab?: Tab): MenuStructure[] {
+function generalMenuItems(iconsColor: "black" | "white", options: OptionForm, tab?: Tab): MenuStructure[] {
 	return [
 		{
 			title: "New Tab",
-			onclick: () => newTab(tab ? { openerTabId: tab.id } : undefined),
+			onclick: () => TabMethods.newTab(tab ? { openerTabId: tab.id } : undefined),
 			icons: ctxIcons[iconsColor].newTab,
 		},
+		...(options["ctxMenu/showNewTabInContainer"] ? [{
+			title: "New Container Tab",
+			enabled: !!containers.length,
+			icons: ctxIcons[iconsColor].newContainer,
+			children:
+				containers.map((container) => ({
+					title: container.name,
+					icons: { 16: container.iconB64Colored ?? container.iconUrl },
+					onclick: () => TabMethods.newTab({ cookieStoreId: container.cookieStoreId }),
+				})),
+		}] : []),
 		{
 			title: "Reopen Closed Tab",
-			onclick: () => restoreClosedTab(),
+			onclick: () => TabMethods.restoreClosedTab(),
 			icons: ctxIcons[iconsColor].reopenTab,
-		},
+		}
 	];
 }
-// document.addEventListener("contextmenu", event => {
-// 	if ((event.target as HTMLElement).closest(".tab")) return;
-// 	setMenu([
-// 		{ title: "New Tab", onclick: () => newTab(), /*icons: ctxIcons.newTab */},
-// 		{ title: "Reopen Closed Tab", onclick: () => restoreClosedTab(), /*icons: ctxIcons.reopenTab */},
-// 	]);
-// });
 
 interface MenuStructure extends browser.Menus.CreateCreatePropertiesType {
 	children?: MenuStructure[];
@@ -146,7 +152,7 @@ function createContext(menu: MenuStructure, showIcons: boolean = false, parentId
 		contexts: ["all"],
 		viewTypes: ["sidebar"],
 		...createProps,
-		...(showIcons ? { icons } : {}),
+		...(showIcons && { icons }),
 	});
 	for (const childContextObj of children || []) createContext(childContextObj, showIcons, id);
 }
@@ -159,7 +165,7 @@ export function useContextMenu(tab?: Tab) {
 		return function showContextMenu(event: React.MouseEvent) {
 			event.stopPropagation();
 			const menuItems: MenuStructure[] = [
-				...defaultMenuItems(iconsColor, tab),
+				...generalMenuItems(iconsColor, options, tab),
 				{ type: "separator" },
 				...tabMenuItems(iconsColor, tab, options),
 			];
@@ -169,7 +175,7 @@ export function useContextMenu(tab?: Tab) {
 		return function showContextMenu(event: React.MouseEvent) {
 			event.stopPropagation();
 			const menuItems: MenuStructure[] = [
-				...defaultMenuItems(iconsColor),
+				...generalMenuItems(iconsColor, options),
 				...(options["ctxMenu/showSidetabsOptions"]
 					? [
 							{ type: "separator" } as MenuStructure,

@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
-import tabMethods, { Tab } from "./Tab";
+import * as TabMethods from "./Tab";
+import { Tab } from "./Tab";
 import CLOSE_ICON from "../../assets/context_menu_icons/Close.svg?react";
 import AUDIO_PLAYING_ICON from "../../assets/icons/music_note.svg?react";
 import AUDIO_MUTE_ICON from "../../assets/icons/music_note_off.svg?react";
@@ -11,7 +12,7 @@ export default function TabElement({ tab, beingDragged }: { tab: Tab; beingDragg
 	const showContextMenu = useContextMenu(tab);
 	const extensionOptions = useContext(OptionsContext);
 
-	const [loading, setLoading] = React.useState(tabMethods.getLoading(tab));
+	const [loading, setLoading] = React.useState(TabMethods.getLoading(tab));
 	const [justLoaded, setJustLoaded] = React.useState(false); //Means the tab was loaded in the last 500 ms.
 	const [useDefaultIcon, setUseDefaultIcon] = React.useState(false);
 
@@ -19,8 +20,8 @@ export default function TabElement({ tab, beingDragged }: { tab: Tab; beingDragg
 	const tabDragTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
 	React.useEffect(() => {
-		setLoading(tabMethods.getLoading(tab));
-		if (!tabMethods.getLoading(tab) && loading) {
+		setLoading(TabMethods.getLoading(tab));
+		if (!TabMethods.getLoading(tab) && loading) {
 			setJustLoaded(true);
 			setLoading(false);
 			setTimeout(() => setJustLoaded(false), 500);
@@ -34,11 +35,11 @@ export default function TabElement({ tab, beingDragged }: { tab: Tab; beingDragg
 	const tabClasses = ["tab"];
 	if (tab.active) tabClasses.push("activeTab");
 	if (tab.discarded) tabClasses.push("discarded");
-	if (tabMethods.getLoading(tab)) tabClasses.push("loading");
+	if (TabMethods.getLoading(tab)) tabClasses.push("loading");
 	if (justLoaded) tabClasses.push("justLoaded");
 	if (tab.attention) tabClasses.push("drawingAttention");
 
-	const tabContainer = tabMethods.getContainer(tab);
+	const tabContainer = TabMethods.getContainer(tab);
 	const containerColorStyle = tabContainer?.color ? { backgroundColor: tabContainer.color } : {};
 
 	return (
@@ -46,18 +47,18 @@ export default function TabElement({ tab, beingDragged }: { tab: Tab; beingDragg
 			onContextMenu={showContextMenu}
 			className={tabClasses.join(" ")}
 			onClick={(e) => {
-				if (e.button === 0) tabMethods.activate(tab); //Left click (open tab)
+				if (e.button === 0) TabMethods.activate(tab); //Left click (open tab)
 			}}
 			onMouseUp={
 				extensionOptions["behavior/middleClickClose"]
 					? (e) => {
-							if (e.button === 1) tabMethods.close(tab); //Middle mouse up (close)
+							if (e.button === 1) TabMethods.close(tab); //Middle mouse up (close)
 					  }
 					: undefined
 			}
 			title={extensionOptions["behavior/tabtooltip"] ? tab.title : undefined}
 			onMouseEnter={() => {
-				tabMethods.warmup(tab);
+				TabMethods.warmup(tab);
 			}}
 			onDragExit={() => {
 				tabIsDraggingOverRef.current = false;
@@ -67,7 +68,7 @@ export default function TabElement({ tab, beingDragged }: { tab: Tab; beingDragg
 				tabIsDraggingOverRef.current = true;
 				if (tabDragTimeoutRef.current) clearTimeout(tabDragTimeoutRef.current);
 				tabDragTimeoutRef.current = setTimeout(() => {
-					if (tabIsDraggingOverRef.current) tabMethods.activate(tab);
+					if (tabIsDraggingOverRef.current) TabMethods.activate(tab);
 				}, 500);
 			}}
 		>
@@ -78,13 +79,13 @@ export default function TabElement({ tab, beingDragged }: { tab: Tab; beingDragg
 				) : (
 					<img className="tabIcon" src={tab.favIconUrl} onError={() => setUseDefaultIcon(true)} />
 				)}
-				{tabMethods.getLoading(tab) && <div className="loadingIndicator" />}
+				{TabMethods.getLoading(tab) && <div className="loadingIndicator" />}
 			</div>
 			<div className="badges">
-				{tabMethods.getMuted(tab) ? (
-					<AUDIO_MUTE_ICON className="icon" onClick={() => tabMethods.unmute(tab)} />
+				{TabMethods.getMuted(tab) ? (
+					<AUDIO_MUTE_ICON className="icon" onClick={() => TabMethods.unmute(tab)} />
 				) : tab.audible ? (
-					<AUDIO_PLAYING_ICON className="icon" onClick={() => tabMethods.mute(tab)} />
+					<AUDIO_PLAYING_ICON className="icon" onClick={() => TabMethods.mute(tab)} />
 				) : null}
 			</div>
 			<div className="tabText">{tab.title}</div>
@@ -92,7 +93,7 @@ export default function TabElement({ tab, beingDragged }: { tab: Tab; beingDragg
 				className="tabCloseBtn"
 				onClick={(event) => {
 					event.stopPropagation();
-					tabMethods.close(tab);
+					TabMethods.close(tab);
 				}}
 			>
 				<CLOSE_ICON className="icon" />

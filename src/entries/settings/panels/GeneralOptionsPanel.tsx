@@ -59,10 +59,13 @@ export default function GeneralOptionsPanel({
 			<Subsection title="Context Menu" icon={<TOOLBAR_ICON />}>
 				<CheckBoxOption formRegister={registerForm("ctxMenu/showIcons")}>Show icons beside items in the context menu</CheckBoxOption>
 				<CheckBoxOption formRegister={registerForm("ctxMenu/showCloseOption")}>
-					Show a “Close Tab” item in the tab context menu
+					Show <strong>Close Tab</strong> in the tab context menu
 				</CheckBoxOption>
 				<CheckBoxOption formRegister={registerForm("ctxMenu/showSidetabsOptions")}>
-					Show a “Sidetabs Options” item in the sidebar context menu
+					Show <strong>Sidetabs Options</strong> in the context menu
+				</CheckBoxOption>
+				<CheckBoxOption formRegister={registerForm("ctxMenu/showNewTabInContainer")}>
+					Show <strong>New Container Tab</strong> in the context menu
 				</CheckBoxOption>
 				<br />
 				<MultiOrderOption
@@ -80,7 +83,3 @@ export default function GeneralOptionsPanel({
 		</section>
 	);
 }
-function watchForm(arg0: string) {
-	throw new Error("Function not implemented.");
-}
-

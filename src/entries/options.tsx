@@ -28,6 +28,7 @@ export interface OptionForm {
 	"ctxMenu/menuItems": ctxMenuOption[];
 	"ctxMenu/showCloseOption": boolean;
 	"ctxMenu/showSidetabsOptions": boolean;
+	"ctxMenu/showNewTabInContainer": boolean;
 	"autohiding/autohide": boolean;
 	"autohiding/expanding": boolean;
 	"autohiding/sidebarwidth": number;
@@ -50,6 +51,7 @@ export const SettingsDefault: OptionForm = {
 	"ctxMenu/menuItems": ["reload", "mute", "pin", "duplicate", "reopen", "bookmark", "clearData"],
 	"ctxMenu/showCloseOption": true,
 	"ctxMenu/showSidetabsOptions": true,
+	"ctxMenu/showNewTabInContainer": false,
 	"autohiding/autohide": false,
 	"autohiding/expanding": true,
 	"autohiding/sidebarwidth": 190,
