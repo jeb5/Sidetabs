@@ -180,7 +180,7 @@ export function useContextMenu(tab?: Tab) {
 					? [
 							{ type: "separator" } as MenuStructure,
 							{
-								title: "Sidetabs Options",
+								title: "Sidetabs Settings",
 								onclick: () => browser.runtime.openOptionsPage(),
 								icons: ctxIcons[iconsColor].options,
 							},

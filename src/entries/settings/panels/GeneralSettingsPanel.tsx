@@ -2,7 +2,6 @@ import React from "react";
 import THEMES_ICON from "../../../assets/icons/Themes.svg?react";
 import TOOLBAR_ICON from "../../../assets/icons/Toolbar.svg?react";
 import HIGHLIGHTS_ICON from "../../../assets/icons/Highlights.svg?react";
-import DEVELOPER_ICON from "../../../assets/icons/Developer.svg?react";
 import { Control, UseFormRegister } from "react-hook-form";
 import { OptionForm, ctxMenuItems } from "../../options";
 import { RadioOption } from "../components/RadioOption";
@@ -11,7 +10,7 @@ import { CheckBoxOption } from "../components/CheckBoxOption";
 import "./panels.css";
 import Subsection from "../components/Subsection";
 
-export default function GeneralOptionsPanel({
+export default function GeneralSettingsPanel({
 	registerForm,
 	controlForm,
 }: {
@@ -21,7 +20,7 @@ export default function GeneralOptionsPanel({
 	return (
 		<section>
 			<div className="section-header">
-				<h1>General Options</h1>
+				<h1>General Settings</h1>
 			</div>
 			<Subsection title="Appearance & Behavior" icon={<HIGHLIGHTS_ICON />}>
 				<CheckBoxOption formRegister={registerForm("appearance/newTabButton")}>
@@ -62,7 +61,7 @@ export default function GeneralOptionsPanel({
 					Show <strong>Close Tab</strong> in the tab context menu
 				</CheckBoxOption>
 				<CheckBoxOption formRegister={registerForm("ctxMenu/showSidetabsOptions")}>
-					Show <strong>Sidetabs Options</strong> in the context menu
+					Show <strong>Sidetabs Settings</strong> in the context menu
 				</CheckBoxOption>
 				<CheckBoxOption formRegister={registerForm("ctxMenu/showNewTabInContainer")}>
 					Show <strong>New Container Tab</strong> in the context menu

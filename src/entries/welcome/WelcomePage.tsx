@@ -17,7 +17,7 @@ const WelcomePage = () => {
 							<h1>Sidetabs</h1>
 						</div>
 						<LinkButton href="../settings/index.html" icon={<PREFERENCES_ICON />}>
-							Sidetabs Preferences
+							Sidetabs Settings
 						</LinkButton>
 					</header>
 					<main>
@@ -31,14 +31,14 @@ const WelcomePage = () => {
 								You'll probably want to keep the sidebar on the left side of your browser window, but if you'd like to switch it to the
 								right, click on the sidebar header, and click "Move Sidebar to Right".
 							</p>
-							<p>You can customise tabs behaviour in preferences, and your preferences will by synced with your Firefox account.</p>
+							<p>You can customise tabs behaviour in settings, and your settings will by synced with your Firefox account.</p>
 						</section>
 						<section>
 							<h2>Features</h2>
 							<p>Sidetabs is intended as a replacement for horizontal Firefox tabs, so tabs work as expected.</p>
 							<p>
 								Tabs can be rearranged, closed, restored, and new tabs opened. Other features like container support and clearing website
-								cache are accessible through the context menus of tabs. The context menu can also be customised in preferences.
+								cache are accessible through the context menus of tabs. The context menu can also be customised in settings.
 							</p>
 							<p>
 								Sidetabs will adapt to browser themes, to match the style of your regular tabs. Custom themes are supported. To make a
@@ -55,10 +55,10 @@ const WelcomePage = () => {
 									</p>
 									<p>
 										You can achieve this by modifying your browser's <strong>UserChome.css</strong> file. Instructions for doing this can be
-										found in Preferences.
+										found in settings.
 									</p>
 									<LinkButton href="../settings/index.html" icon={<PREFERENCES_ICON />}>
-										Sidetabs Preferences
+										Sidetabs Settings
 									</LinkButton>
 								</div>
 								<div className="customise-diagram">

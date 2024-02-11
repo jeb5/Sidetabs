@@ -12,8 +12,8 @@ import SIDETABS_ICON from "../../assets/app_icons/sidetabs.svg?react";
 import INFORMATION_ICON from "../../assets/icons/Information.svg?react";
 import usePopupManager from "react-popup-manager";
 import LinkButton from "./components/LinkButton";
-import GeneralOptionsPanel from "./panels/GeneralOptionsPanel";
-import AdvancedOptionsPanel from "./panels/AdvancedOptionsPanel";
+import GeneralSettingsPanel from "./panels/GeneralSettingsPanel";
+import AdvancedSettingsPanel from "./panels/AdvancedSettingsPanel";
 //TODO: Remove react popup manager in favour of dialog component
 
 export default function SettingsPage() {
@@ -62,12 +62,12 @@ export default function SettingsPage() {
 			<div className="options-side-pane">
 				<header>
 					<SIDETABS_ICON className="sidetabs-icon" />
-					<h1>Options</h1>
+					<h1>Settings</h1>
 				</header>
 				<p>
 					<i>Sidetabs Version {sidetabsVersion}</i>
 				</p>
-				<p>Options saved to sync storage</p>
+				<p>Settings saved to sync storage</p>
 				<LinkButton
 					onClick={() => {
 						popupsInfo.confirmReset.trigger(() => {
@@ -85,8 +85,8 @@ export default function SettingsPage() {
 			</div>
 			<div className="options-scroll-box">
 				<main className="options">
-					<GeneralOptionsPanel controlForm={controlForm} registerForm={registerForm} />
-					<AdvancedOptionsPanel controlForm={controlForm} registerForm={registerForm} watchForm={watchForm} setFormValue={setFormValue} />
+					<GeneralSettingsPanel controlForm={controlForm} registerForm={registerForm} />
+					<AdvancedSettingsPanel controlForm={controlForm} registerForm={registerForm} watchForm={watchForm} setFormValue={setFormValue} />
 				</main>
 			</div>
 		</>

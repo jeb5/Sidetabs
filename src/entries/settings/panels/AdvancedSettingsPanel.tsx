@@ -1,10 +1,5 @@
 import React, { useCallback, useEffect } from "react";
-import {
-  Control,
-  UseFormRegister,
-  UseFormSetValue,
-  UseFormWatch,
-} from "react-hook-form";
+import { Control, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
 import { OptionForm } from "../../options";
 import "./panels.css";
 import LinkButton from "../components/LinkButton";
@@ -18,28 +13,24 @@ import generateUserChrome from "../GenerateUserChrome";
 import WarningLabel from "../components/WarningLabel";
 import Subsection from "../components/Subsection";
 import Dialog from "../components/Dialog";
-import "./AdvancedOptionsPanel.css";
+import "./AdvancedSettingsPanel.css";
 import UserchromeExplanationDialog from "../UserchromeExplanationDialog";
 
-const dangerKeys = [
-  "autohiding/autohide",
-  "hiddenElements/sidebarHeader",
-  "hiddenElements/tabs",
-] as (keyof OptionForm)[];
+const dangerKeys = ["autohiding/autohide", "hiddenElements/sidebarHeader", "hiddenElements/tabs"] as (keyof OptionForm)[];
 
-export default function AdvancedOptionsPanel({
-  registerForm,
-  controlForm,
-  watchForm,
-  setFormValue,
+export default function AdvancedSettingsPanel({
+	registerForm,
+	controlForm,
+	watchForm,
+	setFormValue,
 }: {
-  registerForm: UseFormRegister<OptionForm>;
-  controlForm: Control<OptionForm>;
-  watchForm: UseFormWatch<OptionForm>;
-  setFormValue: UseFormSetValue<OptionForm>;
+	registerForm: UseFormRegister<OptionForm>;
+	controlForm: Control<OptionForm>;
+	watchForm: UseFormWatch<OptionForm>;
+	setFormValue: UseFormSetValue<OptionForm>;
 }) {
-  const autohiding = watchForm("autohiding/autohide");
-  const hidingTabs = watchForm("hiddenElements/tabs");
+	const autohiding = watchForm("autohiding/autohide");
+	const hidingTabs = watchForm("hiddenElements/tabs");
 	const expandingOn = watchForm("autohiding/expanding");
 	const userChromeContent = generateUserChrome(watchForm());
 
@@ -89,7 +80,7 @@ export default function AdvancedOptionsPanel({
 			<div className="section-header">
 				<h1>Advanced Browser Configuration</h1>
 				<p>
-					These options require modification to your browser profile's UserChrome.css file. After updating any of these options, please
+					These settings require modification to your browser profile's UserChrome.css file. After updating any of these settings, please
 					paste the generated CSS into your userChrome.css file, and restart your browser to apply the change.
 				</p>
 				<LinkButton onClick={() => setUserchromeExplanationDialogOpen(true)} icon={<INFORMATION_ICON />}>
