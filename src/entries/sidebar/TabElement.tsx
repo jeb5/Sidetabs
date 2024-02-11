@@ -4,6 +4,8 @@ import { Tab } from "./Tab";
 import CLOSE_ICON from "../../assets/context_menu_icons/Close.svg?react";
 import AUDIO_PLAYING_ICON from "../../assets/icons/music_note.svg?react";
 import AUDIO_MUTE_ICON from "../../assets/icons/music_note_off.svg?react";
+import VIDEO_RECORDER_ICON from "../../assets/icons/Video Recorder.svg?react";
+import MICROPHONE_ICON from "../../assets/icons/Microphone.svg?react";
 import DEFAULT_TAB_ICON from "../../assets/icons/Firefox Default.svg?react";
 import { useContextMenu } from "../ctxmenu/contextMenu";
 import { OptionsContext } from "../options";
@@ -82,10 +84,23 @@ export default function TabElement({ tab, beingDragged }: { tab: Tab; beingDragg
 				{TabMethods.getLoading(tab) && <div className="loadingIndicator" />}
 			</div>
 			<div className="badges">
+				{tab.sharingState?.camera ? (
+					<div className="badge">
+						<VIDEO_RECORDER_ICON className="icon recording-icon video-recorder-icon" />
+					</div>
+				) : tab.sharingState?.microphone ? (
+					<div className="badge">
+						<MICROPHONE_ICON className="icon recording-icon" />
+					</div>
+				) : null}
 				{TabMethods.getMuted(tab) ? (
-					<AUDIO_MUTE_ICON className="icon" onClick={() => TabMethods.unmute(tab)} />
+					<div className="badge">
+						<AUDIO_MUTE_ICON className="icon" onClick={() => TabMethods.unmute(tab)} />
+					</div>
 				) : tab.audible ? (
-					<AUDIO_PLAYING_ICON className="icon" onClick={() => TabMethods.mute(tab)} />
+					<div className="badge">
+						<AUDIO_PLAYING_ICON className="icon" onClick={() => TabMethods.mute(tab)} />
+					</div>
 				) : null}
 			</div>
 			<div className="tabText">{tab.title}</div>

@@ -119,11 +119,29 @@ hr {
 }
 .badges {
   height: 1em;
-  width: 1em;
   flex-shrink: 0;
+  display: flex;
+}
+.badges > .badge {
+  width: 1em;
 }
 .badges:empty {
   display: none;
+}
+.badge:has(.video-recorder-icon) {
+  margin-right: 2px;
+} 
+svg.icon.recording-icon {
+  animation: recordingPulse 1s ease infinite alternate;
+}
+@keyframes recordingPulse {
+  from {
+    fill: #c2a5a5;
+  }
+  to {
+    opacity: 1;
+    fill: #d75d55;
+  }
 }
 .loadingIndicator {
   position: absolute;
