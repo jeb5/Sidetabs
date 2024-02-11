@@ -1,7 +1,17 @@
 import pkg from "../package.json";
 
+type ManifestV2 = chrome.runtime.ManifestV2 & {
+	browser_action: {
+		theme_icons: {
+			"light": string,
+			"dark": string,
+			"size": number,
+		}[]
+	}
+}
+
 export function getManifest(): chrome.runtime.ManifestV2 {
-	const manifest: chrome.runtime.ManifestV2 = {
+	const manifest: ManifestV2 = {
 		name: pkg.displayName ?? pkg.name,
 		version: pkg.version,
 		manifest_version: 2,
@@ -26,8 +36,15 @@ export function getManifest(): chrome.runtime.ManifestV2 {
 			default_panel: "src/entries/sidebar/sidebar.html",
 		},
 		browser_action: {
-			default_icon: "sidetabs.svg",
+			default_icon: {
+				128: "sidetabs.svg",
+			},
 			default_title: "Toggle Sidetabs",
+			theme_icons: [{
+				"light": "sidetabs-light.svg",
+				"dark": "sidetabs-dark.svg",
+				"size": 128
+			}],
 		},
 		permissions: [
 			"tabs",
