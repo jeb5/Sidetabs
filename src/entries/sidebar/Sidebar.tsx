@@ -1,4 +1,4 @@
-import { moveTab, newTab, Tab } from "./Tab";
+import { moveTab, newTab } from "./Tab";
 import React, { useContext } from "react";
 
 import NewTabIcon from "../../assets/context_menu_icons/Tab New.svg?react";

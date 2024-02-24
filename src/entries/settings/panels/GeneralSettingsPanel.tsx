@@ -1,6 +1,7 @@
 import React from "react";
 import THEMES_ICON from "../../../assets/icons/Themes.svg?react";
 import TOOLBAR_ICON from "../../../assets/icons/Toolbar.svg?react";
+import BOOKMARK_STAR_ICON from "../../../assets/context_menu_icons/Bookmark Outline.svg?react";
 import HIGHLIGHTS_ICON from "../../../assets/icons/Highlights.svg?react";
 import { Control, UseFormRegister } from "react-hook-form";
 import { OptionForm, ctxMenuItems } from "../../options";
@@ -22,20 +23,22 @@ export default function GeneralSettingsPanel({
 			<div className="section-header">
 				<h1>General Settings</h1>
 			</div>
-			<Subsection title="Appearance & Behavior" icon={<HIGHLIGHTS_ICON />}>
+			<Subsection title="Appearance" icon={<HIGHLIGHTS_ICON />}>
 				<CheckBoxOption formRegister={registerForm("appearance/newTabButton")}>
 					Show a “New Tab” button below the tabs in the sidebar
 				</CheckBoxOption>
+				<CheckBoxOption formRegister={registerForm("appearance/pinnedBadge")}>Show pin badge to indicate pinned tabs</CheckBoxOption>
+				<CheckBoxOption formRegister={registerForm("appearance/showBadgesOnFavicon")}>Always show badges on favicon</CheckBoxOption>
+			</Subsection>
+			<Subsection title="Behavior" icon={<BOOKMARK_STAR_ICON />}>
 				<CheckBoxOption formRegister={registerForm("behavior/middleClickClose")}>Close tabs with a middle click</CheckBoxOption>
-				<CheckBoxOption formRegister={registerForm("behavior/scrollToActiveTab")}>Autoscroll to active tab</CheckBoxOption>
-				<CheckBoxOption formRegister={registerForm("behavior/tabtooltip")}>Show tab title in tooltip</CheckBoxOption>
+				<CheckBoxOption formRegister={registerForm("behavior/scrollToActiveTab")}>Automatically scroll to current tab</CheckBoxOption>
+				<CheckBoxOption formRegister={registerForm("behavior/tabtooltip")}>Show tab titles in tooltips</CheckBoxOption>
 				{/*TODO: Implement pinnedTabsAsIcons*/}
 				{/* <CheckBoxOption formRegister={registerForm("appearance/pinnedTabsAsIcons")}>
 							Display pinned tabs as favicon-only
 						</CheckBoxOption> */}
 			</Subsection>
-			{/* <Subsection title="Behavior" icon={<DEVELOPER_ICON />}>
-			</Subsection> */}
 			<Subsection title="Themes" icon={<THEMES_ICON />}>
 				<RadioOption
 					options={[

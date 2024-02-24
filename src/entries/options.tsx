@@ -18,6 +18,8 @@ export type ctxMenuOption = keyof typeof ctxMenuItems;
 export interface OptionForm {
 	"appearance/pinnedTabsAsIcons": boolean;
 	"appearance/newTabButton": boolean;
+	"appearance/pinnedBadge": boolean;
+	"appearance/showBadgesOnFavicon": boolean;
 	"behavior/middleClickClose": boolean;
 	"behavior/scrollToActiveTab": boolean;
 	"behavior/tabtooltip": boolean;
@@ -41,6 +43,8 @@ export interface OptionForm {
 export const SettingsDefault: OptionForm = {
 	"appearance/pinnedTabsAsIcons": false,
 	"appearance/newTabButton": true,
+	"appearance/pinnedBadge": false,
+	"appearance/showBadgesOnFavicon": false,
 	"behavior/middleClickClose": true,
 	"behavior/scrollToActiveTab": true,
 	"behavior/tabtooltip": false,

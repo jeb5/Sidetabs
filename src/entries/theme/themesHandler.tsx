@@ -236,7 +236,7 @@ const useTheme = (extensionOptions: OptionForm) => {
 
 export const ThemeContext = React.createContext({ theme: DEFAULT_THEMES.DEFAULT_DARK_SIDEBAR_THEME, dark: true });
 
-export function ThemeProvider(props: { children: React.ReactNode }) {
+export function ThemeContextProvider(props: { children: React.ReactNode }) {
 	const extensionOptions = useContext(OptionsContext);
 	const theme = useTheme(extensionOptions);
 	const themeIsDark = theme?.colors["--theme-tab-text-color"]?.isLight() || false;

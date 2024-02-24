@@ -92,11 +92,12 @@ export default function AdvancedSettingsPanel({
 			</div>
 			<Subsection title="Autohiding" icon={<SIDE_DOCK_ICON />} experimental>
 				<CheckBoxOption formRegister={registerForm("autohiding/autohide")}>Use slim sidebar</CheckBoxOption>
-				<CheckBoxOption formRegister={registerForm("autohiding/expanding")} disabled={!autohiding}>
+				<CheckBoxOption formRegister={registerForm("autohiding/expanding")} disabled={!autohiding} indentLevel={1}>
 					Expand sidebar on hover
 				</CheckBoxOption>
 				<SelectOption
 					disabled={!autohiding || !expandingOn}
+					indentLevel={1}
 					formRegister={registerForm("autohiding/sidebarwidth")}
 					items={[170, 180, 190, 200, 210, 220, 230].map((v) => ({
 						value: v,
@@ -107,6 +108,7 @@ export default function AdvancedSettingsPanel({
 				</SelectOption>
 				<SelectOption
 					disabled={!autohiding || !expandingOn}
+					indentLevel={1}
 					formRegister={registerForm("autohiding/debounceDelay")}
 					items={[0, 50, 100, 150, 200, 250].map((v) => ({
 						value: v,

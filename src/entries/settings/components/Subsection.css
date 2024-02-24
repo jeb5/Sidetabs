@@ -23,6 +23,7 @@
 .subsection-main-label > svg {
 	width: 24px;
 	margin-right: 16px;
+	margin-bottom: 3px;
 }
 
 .subsection-experimental-label {
