@@ -1,0 +1,26 @@
+.tab {
+	width: 100%;
+}
+.tab-inner {
+	margin: 4px;
+	padding: 4px;
+	background-color: white;
+	border-radius: 3px;
+}
+
+body {
+	background: #F0F0F4;
+}
+.app-container {
+	margin: 100px auto 0 auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.tabs-container {
+	display: flex;
+	flex-direction: column;
+	width: 450px;
+	border: 2px solid #6e7ddd;
+}
