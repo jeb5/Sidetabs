@@ -20,3 +20,13 @@ export function usePrevious<T>(value: T) {
 	}, [value]);
 	return ref.current;
 }
+
+export function debounce<T extends (...args: any[]) => any>(callback: T, wait: number) {
+	let timeoutId: number | null = null;
+	return (...args: Parameters<T>) => {
+		if (timeoutId !== null) clearTimeout(timeoutId)
+		timeoutId = window.setTimeout(() => {
+			callback(...args);
+		}, wait);
+	};
+}

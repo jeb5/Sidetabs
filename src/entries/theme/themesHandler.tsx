@@ -4,6 +4,7 @@ import md5 from "md5";
 import * as DEFAULT_THEMES from "./defaultThemes";
 import React, { useContext, useEffect, useState } from "react";
 import { OptionForm, OptionsContext } from "../options";
+import { debounce } from "../utils/utils";
 
 type Theme = {
 	// Theme type because for some reason @types/webextension-polyfill doesn't have this type
@@ -203,33 +204,42 @@ export async function stylesFromSidebarTheme(theme: SidebarTheme) {
 
 const useTheme = (extensionOptions: OptionForm) => {
 	const [theme, setTheme] = useState<SidebarTheme | null>(null);
+
 	useEffect(() => {
 		if (extensionOptions["theme/mode"] === "dark") return setTheme(DEFAULT_THEMES.DEFAULT_DARK_SIDEBAR_THEME);
 		if (extensionOptions["theme/mode"] === "light") return setTheme(DEFAULT_THEMES.DEFAULT_LIGHT_SIDEBAR_THEME);
 		const showImages = extensionOptions["theme/showPrimaryImage"];
 		const showAdditionalImages = extensionOptions["theme/showAdditionalImages"];
 
-		const setNewTheme = async (newTheme: Theme) => {
+		const setNewTheme = debounce(async (newTheme: Theme) => {
 			if (newTheme) setTheme(await updateThemeStyle(newTheme, showImages, showAdditionalImages));
-		};
+		}, 100);
 
 		let themeListener: (e: browser.Theme.ThemeUpdateInfo) => void;
+		let darkModeListener: (e: MediaQueryListEvent) => void;
 
 		const setup = async () => {
 			const WIN_ID = (await browser.windows.getCurrent()).id!;
 			themeListener = async ({ theme, windowId }) => {
 				if (windowId !== WIN_ID && windowId != undefined) return;
 				const newTheme = theme as Theme;
-				if (newTheme) await setNewTheme(newTheme);
+				if (newTheme) setNewTheme(newTheme);
+			};
+			darkModeListener = async () => {
+				setNewTheme(await browser.theme.getCurrent(WIN_ID));
 			};
 
 			browser.theme.getCurrent(WIN_ID).then((newTheme) => setNewTheme(newTheme));
 			browser.theme.onUpdated.addListener(themeListener);
+			window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", darkModeListener);
 		};
 
 		setup();
 
-		return () => browser.theme.onUpdated.removeListener(themeListener);
+		return () => {
+			browser.theme.onUpdated.removeListener(themeListener);
+			window.matchMedia("(prefers-color-scheme: dark)").removeEventListener("change", darkModeListener);
+		};
 	}, [extensionOptions]);
 	return theme;
 };
