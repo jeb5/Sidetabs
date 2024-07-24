@@ -17,17 +17,15 @@ Sidetabs is on the [Firefox Add-ons Marketplace][FirefoxAddonsMarketplace].
 
 ## Development
 
-_Requires NPM version `>= 8.3.0`._
-
 Install dependencies: `npm install`
 
 Build subpackages: `npm run build --workspaces`
 
 Build extension: `npm run build`
 
-Watch for changes and rebuild: `npm run watch`
+Run development Vite server: `npm run dev`
 
-Serve extension in Firefox: `npm run serve`
+Build extension: `npm run build`
 
 ## Building for production
 

@@ -2,9 +2,10 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./WelcomePage.css";
 import CUSTOMISE_DIAGRAM from "../../assets/assisting_images/customise_diagram.svg?react";
-import SIDETABS_ICON from "../../../public/sidetabs.svg?react";
+import SIDETABS_ICON from "../../assets/app_icons/sidetabs.svg?react";
 import PREFERENCES_ICON from "../../assets/context_menu_icons/Preferences.svg?react";
 import LinkButton from "../settings/components/LinkButton";
+import browser from "webextension-polyfill";
 
 const WelcomePage = () => {
 	return (
@@ -16,7 +17,7 @@ const WelcomePage = () => {
 							<SIDETABS_ICON />
 							<h1>Sidetabs</h1>
 						</div>
-						<LinkButton href="../settings/index.html" icon={<PREFERENCES_ICON />}>
+						<LinkButton href={browser.runtime.getURL("settings.html")} icon={<PREFERENCES_ICON />}>
 							Sidetabs Settings
 						</LinkButton>
 					</header>
@@ -83,7 +84,7 @@ const WelcomePage = () => {
 
 const root = ReactDOM.createRoot(document.getElementById("reactRoot")!);
 root.render(
-  <React.StrictMode>
-    <WelcomePage />
-  </React.StrictMode>
+	<React.StrictMode>
+		<WelcomePage />
+	</React.StrictMode>
 );

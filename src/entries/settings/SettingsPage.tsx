@@ -1,12 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import browser from "webextension-polyfill";
 import { useForm } from "react-hook-form";
-import {
-  OptionForm,
-  SettingsDefault,
-  getAllOptions,
-  setAllOptions,
-} from "../options";
+import { OptionForm, SettingsDefault, getAllOptions, setAllOptions } from "../options";
 import "./SettingsPage.css";
 import SIDETABS_ICON from "../../assets/app_icons/sidetabs.svg?react";
 import INFORMATION_ICON from "../../assets/icons/Information.svg?react";
@@ -79,7 +74,7 @@ export default function SettingsPage() {
 					Reset all to defaults
 				</LinkButton>
 				<div className="big-gap"></div>
-				<LinkButton href={browser.runtime.getURL("src/entries/welcome/welcome.html")} icon={<INFORMATION_ICON />}>
+				<LinkButton href={browser.runtime.getURL("welcome.html")} icon={<INFORMATION_ICON />}>
 					Extension instructions
 				</LinkButton>
 			</div>

@@ -1,10 +1,9 @@
 import browser from "webextension-polyfill";
-// import welcomePage from "../welcome/welcome.html";
 browser.runtime.onInstalled.addListener(({ reason }) => {
   if (reason === "install") {
     browser.tabs.create({
-			url: browser.runtime.getURL("src/entries/welcome/welcome.html"),
-		});
+      url: browser.runtime.getURL("welcome.html"),
+    });
   }
 });
 browser.browserAction.onClicked.addListener(async () => {

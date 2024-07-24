@@ -1,18 +1,3 @@
-// import sharp from "sharp";
-
-// export async function svgToPng(inputSvg: string, width?: number, height?: number, fillHex?: string) {
-// 	let workingSvg = inputSvg;
-// 	if (fillHex) {
-// 		workingSvg = workingSvg.replace('fill="context-fill"', `fill="${fillHex}"`);
-// 	}
-// 	const updatedSvgBuffer = Buffer.from(workingSvg);
-
-// 	const sharpImage = sharp(updatedSvgBuffer);
-// 	if (width && height) sharpImage.resize(width, height);
-// 	const pngBuffer = await sharpImage.png().toBuffer();
-// 	const pngBase64 = pngBuffer.toString("base64");
-// 	return pngBase64;
-// }
 export function svgB64Colored(inputSvg: string, fillHex: string, addWidthHeight: boolean = false) {
 	let coloredSVG = inputSvg.replace('fill="context-fill"', `fill="${fillHex}"`);
 	if (addWidthHeight) {
