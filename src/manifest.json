@@ -1,5 +1,7 @@
 {
 	"manifest_version": 2,
+	"name": "Sidetabs",
+	"description": "Because tabs should be vertical",
 	"author": "Jeb Nicholson",
 	"icons": {
 		"48": "sidetabs.svg",

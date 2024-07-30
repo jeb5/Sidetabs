@@ -30,7 +30,7 @@ body {
 }
 #sidebar {
   /* #sidebar ought to be full height, to capture all onContextMenu events*/
-  padding: 0 3px;
+  padding: 0 4px;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -65,14 +65,73 @@ hr {
 #sidebar > .regularTabs {
   flex-shrink: 2;
 }
+#sidebar > .tabsDiv:not(.empty) {
+  padding: var(--tab-gap) 0;
+}
 #sidebar > .pinnedTabs {
   /* Make the pinned tabs div as big as it wants, capped out at 30%, rounded such that it shows tabs nicely */
   max-height: calc(round(30%, calc(var(--tab-height) + var(--tab-gap))) + var(--tab-gap));
 }
+
+/* Groups */
+.group {
+  margin: calc(var(--tab-gap)/2) 0 0 3px;
+}
+.group_header {
+  display: flex;
+  justify-content: space-between;
+}
+.group_title_box {
+  display: flex;
+  align-items: center;
+  background-color: var(--group-color, red);
+  color: white;
+  font-weight: 600;
+  font-size: 12px;
+  border-radius: 4px;
+  padding: 1.5px 5px;
+}
+.group_arrowhead_down {
+  width: 12px;
+  height: 12px;
+  margin-left: 5px;
+}
+.group_arrowhead_down>.icon {
+  fill: white;
+}
+.group_body {
+  margin-top: 4px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+}
+.group_contents {
+  min-width: 0; /* Somehow prevents overflow */
+}
+.group_bar {
+  /* background-color: #118518; */
+  width: 3px;
+  margin-right: 3px;
+  padding: calc(var(--tab-gap)/2) 0;
+}
+.group_bar::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: #118518;
+  border-radius: 1.5px;
+}
+
+
+
+/*  */
+
+.landingSpot {
+  height: 0.01px;
+}
+
 .tabsDiv {
   overflow-y: scroll;
-  /* margin: var(--tab-gap) 0; */
-  padding: var(--tab-gap) 0;
   scrollbar-width: none;
 }
 .tabsDiv:empty {
@@ -87,14 +146,14 @@ hr {
   height: var(--tab-height);
   border: 1px solid transparent;
 }
-.sortableTab {
+.tab-holder {
   position: relative;
-  margin: var(--tab-gap) 0;
+  margin: calc(var(--tab-gap)/2) 0;
 }
-.sortableTab:first-child {
+.tab-holder:first-child {
   margin-top: 0;
 }
-.sortableTab:last-child {
+.tab-holder:last-child {
   margin-bottom: 0;
 }
 .iconPlusIndicator {
@@ -210,7 +269,7 @@ svg.icon.recording-icon {
 .tab > * {
   z-index: 2;
 }
-.sortableTab.dragging {
+.tab-holder.dragging {
   z-index: 4;
   pointer-events: initial !important;
 }

@@ -1,6 +1,6 @@
 import React, { ReactNode, useContext } from "react";
 import * as TabMethods from "./Tab";
-import { Tab } from "./Tab";
+import { Tab } from "./TabManager";
 import CLOSE_ICON from "../../assets/context_menu_icons/Close.svg?react";
 import AUDIO_PLAYING_ICON from "../../assets/icons/music_note.svg?react";
 import AUDIO_MUTE_ICON from "../../assets/icons/music_note_off.svg?react";
@@ -12,7 +12,7 @@ import { useContextMenu } from "../ctxmenu/contextMenu";
 import { OptionsContext } from "../options";
 import { CollapsedContext } from "./CollapsedContext";
 
-export default function TabElement({ tab, beingDragged }: { tab: Tab; beingDragged: boolean }) {
+export default function TabElement({ tab }: { tab: Tab }) {
 	const showContextMenu = useContextMenu(tab);
 	const extensionOptions = useContext(OptionsContext);
 	const isCollapsed = useContext(CollapsedContext);
@@ -82,12 +82,14 @@ export default function TabElement({ tab, beingDragged }: { tab: Tab; beingDragg
 				tabIsDraggingOverRef.current = false;
 			}}
 			onDragEnter={() => {
-				if (beingDragged) return;
-				tabIsDraggingOverRef.current = true;
-				if (tabDragTimeoutRef.current) clearTimeout(tabDragTimeoutRef.current);
-				tabDragTimeoutRef.current = setTimeout(() => {
-					if (tabIsDraggingOverRef.current) TabMethods.activate(tab);
-				}, 500);
+				return;
+				// if (beingDragged) return;
+				//
+				// tabIsDraggingOverRef.current = true;
+				// if (tabDragTimeoutRef.current) clearTimeout(tabDragTimeoutRef.current);
+				// tabDragTimeoutRef.current = setTimeout(() => {
+				// 	if (tabIsDraggingOverRef.current) TabMethods.activate(tab);
+				// }, 500);
 			}}
 		>
 			<div style={containerColorStyle} className="containerIndicator"></div>

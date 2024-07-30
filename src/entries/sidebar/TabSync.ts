@@ -1,26 +1,35 @@
-import { useEffect, useState } from "react";
-import { Tab } from "./Tab";
+import { useContext, useEffect, useState } from "react";
+import { Tab } from "./TabManager";
 import browser from "webextension-polyfill";
 import { arrWithReposition } from "../utils/utils";
+import { WindowIDContext } from "./Root";
+
 
 export type TabsState = { tabs: { [id: string]: Tab }; tabOrder: number[] };
 
-//Decoupling the extension from the tabs API would be ideal. On every tab change, sidetabs would recieve the updated complete tabs state, and update it's UI accordingly.
+//Decoupling the extension from the tabs API would be ideal. On every tab change, sidetabs would receive the updated complete tabs state, and update the UI accordingly.
 //However, browser.tabs.query(...) doesn't consistently return the up-to-date state of the tabs. After a tab update, even after 100ms, the tabs state returned by query is sometimes stale.
 
-export default function useTabSync() {
-	const [tabsState, setTabsState] = useState<TabsState>({ tabs: {}, tabOrder: [] }); //State is combined to prevent unnecessary re-renders when both pieces of state change in succession.
+export default function useTabSync(onTabAddedAtIndex: (index: number, tab: Tab) => void, onTabRemovedAtIndex: (index: number, tab: Tab) => void, onTabMoved: (fromIndex: number, toIndex: number, tab: Tab) => void) {
+	const [tabsState, setTabsState] = useState<TabsState>({ tabs: {}, tabOrder: [] }); //State is combined to prevent unnecessary re-renders when both pieces of state change in succession. // wait is that necessary...?
+	const WIN_ID = useContext(WindowIDContext);
 
 	useEffect(() => {
 		async function setupTabs() {
 			const browserTabs = await browser.tabs.query({ currentWindow: true });
 
-			let newTabs = browserTabs.reduce((acc, tab) => ({ ...acc, [tab.id!]: tab }), {});
-			let tempTabOrder = new Array(browserTabs.length);
-			browserTabs.forEach((tab) => (tempTabOrder[tab.index] = tab.id));
+			const tabPlusGroupIds: Tab[] = await Promise.all(browserTabs.map(async (tab) => {
+				return {
+					...tab,
+					groupId: await browser.sessions.getTabValue(tab.id!, "groupId"),
+				}
+			}));
+
+			const newTabs = tabPlusGroupIds.reduce((acc, tab) => ({ ...acc, [tab.id!]: tab }), {});
+			const tempTabOrder = new Array(browserTabs.length);
+			tabPlusGroupIds.forEach((tab) => (tempTabOrder[tab.index] = tab.id));
 
 			setTabsState({ tabs: newTabs, tabOrder: tempTabOrder });
-			const WIN_ID = (await browser.windows.getCurrent()).id!;
 			setupTabListeners(WIN_ID);
 		}
 		setupTabs();
@@ -42,15 +51,20 @@ export default function useTabSync() {
 
 		browser.tabs.onAttached.addListener(async (tabId, { newWindowId }) => {
 			if (newWindowId !== WIN_ID) return;
-			let newTab = await browser.tabs.get(tabId);
+			const [newTab, newTabGroupId] = await Promise.all([browser.tabs.get(tabId), browser.sessions.getTabValue(tabId, "groupId")])
+			const tab = { ...newTab, groupId: newTabGroupId };
+			onTabAddedAtIndex(tab.index, tab);
 			setTabsState(({ tabs, tabOrder }) => ({
-				tabs: { ...tabs, [tabId]: newTab },
+				tabs: { ...tabs, [tabId]: tab },
 				tabOrder: [...tabOrder.slice(0, newTab.index), tabId, ...tabOrder.slice(newTab.index)],
 			}));
 		});
 
-		browser.tabs.onCreated.addListener((tab) => {
-			if (tab.windowId !== WIN_ID) return;
+		browser.tabs.onCreated.addListener(async (newTab) => {
+			if (newTab.windowId !== WIN_ID) return;
+			const newTabGroupId = await browser.sessions.getTabValue(newTab.id!, "groupId");
+			const tab = { ...newTab, groupId: newTabGroupId };
+			onTabAddedAtIndex(tab.index, tab);
 			setTabsState(({ tabs, tabOrder }) => ({
 				tabs: { ...tabs, [tab.id!]: tab },
 				tabOrder: [...tabOrder.slice(0, tab.index), tab.id!, ...tabOrder.slice(tab.index)],
@@ -59,17 +73,27 @@ export default function useTabSync() {
 
 		browser.tabs.onDetached.addListener((tabId, { oldWindowId }) => {
 			if (oldWindowId !== WIN_ID) return;
-			setTabsState(({ tabs, tabOrder }) => ({
-				tabs: Object.fromEntries(Object.entries(tabs).filter(([id, tab]) => Number(id) !== tabId)),
-				tabOrder: [...tabOrder.slice(0, tabOrder.indexOf(tabId)), ...tabOrder.slice(tabOrder.indexOf(tabId) + 1)],
-			}));
+			setTabsState(({ tabs, tabOrder }) => {
+				const tabIndex = tabOrder.indexOf(tabId);
+				const tab = tabs[tabId];
+				onTabRemovedAtIndex(tabIndex, tab);
+				return {
+					tabs: Object.fromEntries(Object.entries(tabs).filter(([id, tab]) => Number(id) !== tabId)),
+					tabOrder: [...tabOrder.slice(0, tabIndex), ...tabOrder.slice(tabOrder.indexOf(tabId) + 1)],
+				}
+			});
 		});
 		browser.tabs.onRemoved.addListener((tabId, { windowId }) => {
 			if (windowId !== WIN_ID) return;
-			setTabsState(({ tabs, tabOrder }) => ({
-				tabs: Object.fromEntries(Object.entries(tabs).filter(([id, tab]) => Number(id) !== tabId)),
-				tabOrder: [...tabOrder.slice(0, tabOrder.indexOf(tabId)), ...tabOrder.slice(tabOrder.indexOf(tabId) + 1)],
-			}));
+			setTabsState(({ tabs, tabOrder }) => {
+				const tabIndex = tabOrder.indexOf(tabId);
+				const tab = tabs[tabId];
+				onTabRemovedAtIndex(tabIndex, tab);
+				return {
+					tabs: Object.fromEntries(Object.entries(tabs).filter(([id, tab]) => Number(id) !== tabId)),
+					tabOrder: [...tabOrder.slice(0, tabIndex), ...tabOrder.slice(tabOrder.indexOf(tabId) + 1)],
+				}
+			});
 		});
 		browser.tabs.onHighlighted.addListener(({ tabIds, windowId }) => {
 			if (windowId !== WIN_ID) return;
@@ -89,6 +113,8 @@ export default function useTabSync() {
 			setTabsState(({ tabs, tabOrder }) => {
 				if (tabs[tabId].index === toIndex) return { tabs, tabOrder };
 				const newTabOrder = arrWithReposition(tabOrder, fromIndex, toIndex);
+				const tab = tabs[tabId];
+				onTabMoved(fromIndex, toIndex, tab)
 				return {
 					tabs: Object.fromEntries(
 						Object.entries(tabs).map(([id, tab]) => [id, { ...tab, index: newTabOrder.indexOf(Number(id)) } as Tab])
@@ -98,10 +124,11 @@ export default function useTabSync() {
 			});
 		});
 		browser.tabs.onUpdated.addListener(
-			(tabId, changeInfo, newTabState) => {
+			async (tabId, changeInfo, newTabState) => {
+				const newTabGroupId = await browser.sessions.getTabValue(tabId, "groupId");
 				setTabsState(({ tabs, tabOrder }) => {
 					return {
-						tabs: { ...tabs, [tabId]: newTabState },
+						tabs: { ...tabs, [tabId]: { ...newTabState, groupId: newTabGroupId } },
 						tabOrder,
 					};
 				});
@@ -110,18 +137,19 @@ export default function useTabSync() {
 		);
 	}
 
-	function preemptTabReorder(fromIndex: number, toIndex: number) {
-		setTabsState(({ tabs, tabOrder }) => {
-			const newTabOrder = arrWithReposition(tabOrder, fromIndex, toIndex);
-			const newTabs = Object.fromEntries(
-				Object.entries(tabs).map(([id, tab]) => [id, { ...tab, index: newTabOrder.indexOf(Number(id)) } as Tab])
-			);
-			return {
-				tabs: newTabs,
-				tabOrder: newTabOrder,
-			};
-		});
-	}
+	// function preemptTabReorder(fromIndex: number, toIndex: number) {
+	// 	setTabsState(({ tabs, tabOrder }) => {
+	// 		const newTabOrder = arrWithReposition(tabOrder, fromIndex, toIndex);
+	// 		const newTabs = Object.fromEntries(
+	// 			Object.entries(tabs).map(([id, tab]) => [id, { ...tab, index: newTabOrder.indexOf(Number(id)) } as Tab])
+	// 		);
+	// 		return {
+	// 			tabs: newTabs,
+	// 			tabOrder: newTabOrder,
+	// 		};
+	// 	});
+	// }
 
-	return { tabsState, preemptTabReorder };
+	// return { tabsState, preemptTabReorder };
+	return tabsState;
 }

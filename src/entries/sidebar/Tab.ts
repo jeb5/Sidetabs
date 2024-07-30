@@ -1,7 +1,7 @@
 import browser from "webextension-polyfill";
 import { containers } from "./containers";
+import { Tab } from "./TabManager";
 
-export type Tab = browser.Tabs.Tab;
 
 export function getDiscardable(tab: Tab) {
 		return !tab.active && !tab.discarded;

@@ -1,6 +1,6 @@
 import { containers } from "../sidebar/containers";
 import * as TabMethods from "../sidebar/Tab";
-import { Tab } from "../sidebar/Tab";
+import { Tab, TabManagerContext, TabManagerMethods } from "../sidebar/TabManager";
 import browser from "webextension-polyfill";
 import ctxIcons from "./ctxmenuIcons";
 import React, { useContext } from "react";
@@ -8,11 +8,20 @@ import { ctxMenuOption, OptionForm, OptionsContext } from "../options";
 import { ThemeContext } from "../theme/themesHandler";
 
 //Returns the MenuStructure array for a tab-relevant context menu
-function tabMenuItems(iconsColor: "black" | "white", tab: Tab, options: OptionForm): MenuStructure[] {
+function tabMenuItems(iconsColor: "black" | "white", tab: Tab, options: OptionForm, tabManagerMethods: TabManagerMethods): MenuStructure[] {
 	const coloredIcons = ctxIcons[iconsColor];
 	const ctxMenuItems: {
 		[key in ctxMenuOption | "close"]: MenuStructure;
 	} = {
+		addToGroup: {
+			title: "Add to Group",
+			children: [
+				{
+					title: "New Group",
+					onclick: () => tabManagerMethods.addNewGroup([tab]),
+				}
+			]
+		},
 		reload: {
 			title: "Reload Tab",
 			onclick: () => TabMethods.reload(tab),
@@ -160,6 +169,7 @@ function createContext(menu: MenuStructure, showIcons: boolean = false, parentId
 export function useContextMenu(tab?: Tab) {
 	const options = useContext(OptionsContext);
 	const iconsColor = useContext(ThemeContext).dark ? "white" : "black";
+	const { tabManagerMethods } = useContext(TabManagerContext)!;
 	const showIcons = options["ctxMenu/showIcons"];
 	if (tab) {
 		return function showContextMenu(event: React.MouseEvent) {
@@ -167,7 +177,7 @@ export function useContextMenu(tab?: Tab) {
 			const menuItems: MenuStructure[] = [
 				...generalMenuItems(iconsColor, options, tab),
 				{ type: "separator" },
-				...tabMenuItems(iconsColor, tab, options),
+				...tabMenuItems(iconsColor, tab, options, tabManagerMethods),
 			];
 			setMenu(menuItems, showIcons);
 		};

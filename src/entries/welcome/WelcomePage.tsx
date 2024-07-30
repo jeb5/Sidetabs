@@ -7,6 +7,8 @@ import PREFERENCES_ICON from "../../assets/context_menu_icons/Preferences.svg?re
 import LinkButton from "../settings/components/LinkButton";
 import browser from "webextension-polyfill";
 
+const settingsURL = browser.runtime.getURL("settings.html");
+
 const WelcomePage = () => {
 	return (
 		<>
@@ -17,7 +19,7 @@ const WelcomePage = () => {
 							<SIDETABS_ICON />
 							<h1>Sidetabs</h1>
 						</div>
-						<LinkButton href={browser.runtime.getURL("settings.html")} icon={<PREFERENCES_ICON />}>
+						<LinkButton href={settingsURL} icon={<PREFERENCES_ICON />}>
 							Sidetabs Settings
 						</LinkButton>
 					</header>
@@ -58,7 +60,7 @@ const WelcomePage = () => {
 										You can achieve this by modifying your browser's <strong>UserChome.css</strong> file. Instructions for doing this can be
 										found in settings.
 									</p>
-									<LinkButton href="../settings/index.html" icon={<PREFERENCES_ICON />}>
+									<LinkButton href={settingsURL} icon={<PREFERENCES_ICON />}>
 										Sidetabs Settings
 									</LinkButton>
 								</div>

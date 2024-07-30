@@ -2,6 +2,7 @@ import React from "react";
 import browser from "webextension-polyfill";
 
 export const ctxMenuItems = {
+	addToGroup: "Add to Group",
 	reload: "Reload Tab",
 	mute: "Mute Tab",
 	pin: "Pin Tab",
