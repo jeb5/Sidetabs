@@ -132,6 +132,12 @@ export default function TabManager(props: { children: React.ReactNode }) {
 		}));
 	});
 	const onMoved = useEvent((tabId: number, fromIndex: number, toIndex: number) => {
+		if (tabOrder[fromIndex] !== tabId) {
+			//Discrepancy, might be due to multiple tabs moving at once (calling onMoved multiple times)
+			console.log("Discrepancy in onMoved, resyncing tabs");
+			resyncTabs();
+			return;
+		}
 		const newTabOrder = arrWithReposition(tabOrder, fromIndex, toIndex);
 		setTabOrder(newTabOrder);
 		const tab = tabs[tabId];
@@ -150,9 +156,9 @@ export default function TabManager(props: { children: React.ReactNode }) {
 			if (beforeGroupId !== undefined && beforeGroupId === afterGroupId) newGroupId = beforeGroupId;
 		}
 		const newTabs = { ...tabs };
-		newTabs[tabId] = { ...tab, groupId: newGroupId };
 		for (const [index, tabId] of newTabOrder.entries()) newTabs[tabId] = { ...newTabs[tabId], index };
 		setTabs(newTabs);
+		setTabGroupIds([tabId], newGroupId!);
 
 		setGroups((groups) => {
 			return groups.map((group) => {
@@ -168,29 +174,32 @@ export default function TabManager(props: { children: React.ReactNode }) {
 		setTabs((tabs) => ({ ...tabs, [tabId]: { ...tabs[tabId], ...newTabState } }));
 	});
 
+	async function resyncTabs() {
+		const rawTabs = await browser.tabs.query({ currentWindow: true });
+
+		const tabList: Tab[] = await Promise.all(
+			rawTabs.map(async (tab) => {
+				return {
+					...tab,
+					groupId: await browser.sessions.getTabValue(tab.id!, "groupId"),
+				};
+			})
+		);
+
+		const newTabOrder = new Array(rawTabs.length);
+		tabList.forEach((tab) => (newTabOrder[tab.index] = tab.id));
+		const newTabs = tabList.reduce((acc, tab) => ({ ...acc, [tab.id!]: tab }), {});
+
+		const restoredGroups = await browser.sessions.getWindowValue(WIN_ID, "tabGroups");
+
+		setTabs(newTabs);
+		setTabOrder(newTabOrder);
+		if (restoredGroups) setGroups(restoredGroups);
+	}
+
 	useEffect(() => {
 		async function setup() {
-			const rawTabs = await browser.tabs.query({ currentWindow: true });
-
-			const tabList: Tab[] = await Promise.all(
-				rawTabs.map(async (tab) => {
-					return {
-						...tab,
-						groupId: await browser.sessions.getTabValue(tab.id!, "groupId"),
-					};
-				})
-			);
-
-			const newTabOrder = new Array(rawTabs.length);
-			tabList.forEach((tab) => (newTabOrder[tab.index] = tab.id));
-			const newTabs = tabList.reduce((acc, tab) => ({ ...acc, [tab.id!]: tab }), {});
-
-			const restoredGroups = await browser.sessions.getWindowValue(WIN_ID, "tabGroups");
-
-			setTabs(newTabs);
-			setTabOrder(newTabOrder);
-			if (restoredGroups) setGroups(restoredGroups);
-
+			await resyncTabs();
 			browser.tabs.onAttached.addListener(async (tabId, { newWindowId }) => {
 				if (newWindowId !== WIN_ID) return;
 				const [newTab, newTabGroupId] = await Promise.all([browser.tabs.get(tabId), browser.sessions.getTabValue(tabId, "groupId")]);
@@ -204,7 +213,6 @@ export default function TabManager(props: { children: React.ReactNode }) {
 				onAttachedOrCreated(tab);
 			});
 			browser.tabs.onActivated.addListener(({ previousTabId, tabId, windowId }) => {
-				console.log("OnActivated, WIN_ID", WIN_ID, windowId);
 				if (windowId === WIN_ID) onActivated(tabId, previousTabId);
 			});
 			browser.tabs.onDetached.addListener((tabId, { oldWindowId }) => {
@@ -225,7 +233,11 @@ export default function TabManager(props: { children: React.ReactNode }) {
 	}, []);
 
 	async function setTabGroupIds(tabIds: number[], groupId: string) {
-		await Promise.all(tabIds.map(async (tabId) => await browser.sessions.setTabValue(tabId, "groupId", groupId)));
+		await Promise.all(
+			tabIds.map(async (tabId) =>
+				groupId ? await browser.sessions.setTabValue(tabId, "groupId", groupId) : await browser.sessions.removeTabValue(tabId, "groupId")
+			)
+		);
 		setTabs((tabs) => {
 			const newTabs = { ...tabs };
 			for (const tabId of tabIds) newTabs[tabId] = { ...tabs[tabId], groupId };
@@ -233,9 +245,10 @@ export default function TabManager(props: { children: React.ReactNode }) {
 		});
 	}
 
-	async function persistGroups() {
-		await browser.sessions.setWindowValue(WIN_ID, "tabGroups", groups);
-	}
+	useEffect(() => {
+		console.log("Persisting Groups", groups);
+		browser.sessions.setWindowValue(WIN_ID, "tabGroups", groups);
+	}, [groups]);
 
 	const tabManagerMethods: TabManagerMethods = {
 		addNewGroup: async function (firstTabs: Tab[]): Promise<void> {
@@ -259,8 +272,6 @@ export default function TabManager(props: { children: React.ReactNode }) {
 				firstTabs.map((tab) => tab.id!),
 				{ index: groupIndex + pinnedTabs.length }
 			);
-			//Persist groups
-			await persistGroups();
 		},
 		addTabsToGroup: function (groupId: string, tabs: Tab[]): void {
 			throw new Error("Function not implemented.");
