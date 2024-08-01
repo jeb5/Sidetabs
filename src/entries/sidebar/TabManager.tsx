@@ -1,9 +1,8 @@
-import useTabSync from "./TabSync";
 import browser from "webextension-polyfill";
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { WindowIDContext } from "./Root";
-import { set } from "react-hook-form";
 import { arrWithReposition } from "../utils/utils";
+import useEvent from "react-use-event-hook";
 
 /* Thinking
 This hook should provide methods for tabs to inform of reordering, and for tabs to inform of selection changes.....
@@ -91,140 +90,86 @@ export default function TabManager(props: { children: React.ReactNode }) {
 	const [tabs, setTabs] = useState<{ [id: string]: Tab }>({});
 	const [tabOrder, setTabOrder] = useState<number[]>([]);
 
-	const tabOrderRef = useRef(tabOrder); // Crime?
-	tabOrderRef.current = tabOrder;
-	const tabsRef = useRef(tabs);
-	tabsRef.current = tabs;
-	const groupsRef = useRef(groups);
-	groupsRef.current = groups;
+	const tabs2: Tab[] = tabOrder.map((tabId) => ({ ...tabs[tabId], dragging: false }));
+	const pinnedTabs = tabs2.filter((tab) => tab.pinned);
+	const regularTabs = tabs2.filter((tab) => !tab.pinned);
+
+	const onAttachedOrCreated = useEvent((tab: Tab) => {
+		const regularIndex = tab.index - pinnedTabs.length;
+		if (regularIndex >= 0)
+			setGroups((groups) =>
+				groups.map((group) =>
+					regularIndex < group.index || (regularIndex === group.index && tab.groupId !== group.id)
+						? { ...group, index: group.index + 1 }
+						: group
+				)
+			);
+		setTabs((tabs) => ({ ...tabs, [tab.id!]: tab }));
+		setTabOrder((tabOrder) => [...tabOrder.slice(0, tab.index), tab.id!, ...tabOrder.slice(tab.index)]);
+	});
+	const onDetachedOrRemoved = useEvent((tabId: number) => {
+		const regularIndex = tabs[tabId].index - pinnedTabs.length;
+		if (regularIndex >= 0)
+			setGroups((groups) => groups.map((group) => (regularIndex < group.index ? { ...group, index: group.index - 1 } : group)));
+		setTabs((tabs) => {
+			const { [tabId]: removedTab, ...newTabs } = tabs;
+			return newTabs;
+		});
+		setTabOrder(tabOrder.filter((id) => id !== tabId));
+	});
+	const onHighlighted = useEvent((tabIds: number[]) => {
+		setTabs((tabs) => {
+			const newTabs = { ...tabs };
+			for (const tabId of tabIds) newTabs[tabId] = { ...tabs[tabId], highlighted: true };
+			return newTabs;
+		});
+	});
+	const onActivated = useEvent((tabId: number, previousTabId?: number) => {
+		setTabs((tabs) => ({
+			...tabs,
+			...(previousTabId ? { [previousTabId]: { ...tabs[previousTabId], active: false } } : {}),
+			[tabId]: { ...tabs[tabId], active: true },
+		}));
+	});
+	const onMoved = useEvent((tabId: number, fromIndex: number, toIndex: number) => {
+		const newTabOrder = arrWithReposition(tabOrder, fromIndex, toIndex);
+		setTabOrder(newTabOrder);
+		const tab = tabs[tabId];
+		const regularToIndex = toIndex - pinnedTabs.length;
+		const regularFromIndex = fromIndex - pinnedTabs.length;
+
+		//If a tab lands in a group, it should join that group. If it lands on either edge of a group, it should join the group only if it already has membership
+		let newGroupId = tab.groupId;
+		const group = groups.find((group) => group.id === tab.groupId);
+		if (regularToIndex <= 0) newGroupId = undefined;
+		else if (!group || group.index > regularToIndex || (tabs[tabOrder[toIndex - 1]].groupId !== tab.groupId && group.index !== toIndex)) {
+			newGroupId = undefined;
+			//If the tabs before and after are in a group, then join that group
+			const beforeGroupId = tabs[newTabOrder[toIndex - 1]].groupId;
+			const afterGroupId = tabs[newTabOrder[toIndex + 1]].groupId;
+			if (beforeGroupId !== undefined && beforeGroupId === afterGroupId) newGroupId = beforeGroupId;
+		}
+		const newTabs = { ...tabs };
+		newTabs[tabId] = { ...tab, groupId: newGroupId };
+		for (const [index, tabId] of newTabOrder.entries()) newTabs[tabId] = { ...newTabs[tabId], index };
+		setTabs(newTabs);
+
+		setGroups((groups) => {
+			return groups.map((group) => {
+				let groupIndex = group.index;
+				if (regularFromIndex >= 0 && regularFromIndex < group.index) groupIndex--;
+				if ((regularToIndex >= 0 && regularToIndex < group.index) || (regularToIndex === groupIndex && tab.groupId !== group.id))
+					groupIndex++;
+				return { ...group, index: groupIndex };
+			});
+		});
+	});
+	const onUpdated = useEvent((tabId: number, newTabState: browser.Tabs.Tab) => {
+		setTabs((tabs) => ({ ...tabs, [tabId]: { ...tabs[tabId], ...newTabState } }));
+	});
 
 	useEffect(() => {
-		function setupTabListeners() {
-			//
-			// TODO: In these functions, deal with tabs that are created, with group membership but are in the wrong place. their membership should be removed. (Restoring old tabs when group has moved)
-			// This mght be a challenge, as getting information about the group index would require us to create a groupsRef too.
-			// I feel like creating refs that mirror the values of state is an anti-pattern, but how else am I supposed to do this? Registering and unregistering the listeners every time surely isn't the solution.
-			//
-			const onTabAddedAtIndex = (index: number, tab: Tab) => {
-				console.log("Tab added at index", index);
-				const pinnedTabsLength = tabOrderRef.current.filter((tabId) => tabsRef.current[tabId].pinned).length;
-				const regularIndex = index - pinnedTabsLength;
-				console.log("Tab added at regular index", index);
-				setGroups((groups) => {
-					if (regularIndex < 0) return groups;
-					console.log("RegularIndex", regularIndex);
-					return groups.map((group) => {
-						if (regularIndex < group.index || (regularIndex === group.index && tab.groupId !== group.id)) {
-							console.log("decrementing group index");
-							return { ...group, index: group.index + 1 };
-						}
-						return group;
-					});
-				});
-			};
-			function onTabRemovedAtIndex(index: number, tab: Tab) {
-				setGroups((groups) => {
-					const pinnedTabsLength = tabOrderRef.current.filter((tabId) => tabsRef.current[tabId].pinned).length;
-					const regularIndex = index - pinnedTabsLength;
-					if (regularIndex < 0) return groups;
-					return groups.map((group) => {
-						if (regularIndex < group.index) {
-							return { ...group, index: group.index - 1 };
-						}
-						return group;
-					});
-				});
-			}
-			function onTabMoved(fromIndex: number, toIndex: number, tab: Tab) {
-				setGroups((groups) => {
-					const pinnedTabsLength = tabOrderRef.current.filter((tabId) => tabsRef.current[tabId].pinned).length;
-					const regularFromIndex = fromIndex - pinnedTabsLength;
-					const regularToIndex = toIndex - pinnedTabsLength;
-					return groups.map((group) => {
-						let groupIndex = group.index;
-						if (regularFromIndex >= 0 && regularFromIndex < group.index) groupIndex--;
-						if (regularToIndex < group.index || (regularToIndex === group.index && tab.groupId !== group.id)) groupIndex++;
-						return { ...group, index: groupIndex };
-					});
-				});
-			}
-
-			browser.tabs.onActivated.addListener(({ previousTabId, tabId, windowId }) => {
-				if (windowId !== WIN_ID) return;
-				setTabs((tabs) => ({
-					...tabs,
-					...(previousTabId ? { [previousTabId]: { ...tabs[previousTabId], active: false } } : {}),
-					[tabId]: { ...tabs[tabId], active: true },
-				}));
-			});
-
-			browser.tabs.onAttached.addListener(async (tabId, { newWindowId }) => {
-				if (newWindowId !== WIN_ID) return;
-				const [newTab, newTabGroupId] = await Promise.all([browser.tabs.get(tabId), browser.sessions.getTabValue(tabId, "groupId")]);
-				const tab = { ...newTab, groupId: newTabGroupId };
-				onTabAddedAtIndex(tab.index, tab);
-				setTabs((tabs) => ({ ...tabs, [tabId]: tab }));
-				setTabOrder((tabOrder) => [...tabOrder.slice(0, newTab.index), tabId, ...tabOrder.slice(newTab.index)]);
-			});
-
-			browser.tabs.onCreated.addListener(async (newTab) => {
-				if (newTab.windowId !== WIN_ID) return;
-				const newTabGroupId = await browser.sessions.getTabValue(newTab.id!, "groupId");
-				const tab = { ...newTab, groupId: newTabGroupId };
-				onTabAddedAtIndex(tab.index, tab);
-				setTabs((tabs) => ({ ...tabs, [newTab.id!]: tab }));
-				setTabOrder((tabOrder) => [...tabOrder.slice(0, newTab.index), newTab.id!, ...tabOrder.slice(newTab.index)]);
-			});
-
-			browser.tabs.onDetached.addListener((tabId, { oldWindowId }) => {
-				if (oldWindowId !== WIN_ID) return;
-				const tab = tabsRef.current[tabId];
-				onTabRemovedAtIndex(tab.index, tab);
-				setTabs((tabs) => {
-					const { [tabId]: removedTab, ...newTabs } = tabs;
-					return newTabs;
-				});
-				setTabOrder((tabOrder) => tabOrder.filter((id) => id !== tabId));
-			});
-			browser.tabs.onRemoved.addListener((tabId, { windowId }) => {
-				if (windowId !== WIN_ID) return;
-				const tab = tabsRef.current[tabId];
-				onTabRemovedAtIndex(tab.index, tab);
-				setTabs((tabs) => {
-					const { [tabId]: removedTab, ...newTabs } = tabs;
-					return newTabs;
-				});
-				setTabOrder((tabOrder) => tabOrder.filter((id) => id !== tabId));
-			});
-			browser.tabs.onHighlighted.addListener(({ tabIds, windowId }) => {
-				if (windowId !== WIN_ID) return;
-				setTabs((tabs) => {
-					const newTabs = { ...tabs };
-					for (const tabId of tabIds) newTabs[tabId] = { ...tabs[tabId], highlighted: true };
-					return newTabs;
-				});
-			});
-			browser.tabs.onMoved.addListener((tabId, { windowId, fromIndex, toIndex }) => {
-				if (windowId !== WIN_ID) return;
-				const newTabOrder = arrWithReposition(tabOrderRef.current, fromIndex, toIndex);
-				setTabOrder(newTabOrder);
-				setTabs((tabs) => {
-					const newTabs = { ...tabs };
-					for (const [index, tabId] of newTabOrder.entries()) newTabs[tabId] = { ...tabs[tabId], index };
-					return newTabs;
-				});
-				const tab = tabsRef.current[tabId];
-				onTabMoved(fromIndex, toIndex, tab);
-			});
-			browser.tabs.onUpdated.addListener(
-				async (tabId, changeInfo, newTabState) => {
-					// const newTabGroupId = await browser.sessions.getTabValue(tabId, "groupId");
-					setTabs((tabs) => ({ ...tabs, [tabId]: { ...tabs[tabId], ...newTabState } }));
-				},
-				{ windowId: WIN_ID }
-			);
-		}
-		async function setupTabs() {
+		async function setup() {
 			const rawTabs = await browser.tabs.query({ currentWindow: true });
 
 			const tabList: Tab[] = await Promise.all(
@@ -246,9 +191,37 @@ export default function TabManager(props: { children: React.ReactNode }) {
 			setTabOrder(newTabOrder);
 			if (restoredGroups) setGroups(restoredGroups);
 
-			setupTabListeners();
+			browser.tabs.onAttached.addListener(async (tabId, { newWindowId }) => {
+				if (newWindowId !== WIN_ID) return;
+				const [newTab, newTabGroupId] = await Promise.all([browser.tabs.get(tabId), browser.sessions.getTabValue(tabId, "groupId")]);
+				const tab = { ...newTab, groupId: newTabGroupId };
+				onAttachedOrCreated(tab);
+			});
+			browser.tabs.onCreated.addListener(async (newTab) => {
+				if (newTab.windowId !== WIN_ID) return;
+				const newTabGroupId = await browser.sessions.getTabValue(newTab.id!, "groupId");
+				const tab = { ...newTab, groupId: newTabGroupId };
+				onAttachedOrCreated(tab);
+			});
+			browser.tabs.onActivated.addListener(({ previousTabId, tabId, windowId }) => {
+				console.log("OnActivated, WIN_ID", WIN_ID, windowId);
+				if (windowId === WIN_ID) onActivated(tabId, previousTabId);
+			});
+			browser.tabs.onDetached.addListener((tabId, { oldWindowId }) => {
+				if (oldWindowId === WIN_ID) onDetachedOrRemoved(tabId);
+			});
+			browser.tabs.onRemoved.addListener((tabId, { windowId }) => {
+				if (windowId === WIN_ID) onDetachedOrRemoved(tabId);
+			});
+			browser.tabs.onHighlighted.addListener(({ tabIds, windowId }) => {
+				if (windowId === WIN_ID) onHighlighted(tabIds);
+			});
+			browser.tabs.onMoved.addListener((tabId, { windowId, fromIndex, toIndex }) => {
+				if (windowId === WIN_ID) onMoved(tabId, fromIndex, toIndex);
+			});
+			browser.tabs.onUpdated.addListener((tabId, _, newTabState) => onUpdated(tabId, newTabState), { windowId: WIN_ID });
 		}
-		setupTabs();
+		setup();
 	}, []);
 
 	async function setTabGroupIds(tabIds: number[], groupId: string) {
@@ -260,25 +233,18 @@ export default function TabManager(props: { children: React.ReactNode }) {
 		});
 	}
 
-	const tabs2: Tab[] = tabOrder.map((tabId) => ({ ...tabs[tabId], dragging: false }));
-	const pinnedTabs = tabs2.filter((tab) => tab.pinned);
-	const regularTabs = tabs2.filter((tab) => !tab.pinned);
-
 	async function persistGroups() {
 		await browser.sessions.setWindowValue(WIN_ID, "tabGroups", groups);
 	}
 
 	const tabManagerMethods: TabManagerMethods = {
 		addNewGroup: async function (firstTabs: Tab[]): Promise<void> {
-			console.log("Adding new group");
 			// Filter out pinned tabs
 			firstTabs = firstTabs.filter((tab) => !tab.pinned);
 			// Sort Tabs by index
 			firstTabs.sort((a, b) => a.index - b.index);
-			console.log("First tabs", firstTabs);
 			// Get index of lowest-index tab in group
 			const groupIndex = (firstTabs.length > 0 ? firstTabs[0].index : regularTabs.length) - pinnedTabs.length;
-			console.log("Group index", groupIndex);
 			// Create group
 			const newGroup = { title: "New Group", id: Math.random().toString(36).slice(2), index: groupIndex, subIndex: 0, color: "#019407" };
 			console.log("Setting Groups", [...groups, newGroup]);
