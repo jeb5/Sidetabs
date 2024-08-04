@@ -3,7 +3,7 @@ import { OptionsProvider } from "../options";
 import { ThemeContextProvider } from "../theme/themesHandler";
 import Sidebar from "./Sidebar";
 import { CollapsedContextProvider } from "./CollapsedContext";
-import TabManager from "./TabManager";
+import { TabManagerContextProvider } from "./TabManager";
 import browser from "webextension-polyfill";
 
 export const WindowIDContext = React.createContext<number>(-1);
@@ -22,9 +22,9 @@ export default function Root() {
 			<OptionsProvider>
 				<ThemeContextProvider>
 					<CollapsedContextProvider>
-						<TabManager>
+						<TabManagerContextProvider>
 							<Sidebar />
-						</TabManager>
+						</TabManagerContextProvider>
 					</CollapsedContextProvider>
 				</ThemeContextProvider>
 			</OptionsProvider>
