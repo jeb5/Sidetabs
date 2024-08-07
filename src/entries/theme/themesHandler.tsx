@@ -5,7 +5,7 @@ import * as DEFAULT_THEMES from "./defaultThemes";
 import React, { useContext, useEffect, useState } from "react";
 import { OptionForm, OptionsContext } from "../options";
 import { debounce } from "../utils/utils";
-import { WindowIDContext } from "../sidebar/Root";
+import { WindowInfoContext } from "../sidebar/Root";
 
 type Theme = {
 	// Theme type because for some reason @types/webextension-polyfill doesn't have this type
@@ -205,7 +205,8 @@ export async function stylesFromSidebarTheme(theme: SidebarTheme) {
 
 const useTheme = (extensionOptions: OptionForm) => {
 	const [theme, setTheme] = useState<SidebarTheme | null>(null);
-	const WIN_ID = useContext(WindowIDContext);
+	const windowInfo = useContext(WindowInfoContext);
+	const WIN_ID = windowInfo?.windowId!;
 
 	useEffect(() => {
 		if (extensionOptions["theme/mode"] === "dark") return setTheme(DEFAULT_THEMES.DEFAULT_DARK_SIDEBAR_THEME);

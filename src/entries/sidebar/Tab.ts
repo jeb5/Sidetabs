@@ -20,7 +20,7 @@ export function getLoading(tab: Tab) {
 		return tab.status === "loading";
 	}
 export async function activate(tab: Tab) {
-		await browser.tabs.update(tab.id!, { active: true });
+	await browser.tabs.highlight({ tabs: tab.index });
 	}
 export function warmup(tab: Tab) {
 		browser.tabs.warmup(tab.id!);

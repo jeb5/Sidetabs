@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import { arrWithReposition } from "../utils/utils";
-import { WindowIDContext } from "./Root";
+import { WindowInfoContext } from "./Root";
 import { createContext, useContext, useEffect, useState } from "react";
 
 export type Tab = browser.Tabs.Tab & {
@@ -58,17 +58,23 @@ type TabStructure = {
 	pinned: TabListItem[];
 	regular: TabListItem[];
 };
+type TabManagerInfo = {
+	multiselectInProgress: boolean;
+};
 type TabManagerContextType = {
-	tabStructure: TabStructure;
+	structure: TabStructure;
+	info: TabManagerInfo;
 	tabManager: TabManager;
 };
 
 export class TabManager {
-	windowId: number;
-	tabs: { [tabId: number]: Tab } = {};
-	tabOrder: number[] = [];
-	groups: GroupInfo[] = [];
-	observers: (() => void)[] = [];
+	private windowId: number;
+	private tabs: { [tabId: number]: Tab } = {};
+	private tabOrder: number[] = [];
+	private groups: GroupInfo[] = [];
+	private observers: (() => void)[] = [];
+	private selectionAnchor: number = -1;
+	private selectionFocus: number = -1;
 
 	constructor(windowId: number) {
 		this.windowId = windowId;
@@ -105,6 +111,64 @@ export class TabManager {
 	private get regularTabs() {
 		return this.tabOrder.map((tabId) => this.tabs[tabId]).filter((tab) => !tab.pinned);
 	}
+	private get highlightedTabs() {
+		return this.tabOrder.map((tabId) => this.tabs[tabId]).filter((tab) => tab.highlighted);
+	}
+
+	public getInfo(): TabManagerInfo {
+		return { multiselectInProgress: this.highlightedTabs.length > 1 };
+	}
+
+	public async toggleSelection(tabId: number, shiftKeyMode: boolean = false) {
+		//macOS selection rules, from gh:ibash/better-multiselect
+		const tabIndex = this.tabOrder.indexOf(tabId);
+		const selectedTabIndices = new Set(this.highlightedTabs.map((tab) => tab.index));
+		if (this.selectionAnchor == -1 || !this.tabs[this.selectionAnchor]?.highlighted)
+			this.selectionAnchor = this.tabOrder.find((tabId) => this.tabs[tabId].active)!;
+		if (!this.tabs[this.selectionFocus]?.highlighted) this.selectionFocus = -1;
+		if (shiftKeyMode) {
+			// Clear everything between anchor and focus
+			if (this.selectionFocus !== -1) {
+				const [start, end] = [this.tabs[this.selectionAnchor].index, this.tabs[this.selectionFocus].index].sort((a, b) => a - b);
+				for (let i = start; i <= end; i++) selectedTabIndices.delete(i);
+			}
+			this.selectionFocus = tabId;
+			const [start, end] = [this.tabs[this.selectionAnchor].index, this.tabs[this.selectionFocus].index].sort((a, b) => a - b);
+			for (let i = start; i <= end; i++) selectedTabIndices.add(i);
+		} else {
+			//controlKeyMode
+			this.selectionFocus = -1;
+			if (selectedTabIndices.has(tabIndex)) {
+				//If selected
+				if (selectedTabIndices.size <= 1) return; //Can't unselect the active tab and leave nothing!
+				selectedTabIndices.delete(tabIndex);
+				let successorAnchor = this.tabOrder.slice(tabIndex + 1).find((_, index) => selectedTabIndices.has(index)) || -1;
+				if (successorAnchor === -1)
+					successorAnchor = this.tabOrder.slice(0, tabIndex).findLast((_, index) => selectedTabIndices.has(index)) || -1;
+				this.selectionAnchor = successorAnchor;
+			} else {
+				//If not selected
+				selectedTabIndices.add(tabIndex);
+				this.selectionAnchor = tabId;
+			}
+		}
+		const activeTabIndex = this.tabOrder.findIndex((tabId) => this.tabs[tabId].active);
+		// Move the tab with the index CLOSEST to the active tab to the front
+		const closestToActive = [...selectedTabIndices].reduce(
+			(closest, index) => {
+				const distance = Math.abs(index - activeTabIndex);
+				if (distance < closest.distance) return { index, distance };
+				else return closest;
+			},
+			{ index: -1, distance: Infinity }
+		);
+		let selectedIndiciesList: number[] = [];
+		if (closestToActive) {
+			selectedTabIndices.delete(closestToActive.index);
+			selectedIndiciesList = [closestToActive.index, ...selectedTabIndices];
+		}
+		await browser.tabs.highlight({ windowId: this.windowId, tabs: selectedIndiciesList });
+	}
 
 	private async registerListeners() {
 		browser.tabs.onAttached.addListener(async (tabId, { newWindowId }) => {
@@ -131,9 +195,7 @@ export class TabManager {
 		browser.tabs.onHighlighted.addListener(({ tabIds, windowId }) => {
 			if (windowId === this.windowId) this.onHighlighted(tabIds);
 		});
-		console.log("Adding listeners");
 		browser.tabs.onMoved.addListener((tabId, { windowId, fromIndex, toIndex }) => {
-			console.log("On Moved!");
 			if (windowId === this.windowId) this.onMoved(tabId, fromIndex, toIndex);
 		});
 		browser.tabs.onUpdated.addListener((tabId, _, newTabState) => this.onUpdated(tabId, newTabState), { windowId: this.windowId });
@@ -149,6 +211,7 @@ export class TabManager {
 			);
 		this.tabs[tab.id!] = tab;
 		this.tabOrder = [...this.tabOrder.slice(0, tab.index), tab.id!, ...this.tabOrder.slice(tab.index)];
+		this.tabOrder.forEach((tabId, index) => (this.tabs[tabId].index = index));
 		this.notifyObservers();
 	}
 
@@ -157,17 +220,18 @@ export class TabManager {
 		if (regularIndex >= 0)
 			this.groups = this.groups.map((group) => (regularIndex < group.index ? { ...group, index: group.index - 1 } : group));
 		const { [tabId]: removedTab, ...newTabs } = this.tabs;
-		this.tabs = newTabs;
 		this.tabOrder = this.tabOrder.filter((id) => id !== tabId);
+		this.tabOrder.forEach((tabId, index) => (newTabs[tabId].index = index));
+		this.tabs = newTabs;
 		this.notifyObservers();
 	}
 	private onHighlighted(tabIds: number[]) {
-		for (const tabId of tabIds) this.tabs[tabId] = { ...this.tabs[tabId], highlighted: true };
+		for (const tabId of this.tabOrder) this.tabs[tabId].highlighted = tabIds.includes(tabId);
 		this.notifyObservers();
 	}
 	private onActivated(tabId: number, previousTabId?: number) {
-		if (previousTabId) this.tabs[previousTabId].active = false;
-		this.tabs[tabId].active = true;
+		if (previousTabId && this.tabs[previousTabId]) this.tabs[previousTabId].active = false;
+		if (this.tabs[tabId]) this.tabs[tabId].active = true;
 		this.notifyObservers();
 	}
 	private onMoved(tabId: number, fromIndex: number, toIndex: number) {
@@ -193,7 +257,7 @@ export class TabManager {
 			const afterGroupId = this.tabs[this.tabOrder[toIndex + 1]].groupId;
 			if (beforeGroupId !== undefined && beforeGroupId === afterGroupId) newGroupId = beforeGroupId;
 		}
-		for (const [index, tabId] of this.tabOrder.entries()) this.tabs[tabId].index = index;
+		this.tabOrder.forEach((tabId, index) => (this.tabs[tabId].index = index));
 
 		this.setTabGroupIds([tabId], newGroupId);
 
@@ -294,21 +358,23 @@ export class TabManager {
 
 export const TabManagerContext = createContext<TabManagerContextType | null>(null);
 export function TabManagerContextProvider(props: { children: React.ReactNode }) {
-	const windowId = useContext(WindowIDContext);
+	const windowInfo = useContext(WindowInfoContext);
 	const [tabManager, setTabManager] = useState<TabManager | null>(null);
 	const [tabStructure, setTabStructure] = useState<TabStructure | null>(null);
+	const [tabManagerInfo, setTabManagerInfo] = useState<TabManagerInfo | null>(null);
 
 	useEffect(() => {
-		const tabManager = new TabManager(windowId);
+		const tabManager = new TabManager(windowInfo!.windowId);
 		setTabManager(tabManager);
 		const tabUpdateListener = () => {
 			setTabStructure(tabManager.renderTabStructure());
+			setTabManagerInfo(tabManager.getInfo());
 		};
 		tabManager.subscribeToTabUpdates(tabUpdateListener);
 		return () => tabManager.unsubscribeFromTabUpdates(tabUpdateListener);
 	}, []);
 
-	if (!tabStructure || !tabManager) return null;
-	const tabManagerContext = { tabStructure, tabManager };
+	if (!tabStructure || !tabManager || !tabManagerInfo) return null;
+	const tabManagerContext = { structure: tabStructure, tabManager, info: tabManagerInfo };
 	return <TabManagerContext.Provider value={tabManagerContext}>{props.children}</TabManagerContext.Provider>;
 }

@@ -145,6 +145,7 @@ hr {
   box-sizing: border-box;
   height: var(--tab-height);
   border: 1px solid transparent;
+  --tab-text-color: var(--theme-tab-background-text-color);
 }
 .tab-holder {
   position: relative;
@@ -336,14 +337,20 @@ svg.icon.recording-icon {
   left: 0;
   width: 1.5px;
 }
-.tab.activeTab {
+.tab.activeTab.activeTab {
   background: rgba(var(--theme-tab-selected-color));
   --tab-text-color: var(--theme-tab-text-color);
   border: 1px solid rgba(var(--theme-tab-border-color));
 }
-.tab:not(.activeTab) {
-  --tab-text-color: var(--theme-tab-background-text-color);
+.multiselect_in_progress .tab.highlighted {
+  /* background: rgba(var(--theme-tab-selected-color)); */
+  /* --tab-text-color: var(--theme-tab-text-color); */
+  border: 1px solid #2480cc;
 }
+.multiselect_in_progress .tab.highlighted.activeTab {
+  border: 2px solid #2480cc;
+}
+
 .tabsDiv .tab:hover:not(.activeTab) {
   background: rgba(var(--theme-tab-hover-color));
 }

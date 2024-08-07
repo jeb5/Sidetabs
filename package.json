@@ -30,7 +30,6 @@
 		"react-hook-form": "^7.52.1",
 		"react-popup-manager": "file:packages/react-popup-manager",
 		"react-syntax-highlighter": "^15.5.0",
-		"react-use-event-hook": "^0.9.6",
 		"react-vertical-dnd": "file:packages/react-vertical-dnd",
 		"vite-plugin-svgr": "^4.2.0"
 	},

@@ -6,19 +6,28 @@ import { CollapsedContextProvider } from "./CollapsedContext";
 import { TabManagerContextProvider } from "./TabManager";
 import browser from "webextension-polyfill";
 
-export const WindowIDContext = React.createContext<number>(-1);
+type WindowInfo = {
+	windowId: number;
+	platform: browser.Runtime.PlatformOs;
+};
+export const WindowInfoContext = React.createContext<WindowInfo | null>(null);
 
 export default function Root() {
-	const [windowId, setWindowId] = useState<number>(-1);
+	const [windowInfo, setWindowInfo] = useState<WindowInfo | null>(null);
 
 	useEffect(() => {
-		browser.windows.getCurrent().then((window) => {
-			setWindowId(window.id!);
-		});
+		async function getInfo() {
+			const [windowId, platform] = await Promise.all([
+				browser.windows.getCurrent().then((window) => window.id!),
+				browser.runtime.getPlatformInfo().then((platform) => platform.os),
+			]);
+			setWindowInfo({ windowId, platform });
+		}
+		getInfo();
 	});
 
-	return windowId === -1 ? null : (
-		<WindowIDContext.Provider value={windowId}>
+	return windowInfo === null ? null : (
+		<WindowInfoContext.Provider value={windowInfo}>
 			<OptionsProvider>
 				<ThemeContextProvider>
 					<CollapsedContextProvider>
@@ -28,6 +37,6 @@ export default function Root() {
 					</CollapsedContextProvider>
 				</ThemeContextProvider>
 			</OptionsProvider>
-		</WindowIDContext.Provider>
+		</WindowInfoContext.Provider>
 	);
 }

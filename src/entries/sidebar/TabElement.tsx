@@ -1,6 +1,6 @@
-import React, { ReactNode, useContext } from "react";
+import React, { ReactNode, useContext, useEffect, useState } from "react";
 import * as TabMethods from "./Tab";
-import { Tab } from "./TabManager";
+import { Tab, TabManagerContext } from "./TabManager";
 import CLOSE_ICON from "../../assets/context_menu_icons/Close.svg?react";
 import AUDIO_PLAYING_ICON from "../../assets/icons/music_note.svg?react";
 import AUDIO_MUTE_ICON from "../../assets/icons/music_note_off.svg?react";
@@ -11,6 +11,7 @@ import DEFAULT_TAB_ICON from "../../assets/icons/Firefox Default.svg?react";
 import { useContextMenu } from "../ctxmenu/contextMenu";
 import { OptionsContext } from "../options";
 import { CollapsedContext } from "./CollapsedContext";
+import { WindowInfoContext } from "./Root";
 
 export default function TabElement({ tab }: { tab: Tab }) {
 	const showContextMenu = useContextMenu(tab);
@@ -23,8 +24,10 @@ export default function TabElement({ tab }: { tab: Tab }) {
 
 	const tabIsDraggingOverRef = React.useRef(false);
 	const tabDragTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+	const windowInfo = useContext(WindowInfoContext);
+	const { tabManager } = useContext(TabManagerContext)!;
 
-	React.useEffect(() => {
+	useEffect(() => {
 		setLoading(TabMethods.getLoading(tab));
 		if (!TabMethods.getLoading(tab) && loading) {
 			setJustLoaded(true);
@@ -33,12 +36,15 @@ export default function TabElement({ tab }: { tab: Tab }) {
 		}
 	}, [tab.status]);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		setUseDefaultIcon(tab.favIconUrl === undefined || tab.favIconUrl === "" || tab.url === "about:newtab" || tab.url === "about:blank");
 	}, [tab.favIconUrl, tab.status]);
 
+	const [preventActivate, setPreventActivate] = useState(false);
+
 	const tabClasses = ["tab"];
 	if (tab.active) tabClasses.push("activeTab");
+	if (tab.highlighted) tabClasses.push("highlighted");
 	if (tab.discarded) tabClasses.push("discarded");
 	if (TabMethods.getLoading(tab)) tabClasses.push("loading");
 	if (justLoaded) tabClasses.push("justLoaded");
@@ -65,7 +71,8 @@ export default function TabElement({ tab }: { tab: Tab }) {
 			onContextMenu={showContextMenu}
 			className={tabClasses.join(" ")}
 			onClick={(e) => {
-				if (e.button === 0) TabMethods.activate(tab); //Left click (open tab)
+				if (e.button === 0 && !preventActivate) TabMethods.activate(tab); //Left click (open tab)
+				setPreventActivate(false);
 			}}
 			onMouseUp={
 				extensionOptions["behavior/middleClickClose"]
@@ -74,6 +81,17 @@ export default function TabElement({ tab }: { tab: Tab }) {
 					  }
 					: undefined
 			}
+			onMouseDown={(e) => {
+				if (e.button !== 0) return true; //Handle only left click
+				const mac = windowInfo!.platform === "mac";
+				if (e.shiftKey) {
+					tabManager.toggleSelection(tab.id!, true);
+					setPreventActivate(true);
+				} else if ((e.ctrlKey && !mac) || (e.metaKey && mac)) {
+					tabManager.toggleSelection(tab.id!);
+					setPreventActivate(true);
+				}
+			}}
 			title={extensionOptions["behavior/tabtooltip"] ? tab.title : undefined}
 			onMouseEnter={() => {
 				TabMethods.warmup(tab);

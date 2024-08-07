@@ -12,7 +12,7 @@ import { TabManagerContext } from "./TabManager";
 export default function Sidebar() {
 	const showContextMenu = useContextMenu();
 	const extensionOptions = useContext(OptionsContext);
-	const { tabStructure } = useContext(TabManagerContext)!;
+	const { structure: tabStructure, info: tabManagerInfo } = useContext(TabManagerContext)!;
 
 	function preventScrollCompass(e: React.MouseEvent) {
 		if (e.button == 1) {
@@ -25,7 +25,12 @@ export default function Sidebar() {
 	const regularTabsEmpty = tabStructure.regular.length <= 1;
 
 	return (
-		<div id="sidebar" onContextMenu={showContextMenu} onMouseDown={preventScrollCompass}>
+		<div
+			id="sidebar"
+			className={tabManagerInfo.multiselectInProgress ? "multiselect_in_progress" : ""}
+			onContextMenu={showContextMenu}
+			onMouseDown={preventScrollCompass}
+		>
 			<TabsList items={tabStructure.pinned} className={`pinnedTabs${pinnedTabsEmpty ? " empty" : ""}`} />
 			{!pinnedTabsEmpty && <hr />}
 			<TabsList items={tabStructure.regular} className={`regularTabs${regularTabsEmpty ? " empty" : ""}`} />
