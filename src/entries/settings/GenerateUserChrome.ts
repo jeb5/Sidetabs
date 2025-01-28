@@ -34,15 +34,13 @@ export default function generateUserChrome(settings: OptionForm) {
  max-height: 100% !important;
 ${
 			(settings["autohiding/expanding"] && !settings["autohiding/expandedFloats"]) ? `
- transition: max-width var(--sidebar-transition-speed) var(--sidebar-transition-delay) ease,
-						 width var(--sidebar-transition-speed) var(--sidebar-debounce-delay) ease !important;
-	` : ""
+ transition: max-width var(--sidebar-transition-speed) var(--sidebar-transition-delay) ease, width var(--sidebar-transition-speed) var(--sidebar-transition-delay) ease !important;` : ""
 }
 }
 #sidebar {
  height: 100% !important;
  width: var(--sidebar-hover-width) !important;
- z-index: 200 !important;
+ ${(settings["autohiding/expanding"] && settings["autohiding/expandedFloats"]) ? "z-index: 200 !important;" : ""}
  position: absolute !important;${
 		settings["autohiding/expanding"]
 			? `
@@ -91,10 +89,20 @@ ${
 		margin-left: auto !important;
 	}
 }
+@media (-moz-platform: macos) and (not (-moz-mac-rtl))  {
+	#TabsToolbar>.titlebar-buttonbox-container {
+		margin-right: auto !important;
+	}
+}
 @media (-moz-platform: macos)  {
 	#TabsToolbar>.titlebar-buttonbox-container {
 		margin-top: 5px;
 		margin-bottom: 5px;
+	}
+	#TabsToolbar {
+		:root[inFullscreen] & {
+			min-height: 10px !important;
+		}
 	}
 }`;
 			}

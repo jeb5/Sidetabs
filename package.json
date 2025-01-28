@@ -1,6 +1,6 @@
 {
 	"name": "sidetabs",
-	"version": "0.67",
+	"version": "0.68",
 	"author": "Jeb Nicholson",
 	"type": "module",
 	"description": "A Firefox extension that shows vertical tabs in the sidebar.",
