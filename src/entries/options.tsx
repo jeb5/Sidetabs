@@ -34,8 +34,10 @@ export interface OptionForm {
 	"ctxMenu/showNewTabInContainer": boolean;
 	"autohiding/autohide": boolean;
 	"autohiding/expanding": boolean;
+	"autohiding/expandedFloats": boolean;
 	"autohiding/sidebarwidth": number;
 	"autohiding/debounceDelay": number;
+	"autohiding/transitionSpeed": number;
 	"hiddenElements/tabs": boolean;
 	"hiddenElements/sidebarHeader": boolean;
 	"hiddenElements/titleBar": boolean;
@@ -59,8 +61,10 @@ export const SettingsDefault: OptionForm = {
 	"ctxMenu/showNewTabInContainer": false,
 	"autohiding/autohide": false,
 	"autohiding/expanding": true,
+	"autohiding/expandedFloats": true,
 	"autohiding/sidebarwidth": 190,
 	"autohiding/debounceDelay": 150,
+	"autohiding/transitionSpeed": 150,
 	"hiddenElements/tabs": false,
 	"hiddenElements/sidebarHeader": false,
 	"hiddenElements/titleBar": false,
