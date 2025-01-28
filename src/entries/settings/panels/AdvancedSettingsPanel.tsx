@@ -31,7 +31,7 @@ export default function AdvancedSettingsPanel({
 }) {
 	const autohiding = watchForm("autohiding/autohide");
 	const hidingTabs = watchForm("hiddenElements/tabs");
-	const expandingOn = watchForm("autohiding/expanding");
+	const expanding = watchForm("autohiding/expanding");
 	const userChromeContent = generateUserChrome(watchForm());
 
 	const [warningDialogOpen, setWarningDialogOpen] = React.useState(false);
@@ -87,7 +87,7 @@ export default function AdvancedSettingsPanel({
 					How to modify your userChrome.css file
 				</LinkButton>
 				<WarningLabel className="abc-warning">
-					This is advanced configuration. Please only proceed if you understand how to safely modify your UserChrome.css file.
+					This is advanced configuration. Please only proceed if you understand how to safely modify your userChrome.css file.
 				</WarningLabel>
 			</div>
 			<Subsection title="Autohiding" icon={<SIDE_DOCK_ICON />} experimental>
@@ -95,8 +95,11 @@ export default function AdvancedSettingsPanel({
 				<CheckBoxOption formRegister={registerForm("autohiding/expanding")} disabled={!autohiding} indentLevel={1}>
 					Expand sidebar on hover
 				</CheckBoxOption>
+				<CheckBoxOption formRegister={registerForm("autohiding/expandedFloats")} disabled={!autohiding || !expanding} indentLevel={1}>
+					Display expanded sidebar floating above page
+				</CheckBoxOption>
 				<SelectOption
-					disabled={!autohiding || !expandingOn}
+					disabled={!autohiding || !expanding}
 					indentLevel={1}
 					formRegister={registerForm("autohiding/sidebarwidth")}
 					items={[170, 180, 190, 200, 210, 220, 230].map((v) => ({
@@ -107,7 +110,7 @@ export default function AdvancedSettingsPanel({
 					Expanded sidebar width
 				</SelectOption>
 				<SelectOption
-					disabled={!autohiding || !expandingOn}
+					disabled={!autohiding || !expanding}
 					indentLevel={1}
 					formRegister={registerForm("autohiding/debounceDelay")}
 					items={[0, 50, 100, 150, 200, 250].map((v) => ({
@@ -116,6 +119,17 @@ export default function AdvancedSettingsPanel({
 					}))}
 				>
 					Hide/show delay
+				</SelectOption>
+				<SelectOption
+					disabled={!autohiding || !expanding}
+					indentLevel={1}
+					formRegister={registerForm("autohiding/transitionSpeed")}
+					items={[0, 50, 100, 150, 200, 250].map((v) => ({
+						value: v,
+						label: `${v}ms`,
+					}))}
+				>
+					Hide/show animation speed
 				</SelectOption>
 			</Subsection>
 			<Subsection title="Hidden Elements" icon={<POPUP_BLOCK_ICON />}>

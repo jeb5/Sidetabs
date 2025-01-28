@@ -1,5 +1,10 @@
 import { OptionForm } from "../options";
 
+/*
+ Who knows what's going on here honestly
+ With tabs needed for backtick formatting, chaos ensues
+*/
+
 export default function generateUserChrome(settings: OptionForm) {
 	let userChrome = `/* ########  Sidetabs Styles  ######### */
 `;
@@ -11,7 +16,8 @@ export default function generateUserChrome(settings: OptionForm) {
 		settings["autohiding/expanding"]
 			? `
  --sidebar-visible-width: ${settings["autohiding/sidebarwidth"]}px;
- --sidebar-debounce-delay: ${settings["autohiding/debounceDelay"]}ms;
+ --sidebar-transition-delay: ${settings["autohiding/debounceDelay"]}ms;
+ --sidebar-transition-speed: ${settings["autohiding/transitionSpeed"]}ms;
  `
 			: ""
  }
@@ -20,10 +26,18 @@ export default function generateUserChrome(settings: OptionForm) {
  display: grid !important;
  min-width: var(--sidebar-hover-width) !important;
  max-width: var(--sidebar-hover-width) !important;
+ width: var(--sidebar-hover-width) !important;
  overflow: visible !important;
+ will-change: auto !important;
  height: 100% !important;
  min-height: 100% !important;
  max-height: 100% !important;
+${
+			(settings["autohiding/expanding"] && !settings["autohiding/expandedFloats"]) ? `
+ transition: max-width var(--sidebar-transition-speed) var(--sidebar-transition-delay) ease,
+						 width var(--sidebar-transition-speed) var(--sidebar-debounce-delay) ease !important;
+	` : ""
+}
 }
 #sidebar {
  height: 100% !important;
@@ -32,20 +46,31 @@ export default function generateUserChrome(settings: OptionForm) {
  position: absolute !important;${
 		settings["autohiding/expanding"]
 			? `
- transition: width 150ms var(--sidebar-debounce-delay) ease !important;`
+ transition: width var(--sidebar-transition-speed) var(--sidebar-transition-delay) ease !important;`
 			: ""
  }
  min-width: 0 !important;
 }`;
-	if (settings["autohiding/expanding"] && settings["autohiding/autohide"])
+
+	if (settings["autohiding/expanding"] && settings["autohiding/autohide"]) {
 		userChrome += `
 #sidebar:hover {
  width: var(--sidebar-visible-width) !important;
 }`;
+		if (!settings["autohiding/expandedFloats"])
+			userChrome += `
+#sidebar-box:hover {
+ width: var(--sidebar-visible-width) !important;
+ max-width: var(--sidebar-visible-width) !important;
+}
+`;
+	}
+
 	/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 	if (settings["hiddenElements/tabs"] || settings["hiddenElements/sidebarHeader"] || settings["autohiding/autohide"]) {
 		userChrome += `
 /* ~~~~~~~~ Hidden elements styles ~~~~~~~~~ */`;
+
 		if (settings["hiddenElements/tabs"]) {
 			if (settings["hiddenElements/titleBar"]) {
 				userChrome += `
