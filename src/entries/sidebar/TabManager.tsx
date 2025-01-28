@@ -49,21 +49,21 @@ export type TabListItem =
 			group: Group;
 	  };
 
-export type TabManagerMethods = {
-	addNewGroup: (firstTabs: Tab[]) => void;
-	addTabsToGroup: (groupId: string, tabs: Tab[]) => void;
-	removeTabsFromGroup: (groupId: string, tabs: Tab[]) => void;
-};
+// export type TabManagerMethods = {
+// 	addNewGroup: (firstTabs: Tab[]) => void;
+// 	addTabsToGroup: (groupId: string, tabs: Tab[]) => void;
+// 	removeTabsFromGroup: (groupId: string, tabs: Tab[]) => void;
+// };
 type TabStructure = {
 	pinned: TabListItem[];
 	regular: TabListItem[];
 };
 type TabManagerInfo = {
-	multiselectInProgress: boolean;
-};
-type TabManagerContextType = {
+	selectedTabs: Tab[];
 	structure: TabStructure;
-	info: TabManagerInfo;
+	groups: GroupInfo[];
+};
+export type TabManagerContextType = TabManagerInfo & {
 	tabManager: TabManager;
 };
 
@@ -114,9 +114,12 @@ export class TabManager {
 	private get highlightedTabs() {
 		return this.tabOrder.map((tabId) => this.tabs[tabId]).filter((tab) => tab.highlighted);
 	}
-
 	public getInfo(): TabManagerInfo {
-		return { multiselectInProgress: this.highlightedTabs.length > 1 };
+		return {
+			selectedTabs: this.highlightedTabs,
+			groups: this.groups,
+			structure: this.renderTabStructure(),
+		};
 	}
 
 	public async toggleSelection(tabId: number, shiftKeyMode: boolean = false) {
@@ -245,11 +248,12 @@ export class TabManager {
 		//If a tab lands in a group, it should join that group. If it lands on either edge of a group, it should join the group only if it already has membership
 		let newGroupId = tabGroupId;
 		const group = this.groups.find((group) => group.id === tabGroupId);
-		if (regularToIndex <= 0 || regularToIndex >= regularTabsLength - 1) newGroupId = undefined;
+		console.log("RegularTo is", regularToIndex, "group.index is", group!.index);
+		if (regularToIndex < 0 || regularToIndex >= regularTabsLength) newGroupId = undefined;
 		else if (
 			!group ||
-			group.index > regularToIndex ||
-			(this.tabs[this.tabOrder[toIndex - 1]].groupId !== tabGroupId && group.index !== toIndex)
+			regularToIndex < group.index - 1 ||
+			(this.tabs[this.tabOrder[toIndex - 1]]?.groupId !== tabGroupId && group.index < regularToIndex)
 		) {
 			newGroupId = undefined;
 			//If the tabs before and after are in a group, then join that group
@@ -258,13 +262,15 @@ export class TabManager {
 			if (beforeGroupId !== undefined && beforeGroupId === afterGroupId) newGroupId = beforeGroupId;
 		}
 		this.tabOrder.forEach((tabId, index) => (this.tabs[tabId].index = index));
+		console.log("Setting", this.tabs[tabId].title, "to groupId", newGroupId);
 
-		this.setTabGroupIds([tabId], newGroupId);
+		if (newGroupId !== tabGroupId) this.setTabGroupIds([tabId], newGroupId);
 
 		for (const [i, group] of this.groups.entries()) {
 			let groupIndex = group.index;
 			if (regularFromIndex >= 0 && regularFromIndex < group.index) groupIndex--;
-			if ((regularToIndex >= 0 && regularToIndex < group.index) || (regularToIndex === groupIndex && tabGroupId !== group.id)) groupIndex++;
+			if ((regularToIndex >= 0 && regularToIndex < group.index - 1) || (regularToIndex === groupIndex && tabGroupId !== group.id))
+				groupIndex++;
 			this.groups[i].index = groupIndex;
 		}
 		this.notifyObservers();
@@ -277,6 +283,7 @@ export class TabManager {
 
 	private async setTabGroupIds(tabIds: number[], groupId: string | undefined) {
 		for (const tabId of tabIds) this.tabs[tabId].groupId = groupId;
+		console.log("Setting tab groupIds", tabIds, groupId);
 		await Promise.all(
 			tabIds.map(async (tabId) =>
 				groupId ? await browser.sessions.setTabValue(tabId, "groupId", groupId) : await browser.sessions.removeTabValue(tabId, "groupId")
@@ -330,10 +337,21 @@ export class TabManager {
 		}
 		return { pinned: pinnedTabsRender, regular: regularTabsRender };
 	}
+
+	private getGroupLength(groupId: string) {
+		const group = this.groups.find((group) => group.id === groupId);
+		console.log("Can't find group:", !group);
+		if (!group) return 0;
+		const realGroupIndex = group.index + this.pinnedTabs.length;
+		let length = 0;
+		while (this.tabs[this.tabOrder[realGroupIndex + length]].groupId === groupId) length++;
+		return length;
+	}
+
 	async addNewGroup(firstTabs: Tab[]) {
 		const pinnedTabsLength = this.pinnedTabs.length;
 		const regularTabsLength = this.tabOrder.length - pinnedTabsLength;
-		// Filter out pinned tabs
+		// Filter out pinned tabs //TODO: Support adding pinned tabs to groups (by unpinning them)
 		firstTabs = firstTabs.filter((tab) => !tab.pinned);
 		// Sort Tabs by index
 		firstTabs.sort((a, b) => a.index - b.index);
@@ -342,15 +360,34 @@ export class TabManager {
 		// Create group
 		const newGroup = { title: "New Group", id: Math.random().toString(36).slice(2), index: groupIndex, subIndex: 0, color: "#019407" };
 		this.groups.push(newGroup);
+		await this.addTabsToGroup(newGroup.id, firstTabs);
+	}
+	async addTabsToGroup(groupId: string, tabs: Tab[]) {
+		const pinnedTabsLength = this.pinnedTabs.length;
+		const group = this.groups.find((group) => group.id === groupId);
+		const initialGroupLength = this.getGroupLength(groupId);
+		// TODO: Problems
+		if (!group) return;
+		// Filter out pinned tabs + tabs already in the group //TODO: Support adding pinned tabs to groups (by unpinning them)
+		tabs = tabs.filter((tab) => !tab.pinned && tab.groupId !== groupId);
 		// Assign group membership to tabs
 		await this.setTabGroupIds(
-			firstTabs.map((tab) => tab.id!),
-			newGroup.id
+			tabs.map((tab) => tab.id!),
+			groupId
 		);
 		// Place tabs under group
+		const numTabsMovingDown = tabs.filter((tab) => tab.index < group.index + pinnedTabsLength).length;
+		console.log({ initialGroupLength });
+		tabs.sort((a, b) => a.index - b.index);
 		await browser.tabs.move(
-			firstTabs.map((tab) => tab.id!),
-			{ index: groupIndex + pinnedTabsLength }
+			//Place upper tabs on top of group
+			tabs.slice(0, numTabsMovingDown).map((tab) => tab.id!),
+			{ index: group.index + pinnedTabsLength - numTabsMovingDown }
+		);
+		await browser.tabs.move(
+			//Place lower tabs on bottom of group
+			tabs.slice(numTabsMovingDown).map((tab) => tab.id!),
+			{ index: group.index + pinnedTabsLength + initialGroupLength }
 		);
 		this.notifyObservers();
 	}
@@ -360,21 +397,19 @@ export const TabManagerContext = createContext<TabManagerContextType | null>(nul
 export function TabManagerContextProvider(props: { children: React.ReactNode }) {
 	const windowInfo = useContext(WindowInfoContext);
 	const [tabManager, setTabManager] = useState<TabManager | null>(null);
-	const [tabStructure, setTabStructure] = useState<TabStructure | null>(null);
 	const [tabManagerInfo, setTabManagerInfo] = useState<TabManagerInfo | null>(null);
 
 	useEffect(() => {
 		const tabManager = new TabManager(windowInfo!.windowId);
 		setTabManager(tabManager);
 		const tabUpdateListener = () => {
-			setTabStructure(tabManager.renderTabStructure());
 			setTabManagerInfo(tabManager.getInfo());
 		};
 		tabManager.subscribeToTabUpdates(tabUpdateListener);
 		return () => tabManager.unsubscribeFromTabUpdates(tabUpdateListener);
 	}, []);
 
-	if (!tabStructure || !tabManager || !tabManagerInfo) return null;
-	const tabManagerContext = { structure: tabStructure, tabManager, info: tabManagerInfo };
+	if (!tabManager || !tabManagerInfo) return null;
+	const tabManagerContext = { ...tabManagerInfo, tabManager };
 	return <TabManagerContext.Provider value={tabManagerContext}>{props.children}</TabManagerContext.Provider>;
 }

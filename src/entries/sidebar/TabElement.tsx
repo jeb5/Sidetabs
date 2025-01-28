@@ -14,9 +14,12 @@ import { CollapsedContext } from "./CollapsedContext";
 import { WindowInfoContext } from "./Root";
 
 export default function TabElement({ tab }: { tab: Tab }) {
-	const showContextMenu = useContextMenu(tab);
 	const extensionOptions = useContext(OptionsContext);
 	const isCollapsed = useContext(CollapsedContext);
+	const windowInfo = useContext(WindowInfoContext);
+	const { tabManager, selectedTabs } = useContext(TabManagerContext)!;
+
+	const showContextMenu = useContextMenu(selectedTabs.length > 1 ? selectedTabs : [tab]);
 
 	const [loading, setLoading] = React.useState(TabMethods.getLoading(tab));
 	const [justLoaded, setJustLoaded] = React.useState(false); //Means the tab was loaded in the last 500 ms.
@@ -24,8 +27,6 @@ export default function TabElement({ tab }: { tab: Tab }) {
 
 	const tabIsDraggingOverRef = React.useRef(false);
 	const tabDragTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
-	const windowInfo = useContext(WindowInfoContext);
-	const { tabManager } = useContext(TabManagerContext)!;
 
 	useEffect(() => {
 		setLoading(TabMethods.getLoading(tab));
@@ -57,8 +58,8 @@ export default function TabElement({ tab }: { tab: Tab }) {
 	if (tab.pinned && extensionOptions["appearance/pinnedBadge"]) badges.push(<PIN_ICON className="icon wide-icon" />);
 	if (tab.sharingState?.camera) badges.push(<VIDEO_RECORDER_ICON className="icon recording-icon wide-icon" />);
 	else if (tab.sharingState?.microphone) badges.push(<MICROPHONE_ICON className="icon recording-icon" />);
-	if (TabMethods.getMuted(tab)) badges.push(<AUDIO_MUTE_ICON className="icon" onClick={() => TabMethods.unmute(tab)} />);
-	else if (tab.audible) badges.push(<AUDIO_PLAYING_ICON className="icon" onClick={() => TabMethods.mute(tab)} />);
+	if (TabMethods.getMuted(tab)) badges.push(<AUDIO_MUTE_ICON className="icon" onClick={() => TabMethods.unmute([tab])} />);
+	else if (tab.audible) badges.push(<AUDIO_PLAYING_ICON className="icon" onClick={() => TabMethods.mute([tab])} />);
 
 	const showBadgesOnFavicon = extensionOptions["appearance/showBadgesOnFavicon"] || isCollapsed;
 	const indicator = badges[0];
@@ -77,7 +78,7 @@ export default function TabElement({ tab }: { tab: Tab }) {
 			onMouseUp={
 				extensionOptions["behavior/middleClickClose"]
 					? (e) => {
-							if (e.button === 1) TabMethods.close(tab); //Middle mouse up (close)
+							if (e.button === 1) TabMethods.close([tab]); //Middle mouse up (close)
 					  }
 					: undefined
 			}
@@ -126,7 +127,7 @@ export default function TabElement({ tab }: { tab: Tab }) {
 				className="tabCloseBtn"
 				onClick={(event) => {
 					event.stopPropagation();
-					TabMethods.close(tab);
+					TabMethods.close([tab]);
 				}}
 			>
 				<CLOSE_ICON className="icon" />

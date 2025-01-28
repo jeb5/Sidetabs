@@ -4,37 +4,39 @@ import { Tab } from "./TabManager";
 
 
 export function getDiscardable(tab: Tab) {
-		return !tab.active && !tab.discarded;
-	}
+	return !tab.active && !tab.discarded;
+}
 export function getMuted(tab: Tab) {
-		return tab.mutedInfo?.muted;
-	}
+	return tab.mutedInfo?.muted;
+}
 export function getReopenable(tab: Tab) {
-		const { protocol } = new URL(tab.url || "");
-		return protocol === "http:" || protocol === "https:" || tab.url === "about:newtab";
-	}
+	const { protocol } = new URL(tab.url || "");
+	return protocol === "http:" || protocol === "https:" || tab.url === "about:newtab";
+}
 export function getContainer(tab: Tab) {
-		return containers.find(({ cookieStoreId }) => cookieStoreId === tab.cookieStoreId);
-	}
+	return containers.find(({ cookieStoreId }) => cookieStoreId === tab.cookieStoreId);
+}
 export function getLoading(tab: Tab) {
-		return tab.status === "loading";
-	}
+	return tab.status === "loading";
+}
 export async function activate(tab: Tab) {
 	await browser.tabs.highlight({ tabs: tab.index });
-	}
+}
 export function warmup(tab: Tab) {
-		browser.tabs.warmup(tab.id!);
-	}
-export async function close(tab: Tab) {
-		await browser.tabs.remove(tab.id!);
-	}
-export async function reload(tab: Tab) {
-		await browser.tabs.reload(tab.id!);
-	}
-export async function discard(tab: Tab) {
-		await browser.tabs.discard(tab.id!);
-	}
-export async function reopenWithCookieStoreId(tab: Tab, cookieStoreId?: string) {
+	browser.tabs.warmup(tab.id!);
+}
+export async function close(tabs: Tab[]) {
+	await browser.tabs.remove(tabs.map(tab => tab.id!));
+}
+export async function reload(tabs: Tab[]) {
+	await Promise.all(tabs.map(tab => browser.tabs.reload(tab.id!)))
+}
+export async function discard(tabs: Tab[]) {
+	await browser.tabs.discard(tabs.map(tab => tab.id!));
+}
+export async function reopenWithCookieStoreId(tabs: Tab[], cookieStoreId?: string) {
+	//TODO: Support for groups??
+	for (const tab of tabs) {
 		await browser.tabs.create({
 			active: tab.active,
 			...(cookieStoreId && { cookieStoreId }),
@@ -48,47 +50,52 @@ export async function reopenWithCookieStoreId(tab: Tab, cookieStoreId?: string) 
 		});
 		await browser.tabs.remove(tab.id!);
 	}
-export async function mute(tab: Tab) {
-		await browser.tabs.update(tab.id!, { muted: true });
-	}
-export async function unmute(tab: Tab) {
-		await browser.tabs.update(tab.id!, { muted: false });
-	}
-export async function pin(tab: Tab) {
-		await browser.tabs.update(tab.id!, { pinned: true });
-	}
-export async function unpin(tab: Tab) {
-		await browser.tabs.update(tab.id!, { pinned: false });
-	}
-export async function duplicate(tab: Tab) {
-		await browser.tabs.duplicate(tab.id!);
-	}
-export async function bookmark(tab: Tab) {
-		await browser.bookmarks.create({
+}
+export async function mute(tabs: Tab[]) {
+	await Promise.all(tabs.map(tab => browser.tabs.update(tab.id!, { muted: true })))
+}
+export async function unmute(tabs: Tab[]) {
+	await Promise.all(tabs.map(tab => browser.tabs.update(tab.id!, { muted: false })))
+}
+export async function pin(tabs: Tab[]) {
+	await Promise.all(tabs.map(tab => browser.tabs.update(tab.id!, { pinned: true })))
+}
+export async function unpin(tabs: Tab[]) {
+	await Promise.all(tabs.map(tab => browser.tabs.update(tab.id!, { pinned: false })))
+}
+export async function duplicate(tabs: Tab[]) {
+	await Promise.all(tabs.map(tab => browser.tabs.duplicate(tab.id!)));
+}
+export async function bookmark(tabs: Tab[]) {
+	await Promise.all(tabs.map(tab =>
+		browser.bookmarks.create({
 			title: tab.title,
 			url: tab.url,
-		});
-	}
+		})
+	))
+}
 
 export function getHostname(tab: Tab) {
-		return new URL(tab.url || "").hostname;
-	}
+	return new URL(tab.url || "").hostname;
+}
 
-export async function clearCookies(tab: Tab) {
-		if (!(await browser.permissions.request({ origins: ["<all_urls>"] }))) return;
+export async function clearCookies(tabs: Tab[]) {
+	if (!(await browser.permissions.request({ origins: ["<all_urls>"] }))) return;
+	await Promise.all(tabs.map(async (tab) => {
 		const cookies = await browser.cookies.getAll({ url: tab.url });
 		await Promise.all(cookies.map(({ name }) => browser.cookies.remove({ url: tab.url!, name })));
-	}
-export async function clearStorage(tab: Tab) {
-	const hostname = getHostname(tab);
-		if (hostname !== "") await browser.browsingData.removeLocalStorage({ hostnames: [hostname] });
-	}
-export async function clearCache(tab: Tab) {
-	const hostname = getHostname(tab);
-	if (hostname !== "") await browser.browsingData.removeCache({ hostnames: [getHostname(tab)] });
-	}
-export async function clearAllData(tab: Tab) {
-	await Promise.all([clearCookies(tab), clearStorage(tab), clearCache(tab)]);
+	}));
+}
+export async function clearStorage(tabs: Tab[]) {
+	const hostnames = tabs.map(tab => getHostname(tab)).filter(hostname => hostname !== "");
+	if (hostnames.length > 0) await browser.browsingData.removeLocalStorage({ hostnames });
+}
+export async function clearCache(tabs: Tab[]) {
+	const hostnames = tabs.map(tab => getHostname(tab)).filter(hostname => hostname !== "");
+	if (hostnames.length > 0) await browser.browsingData.removeCache({ hostnames });
+}
+export async function clearAllData(tabs: Tab[]) {
+	await Promise.all([clearCookies(tabs), clearStorage(tabs), clearCache(tabs)]);
 }
 
 export async function restoreClosedTab() {

@@ -30,7 +30,6 @@ body {
 }
 #sidebar {
   /* #sidebar ought to be full height, to capture all onContextMenu events*/
-  padding: 0 4px;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -52,7 +51,7 @@ body {
   transform: rotate(90deg);
 }
 hr {
-  width: calc(100% - 6px);
+  width: calc(100% - 14px);
   height: 0;
   border: 0px;
   border-bottom: 1px solid rgba(var(--theme-line-separator-color));
@@ -149,7 +148,7 @@ hr {
 }
 .tab-holder {
   position: relative;
-  margin: calc(var(--tab-gap)/2) 0;
+  margin: calc(var(--tab-gap)/2) 4px;
 }
 .tab-holder:first-child {
   margin-top: 0;
@@ -338,14 +337,15 @@ svg.icon.recording-icon {
   width: 1.5px;
 }
 .tab.activeTab.activeTab {
-  background: rgba(var(--theme-tab-selected-color));
   --tab-text-color: var(--theme-tab-text-color);
   border: 1px solid rgba(var(--theme-tab-border-color));
 }
 .multiselect_in_progress .tab.highlighted {
-  /* background: rgba(var(--theme-tab-selected-color)); */
-  /* --tab-text-color: var(--theme-tab-text-color); */
   border: 1px solid #2480cc;
+}
+.tab.highlighted {
+  background: rgba(var(--theme-tab-selected-color));
+  box-shadow: 0 0 4px rgba(0,0,0,.35);
 }
 .multiselect_in_progress .tab.highlighted.activeTab {
   border: 2px solid #2480cc;
@@ -365,7 +365,7 @@ svg.icon.recording-icon {
   display: flex;
   cursor: pointer;
   opacity: 0.5;
-  margin: var(--tab-gap) 0;
+  margin: var(--tab-gap) 4px;
   height: var(--tab-height);
   transition: opacity 100ms ease;
 }
