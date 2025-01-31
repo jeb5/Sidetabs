@@ -127,10 +127,11 @@ function getThemeFingerprint(theme: ThemeType) {
 function detectExceptionThemes(theme: ThemeType, windowInDarkMode: boolean): SidebarTheme | null {
 	// --- Exception themes ---
 
-	console.log("Theme fingerprint is", getThemeFingerprint(theme));
+	console.log("Theme fingerprint is", getThemeFingerprint(theme), ". Window is in", windowInDarkMode ? "dark" : "light", "mode.");
 
 	switch (getThemeFingerprint(theme)) {
-		case "267e0e07e5cd597938953b5a4d7e6717": //Alpenglow
+		case "b70879eb49910661d97ae318363bb262": //Alpenglow
+		case "5ab55f3fe0034b9602a6036dbd409c9a": //Alpenglow again?
 			// Alpenglow is the only dynamic (light/dark) theme that I know of, but theme.getCurrent() only returns the light version.
 			return windowInDarkMode ? DEFAULT_THEMES.ALPENGLOW_DARK : DEFAULT_THEMES.ALPENGLOW_LIGHT;
 		case "518c16a72b2a6dfa94711a719b100317": //Alpenglow (forced dark), a popular theme
