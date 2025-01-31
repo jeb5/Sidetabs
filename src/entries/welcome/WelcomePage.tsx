@@ -58,7 +58,7 @@ const WelcomePage = () => {
 										You can achieve this by modifying your browser's <strong>UserChome.css</strong> file. Instructions for doing this can be
 										found in settings.
 									</p>
-									<LinkButton href="../settings/index.html" icon={<PREFERENCES_ICON />}>
+									<LinkButton href={browser.runtime.getURL("settings.html")} icon={<PREFERENCES_ICON />}>
 										Sidetabs Settings
 									</LinkButton>
 								</div>

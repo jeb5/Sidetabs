@@ -13,17 +13,17 @@
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
-		"@types/react": "^18.2.7",
-		"@types/react-dom": "^18.2.4",
-		"parcel": "^2.9.1",
-		"react": "^18.2.0",
-		"react-dom": "^18.2.0"
+		"@types/react": "^19.0.8",
+		"@types/react-dom": "^19.0.3",
+		"parcel": "^2.13.3",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0"
 	},
 	"peerDependencies": {
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0"
 	},
 	"dependencies": {
-		"typescript": "^5.0.4"
+		"typescript": "^5.7.3"
 	}
 }

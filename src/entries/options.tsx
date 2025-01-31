@@ -73,17 +73,12 @@ export const SettingsDefault: OptionForm = {
 TODO: Implement New Pinned Tabs Option
 */
 
-export async function getOption(key: keyof OptionForm): Promise<string | boolean | number | string[]> {
-	return ((await browser.storage.local.get(key)) as string | boolean | number | string[]) || SettingsDefault[key];
-}
-export async function setOption(key: string, value: any) {
-	return await browser.storage.local.set({ [key]: value });
-}
 export async function getAllOptions() {
-	return (await browser.storage.sync.get(SettingsDefault)) as OptionForm;
+	// I don't like or understand this typescript chicanery
+	return (await browser.storage.sync.get(SettingsDefault as unknown as Record<string, unknown>)) as unknown as OptionForm;
 }
 export async function setAllOptions(options: OptionForm) {
-	await browser.storage.sync.set(options);
+	await browser.storage.sync.set(options as unknown as Record<string, unknown>);
 }
 
 //Options Provider

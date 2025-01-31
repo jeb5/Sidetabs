@@ -1,9 +1,13 @@
 import { OptionForm } from "../options";
+import browser from "webextension-polyfill";
 
 /*
  Who knows what's going on here honestly
  With tabs needed for backtick formatting, chaos ensues
 */
+
+const extensionId = browser.runtime.id.substring(1, browser.runtime.id.length - 1);
+const sidebarcommandAttrSelector = `sidebarcommand="_${extensionId}_-sidebar-action"`;
 
 export default function generateUserChrome(settings: OptionForm) {
 	let userChrome = `/* ########  Sidetabs Styles  ######### */
@@ -22,7 +26,7 @@ export default function generateUserChrome(settings: OptionForm) {
 			: ""
  }
 }
-#sidebar-box {
+#sidebar-box[${sidebarcommandAttrSelector}] {
  display: grid !important;
  min-width: var(--sidebar-hover-width) !important;
  max-width: var(--sidebar-hover-width) !important;
@@ -37,7 +41,7 @@ ${
  transition: max-width var(--sidebar-transition-speed) var(--sidebar-transition-delay) ease, width var(--sidebar-transition-speed) var(--sidebar-transition-delay) ease !important;` : ""
 }
 }
-#sidebar {
+#sidebar-box[${sidebarcommandAttrSelector}] #sidebar {
  height: 100% !important;
  width: var(--sidebar-hover-width) !important;
  ${(settings["autohiding/expanding"] && settings["autohiding/expandedFloats"]) ? "z-index: 200 !important;" : ""}
@@ -52,12 +56,12 @@ ${
 
 	if (settings["autohiding/expanding"] && settings["autohiding/autohide"]) {
 		userChrome += `
-#sidebar:hover {
+#sidebar-box[${sidebarcommandAttrSelector}] #sidebar:hover {
  width: var(--sidebar-visible-width) !important;
 }`;
 		if (!settings["autohiding/expandedFloats"])
 			userChrome += `
-#sidebar-box:hover {
+#sidebar-box[${sidebarcommandAttrSelector}]:hover {
  width: var(--sidebar-visible-width) !important;
  max-width: var(--sidebar-visible-width) !important;
 }
@@ -110,7 +114,7 @@ ${
 
 		if (settings["hiddenElements/sidebarHeader"] || settings["autohiding/autohide"]) {
 			userChrome += `
-#sidebar-header {
+#sidebar-box[${sidebarcommandAttrSelector}] #sidebar-header {
 	display: none !important;
 }`;
 			userChrome += `

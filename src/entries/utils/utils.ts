@@ -13,14 +13,6 @@ export function arrWithReposition(arr: any[], from: number, to: number) {
 	return result;
 }
 
-export function usePrevious<T>(value: T) {
-	const ref = useRef<T>();
-	useEffect(() => {
-		ref.current = value;
-	}, [value]);
-	return ref.current;
-}
-
 export function debounce<T extends (...args: any[]) => any>(callback: T, wait: number) {
 	let timeoutId: number | null = null;
 	return (...args: Parameters<T>) => {

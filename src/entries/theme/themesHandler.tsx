@@ -6,21 +6,8 @@ import React, { useContext, useEffect, useState } from "react";
 import { OptionForm, OptionsContext } from "../options";
 import { debounce } from "../utils/utils";
 
-type Theme = {
-	// Theme type because for some reason @types/webextension-polyfill doesn't have this type
-	images?: {
-		headerURL?: string;
-		theme_frame?: string;
-		additional_backgrounds?: string[];
-	};
-	colors: {
-		[key: string]: string;
-	};
-	properties?: {
-		additional_backgrounds_alignment?: string[];
-		additional_backgrounds_tiling?: string[];
-	};
-};
+type ThemeType = browser.Manifest.ThemeType;
+
 export type ThemeImages = {
 	image: string;
 	alignment: string;
@@ -36,10 +23,10 @@ export type SidebarTheme = {
 
 // let schemeUpdateListeners: ((newScheme: SidebarTheme) => any)[] = [];
 
-const themeStyleColorMappings: { [cssVar: string]: string[] } = {
+const themeStyleColorMappings: { [cssVar: string]: (keyof browser.Manifest.ThemeTypeColorsType)[] } = {
 	"--theme-tab-text-color": ["tab_text", "bookmark_text", "toolbar_text", "tab_background_text"],
 	"--theme-tab-background-text-color": ["tab_background_text", "toolbar_text"],
-	"--theme-bg-color": ["frame", "frame_inactive", "accentcolor"],
+	"--theme-bg-color": ["frame", "frame_inactive"],
 	"--theme-line-separator-color": ["sidebar_border", "toolbar_vertical_separator"],
 	"--theme-tab-border-color": ["tab_line"],
 	"--theme-tab-load-color": ["tab_loading"],
@@ -48,7 +35,7 @@ const themeStyleColorMappings: { [cssVar: string]: string[] } = {
 	"--theme-icons-color": ["icons", "tab_background_text"],
 };
 
-async function updateThemeStyle(theme: Theme, includePrimaryImage: boolean = true, includeAdditionalImages: boolean = true) {
+async function updateThemeStyle(theme: ThemeType, includePrimaryImage: boolean = true, includeAdditionalImages: boolean = true) {
 	const newTheme = {
 		colors: theme.colors || {},
 		images: theme.images || {},
@@ -61,7 +48,10 @@ async function updateThemeStyle(theme: Theme, includePrimaryImage: boolean = tru
 	let darkMode: boolean;
 	{
 		const tabTextColorString =
-			newTheme.colors[themeStyleColorMappings["--theme-tab-text-color"].find((key) => newTheme.colors[key]) || "tab_text"];
+			newTheme.colors[
+				(themeStyleColorMappings["--theme-tab-text-color"].find((key) => newTheme.colors[key]) ||
+					"tab_text") as keyof browser.Manifest.ThemeTypeColorsType
+			];
 		darkMode = tabTextColorString ? Color(tabTextColorString).isLight() : windowInDarkMode; //If tab text is light, theme must be dark. If tab text is dark, theme must be light. If tab text is undefined, use window dark mode.
 	}
 	const defaultScheme = darkMode ? DEFAULT_THEMES.DEFAULT_DARK_SIDEBAR_THEME : DEFAULT_THEMES.DEFAULT_LIGHT_SIDEBAR_THEME;
@@ -128,13 +118,13 @@ async function updateThemeStyle(theme: Theme, includePrimaryImage: boolean = tru
 // 	schemeUpdateListeners.push(callback);
 // }
 
-function getThemeFingerprint(theme: Theme) {
+function getThemeFingerprint(theme: ThemeType) {
 	//extension urls are not consistent accross different firefox profiles.
 	const cleanedJSON = JSON.stringify(theme).replace(/moz-extension:\/\/[\w-]*\//gm, "EXTENSION:");
 	return md5(cleanedJSON);
 }
 
-function detectExceptionThemes(theme: Theme, windowInDarkMode: boolean): SidebarTheme | null {
+function detectExceptionThemes(theme: ThemeType, windowInDarkMode: boolean): SidebarTheme | null {
 	// --- Exception themes ---
 
 	console.log("Theme fingerprint is", getThemeFingerprint(theme));
@@ -211,7 +201,7 @@ const useTheme = (extensionOptions: OptionForm) => {
 		const showImages = extensionOptions["theme/showPrimaryImage"];
 		const showAdditionalImages = extensionOptions["theme/showAdditionalImages"];
 
-		const setNewTheme = debounce(async (newTheme: Theme) => {
+		const setNewTheme = debounce(async (newTheme: ThemeType) => {
 			if (newTheme) setTheme(await updateThemeStyle(newTheme, showImages, showAdditionalImages));
 		}, 100);
 
@@ -222,10 +212,11 @@ const useTheme = (extensionOptions: OptionForm) => {
 			const WIN_ID = (await browser.windows.getCurrent()).id!;
 			themeListener = async ({ theme, windowId }) => {
 				if (windowId !== WIN_ID && windowId != undefined) return;
-				const newTheme = theme as Theme;
+				const newTheme = theme as ThemeType;
 				if (newTheme) setNewTheme(newTheme);
 			};
 			darkModeListener = async () => {
+				const theme: browser.Manifest.ThemeType = await browser.theme.getCurrent(WIN_ID);
 				setNewTheme(await browser.theme.getCurrent(WIN_ID));
 			};
 

@@ -25,8 +25,6 @@ Build extension: `npm run build`
 
 Run development Vite server: `npm run dev`
 
-Build extension: `npm run build`
-
 ## Building for production
 
 use `web-ext build` to package extension.
