@@ -134,8 +134,6 @@ function detectExceptionThemes(theme: ThemeType, windowInDarkMode: boolean): Sid
 		case "5ab55f3fe0034b9602a6036dbd409c9a": //Alpenglow again?
 			// Alpenglow is the only dynamic (light/dark) theme that I know of, but theme.getCurrent() only returns the light version.
 			return windowInDarkMode ? DEFAULT_THEMES.ALPENGLOW_DARK : DEFAULT_THEMES.ALPENGLOW_LIGHT;
-		case "518c16a72b2a6dfa94711a719b100317": //Alpenglow (forced dark), a popular theme
-			return DEFAULT_THEMES.ALPENGLOW_DARK;
 		default:
 			return null;
 	}
