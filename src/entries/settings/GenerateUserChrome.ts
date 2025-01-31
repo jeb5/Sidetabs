@@ -26,6 +26,11 @@ export default function generateUserChrome(settings: OptionForm) {
 			: ""
  }
 }
+${(settings["autohiding/expanding"] && settings["autohiding/expandedFloats"]) ? `
+#navigator-toolbox {
+ z-index: 201 !important;
+}
+` : ""}
 #sidebar-box[${sidebarcommandAttrSelector}] {
  display: grid !important;
  min-width: var(--sidebar-hover-width) !important;
@@ -43,7 +48,7 @@ ${
 }
 #sidebar-box[${sidebarcommandAttrSelector}] #sidebar {
  height: 100% !important;
- width: var(--sidebar-hover-width) !important;
+ width: 100% !important;
  ${(settings["autohiding/expanding"] && settings["autohiding/expandedFloats"]) ? "z-index: 200 !important;" : ""}
  position: absolute !important;${
 		settings["autohiding/expanding"]
@@ -55,12 +60,11 @@ ${
 }`;
 
 	if (settings["autohiding/expanding"] && settings["autohiding/autohide"]) {
-		userChrome += `
+		if (settings["autohiding/expandedFloats"]) userChrome += `
 #sidebar-box[${sidebarcommandAttrSelector}] #sidebar:hover {
  width: var(--sidebar-visible-width) !important;
 }`;
-		if (!settings["autohiding/expandedFloats"])
-			userChrome += `
+		else userChrome += `
 #sidebar-box[${sidebarcommandAttrSelector}]:hover {
  width: var(--sidebar-visible-width) !important;
  max-width: var(--sidebar-visible-width) !important;
@@ -81,6 +85,9 @@ ${
 }`;
 			} else {
 				userChrome += `
+#nav-bar {
+ border-top-style: none !important;
+}
 #TabsToolbar>:not(.titlebar-buttonbox-container) {
 	display: none !important;
 }
