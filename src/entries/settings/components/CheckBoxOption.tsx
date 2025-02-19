@@ -10,7 +10,7 @@ type CheckBoxOptionProps = React.InputHTMLAttributes<HTMLInputElement> & {
 };
 
 export const CheckBoxOption = (props: CheckBoxOptionProps) => {
-	const { formRegister, children, title, ...rest } = props;
+	const { formRegister, children, title, indentLevel, ...rest } = props;
 	return (
 		<div
 			className={`checkbox-option option-field${props.disabled ? " checkbox-option-disabled" : ""}`}
